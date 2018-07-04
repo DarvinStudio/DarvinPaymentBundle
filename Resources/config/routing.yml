@@ -1,0 +1,3 @@
+darvin_payment_homepage:
+    path:     /
+    defaults: { _controller: DarvinPaymentBundle:Default:index }
