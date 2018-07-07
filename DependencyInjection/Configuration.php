@@ -2,6 +2,7 @@
 
 namespace Darvin\PaymentBundle\DependencyInjection;
 
+use Darvin\PaymentBundle\Entity\Payment;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -20,9 +21,22 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('darvin_payment');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->scalarNode('default_currency')->defaultValue('RUB')->end()
+                ->scalarNode('payment_class')->defaultValue(Payment::class)->end()
+                ->scalarNode('default_gateway')->defaultNull()->end()
+                ->arrayNode('parameters_bridge')
+                    ->isRequired()
+                    ->requiresAtLeastOneElement()
+                    ->useAttributeAsKey('name')
+                    ->arrayPrototype()
+                        ->useAttributeAsKey('key')
+                        ->scalarPrototype()->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }

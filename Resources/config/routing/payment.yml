@@ -1,0 +1,12 @@
+darvin_payment_payment_purchase:
+    path: /{gateway_name}/purchase/{id}
+    defaults: { _controller: DarvinPaymentBundle:Payment:purchase}
+    requirements: { id: "\d+" }
+
+prepare:
+    path: /prepare
+    defaults: { _controller: DarvinPaymentBundle:Payment:prepare }
+
+done:
+    path: /done
+    defaults: { _controller: DarvinPaymentBundle:Payment:done }
