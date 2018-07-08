@@ -4,6 +4,7 @@ namespace Darvin\PaymentBundle\Command;
 
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\PaymentManager\PaymentManagerInterface;
+use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,10 +30,9 @@ class TestCommand extends ContainerAwareCommand
     {
         $container = $this->getContainer();
 
-
         $manager = $container->get(PaymentManagerInterface::class);
+        $payment = $manager->findById(41);
 
-        $payment = $manager->create(1, 'test', 5.55, 'AED', null, null, 'test');
-
+        $output->writeln($container->get(PaymentUrlBuilderInterface::class)->getPurchaseUrl($payment));
     }
 }

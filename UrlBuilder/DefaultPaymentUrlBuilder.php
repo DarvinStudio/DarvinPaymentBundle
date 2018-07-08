@@ -11,6 +11,7 @@ namespace Darvin\PaymentBundle\UrlBuilder;
 
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
+use Darvin\PaymentBundle\UrlBuilder\Exception\DefaultGatewayIsNotConfiguredException;
 use Symfony\Component\Routing\RouterInterface;
 
 class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
@@ -21,13 +22,20 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     protected $router;
 
     /**
+     * @var string|null
+     */
+    protected $defaultGateway;
+
+    /**
      * DefaultPaymentUrlBuilder constructor.
      *
      * @param RouterInterface $router
+     * @param string|null     $defaultGateway
      */
-    public function __construct(RouterInterface $router)
+    public function __construct(RouterInterface $router, $defaultGateway = null)
     {
         $this->router = $router;
+        $this->defaultGateway = $defaultGateway;
     }
 
     /**
@@ -55,7 +63,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
         return $this->router->generate('darvin_payment_payment_purchase',
             [
                 'id'          => $payment->getId(),
-                'gatewayName' => $gateway,
+                'gatewayName' => $this->getGateway($gateway),
             ],
             RouterInterface::ABSOLUTE_URL
         );
@@ -72,7 +80,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
 
         if ($action == 'purchase') {
             return $this->router->generate('darvin_payment_payment_success_purchase', [
-                'gatewayName' => $gateway,
+                'gatewayName'  => $this->getGateway($gateway),
                 'token'        => $payment->getActionToken()
             ], RouterInterface::ABSOLUTE_URL);
         }
@@ -91,7 +99,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
 
         if ($action == 'purchase') {
             return $this->router->generate('darvin_payment_payment_cancled_purchase', [
-                'gatewayName' => $gateway,
+                'gatewayName'  => $this->getGateway($gateway),
                 'token'        => $payment->getActionToken()
             ], RouterInterface::ABSOLUTE_URL);
         }
@@ -110,7 +118,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
 
         if ($action == 'purchase') {
             return $this->router->generate('darvin_payment_payment_failed_purchase', [
-                'gatewayName'  => $gateway,
+                'gatewayName'  => $this->getGateway($gateway),
                 'token'        => $payment->getActionToken()
             ], RouterInterface::ABSOLUTE_URL);
         }
@@ -132,5 +140,24 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     public function getNotifyUrl(PaymentInterface $payment, $gateway = null)
     {
         throw new ActionNotImplementedException('notify');
+    }
+
+    /**
+     * @param null $gateway
+     *
+     * @return null|string
+     * @throws DefaultGatewayIsNotConfiguredException
+     */
+    protected function getGateway($gateway = null)
+    {
+        if ($gateway) {
+            return $gateway;
+        }
+
+        if ($this->defaultGateway) {
+            return $this->defaultGateway;
+        }
+
+        throw new DefaultGatewayIsNotConfiguredException();
     }
 }

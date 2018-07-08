@@ -3,6 +3,7 @@
 namespace Darvin\PaymentBundle\DependencyInjection;
 
 use Darvin\PaymentBundle\PaymentManager\DefaultPaymentManager;
+use Darvin\PaymentBundle\UrlBuilder\DefaultPaymentUrlBuilder;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -28,13 +29,33 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        $definition = $container->getDefinition(DefaultPaymentManager::class);
-        $definition->setArgument(2, $config['payment_class']);
-        $definition->setArgument(3, $config['default_currency']);
+        $this->updatePaymentManagerService($container, $config);
+        $this->updateUrlBuilderService($container, $config);
 
         foreach ($config['parameters_bridge'] as $key => $gatewayConfig) {
             $container->setParameter('darvin_payment.config.gateway_parameters_bridge.'.$key, $gatewayConfig);
         }
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param array            $config
+     */
+    protected function updatePaymentManagerService(ContainerBuilder $container, array $config)
+    {
+        $definition = $container->getDefinition(DefaultPaymentManager::class);
+        $definition->setArgument(2, $config['payment_class']);
+        $definition->setArgument(3, $config['default_currency']);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param array            $config
+     */
+    protected function updateUrlBuilderService(ContainerBuilder $container, array $config)
+    {
+        $definition = $container->getDefinition(DefaultPaymentUrlBuilder::class);
+        $definition->setArgument(1, $config['default_gateway']);
     }
 
     public function prepend(ContainerBuilder $container)
