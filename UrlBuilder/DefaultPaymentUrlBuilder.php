@@ -54,9 +54,10 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     {
         return $this->router->generate('darvin_payment_payment_purchase',
             [
-                'id'      => $payment->getId(),
-                'gateway' => $gateway,
-            ]
+                'id'          => $payment->getId(),
+                'gatewayName' => $gateway,
+            ],
+            RouterInterface::ABSOLUTE_URL
         );
     }
 
@@ -65,7 +66,18 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
      */
     public function getSuccessUrl(PaymentInterface $payment, $gateway = null, $action = 'purchase')
     {
-        // TODO: Implement getSuccessUrl() method.
+        if (!$payment->getActionToken()) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        if ($action == 'purchase') {
+            return $this->router->generate('darvin_payment_payment_success_purchase', [
+                'gatewayName' => $gateway,
+                'token'        => $payment->getActionToken()
+            ], RouterInterface::ABSOLUTE_URL);
+        }
+
+        throw new ActionNotImplementedException($action);
     }
 
     /**
@@ -73,7 +85,18 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
      */
     public function getCanceledUrl(PaymentInterface $payment, $gateway = null, $action = 'purchase')
     {
-        // TODO: Implement getCanceledUrl() method.
+        if (!$payment->getActionToken()) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        if ($action == 'purchase') {
+            return $this->router->generate('darvin_payment_payment_cancled_purchase', [
+                'gatewayName' => $gateway,
+                'token'        => $payment->getActionToken()
+            ], RouterInterface::ABSOLUTE_URL);
+        }
+
+        throw new ActionNotImplementedException($action);
     }
 
     /**
@@ -81,7 +104,18 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
      */
     public function getFailedUrl(PaymentInterface $payment, $gateway = null, $action = 'purchase')
     {
-        // TODO: Implement getFailedUrl() method.
+        if (!$payment->getActionToken()) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        if ($action == 'purchase') {
+            return $this->router->generate('darvin_payment_payment_failed_purchase', [
+                'gatewayName'  => $gateway,
+                'token'        => $payment->getActionToken()
+            ], RouterInterface::ABSOLUTE_URL);
+        }
+
+        throw new ActionNotImplementedException($action);
     }
 
     /**

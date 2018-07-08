@@ -70,7 +70,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
         $description = null,
         array $options = []
     ) {
-        if (!is_a($this->paymentClass, Payment::class)) {
+        if (!is_a($this->paymentClass, Payment::class, true)) {
             throw new \RuntimeException(sprintf(
                 "%s doesn't know how to create object of class %s",
                 self::class,
@@ -164,4 +164,23 @@ class DefaultPaymentManager implements PaymentManagerInterface
             $this->tokenManager->invalidateActionToken($payment);
         }
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function setTransactionReference(PaymentInterface $payment, $reference)
+    {
+        $payment->setTransactionRef($reference);
+        $this->entityManager->flush($payment);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findById($id)
+    {
+        return $this->entityManager->find(PaymentInterface::class, $id);
+    }
+
+
 }

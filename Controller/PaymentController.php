@@ -18,28 +18,36 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class PaymentController extends Controller
 {
     /**
-     * @param                  $gatewayName
-     * @param PaymentInterface $payment
+     * @param string $gatewayName
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function purchaseAction($gatewayName, PaymentInterface $payment)
+    public function purchaseAction($gatewayName, $id)
     {
         $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
         $bridge = $this->getGatewayFactory()->getGatewayParametersBridge($gatewayName);
         $manager = $this->getPaymentManager();
         $urlBuilder = $this->getPaymentUrlBuilder();
 
+        $payment = $manager->findById($id);
+        if (!$payment) {
+            throw $this->createNotFoundException('Payment with id '.$id.' not found');
+        }
+
         if (!$gateway->supportsPurchase()) {
             throw new \Exception(sprintf("%s doesn't support purchase method", $gatewayName));
         }
 
+        $manager->markAsPending($payment);
         $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
 
-        if ($response->isRedirect() && $response instanceof RedirectResponseInterface) {
-            $manager->markAsPending($payment);
+        if ($response->getTransactionReference()) {
+            $manager->setTransactionReference($payment, $response->getTransactionReference());
+        }
 
+        if ($response->isRedirect() && $response instanceof RedirectResponseInterface) {
             if ($response->getRedirectMethod() != 'POST') {
                 return $this->redirect($response->getRedirectUrl());
             }
@@ -87,7 +95,7 @@ class PaymentController extends Controller
             throw new \Exception(sprintf("%s doesn't support complete purchase method", $gatewayName));
         }
 
-        $response = $gateway->completePurchase($bridge->purchaseParameters($payment))->send();
+        $response = $gateway->completePurchase($bridge->completePurchaseParameters($payment))->send();
 
         if ($response->isSuccessful()) {
             $manager->markAsPaid($payment);
@@ -188,7 +196,7 @@ class PaymentController extends Controller
     {
         $payment = $this->getTokenManager()->findPayment($token);
         if (!$payment) {
-            $this->createNotFoundException(sprintf(
+            throw $this->createNotFoundException(sprintf(
                 "Unable to find payment with token %s",
                 $token
             ));

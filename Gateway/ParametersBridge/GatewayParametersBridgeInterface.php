@@ -14,6 +14,11 @@ use Darvin\PaymentBundle\Entity\PaymentInterface;
 interface GatewayParametersBridgeInterface
 {
     /**
+     * @return string
+     */
+    public function getGatewayClassName();
+
+    /**
      * @return array
      */
     public function initializationParameters();
@@ -38,6 +43,13 @@ interface GatewayParametersBridgeInterface
      * @return array
      */
     public function purchaseParameters(PaymentInterface $payment);
+
+    /**
+     * @param PaymentInterface $payment
+     *
+     * @return array
+     */
+    public function completePurchaseParameters(PaymentInterface $payment);
 
     /**
      * @param PaymentInterface $payment

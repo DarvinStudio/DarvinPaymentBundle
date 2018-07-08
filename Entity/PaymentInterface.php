@@ -32,6 +32,13 @@ interface PaymentInterface
     public function getTransactionRef();
 
     /**
+     * @param $reference
+     *
+     * @return void
+     */
+    public function setTransactionRef($reference);
+
+    /**
      * @return double
      */
     public function getAmount();

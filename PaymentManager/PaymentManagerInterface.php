@@ -90,4 +90,20 @@ interface PaymentManagerInterface
      * @return void
      */
     public function markAs(PaymentInterface $payment, $status);
+
+    /**
+     * @param PaymentInterface $payment
+     * @param string|null      $reference
+     *
+     * @return void
+     */
+    public function setTransactionReference(PaymentInterface $payment, $reference);
+
+    /**
+     * @param int $id
+     *
+     * @return PaymentInterface|null
+     */
+    public function findById($id);
+
 }

@@ -5,7 +5,7 @@ services:
 
 
     Darvin\PaymentBundle\PaymentManager\DefaultPaymentManager:
-        arguments: ['@doctrine.orm.entity_manager']
+        arguments: ['@doctrine.orm.entity_manager','@Darvin\PaymentBundle\Token\Manager\TokenManagerInterface']
         public: false
 
     Darvin\PaymentBundle\PaymentManager\PaymentManagerInterface:
@@ -20,11 +20,6 @@ services:
         alias: Darvin\PaymentBundle\Gateway\Factory\DefaultGatewayFactory
         public: true
 
-
-    Darvin\PaymentBundle\Gateway\ParametersBridge\TestGatewayParametersBridge:
-        tags:
-            - { name: darvin_payment.parameters_bridge, gateway: test  }
-
     Darvin\PaymentBundle\UrlBuilder\DefaultPaymentUrlBuilder:
         arguments: ['@router']
         public: false
@@ -38,3 +33,8 @@ services:
 
     Darvin\PaymentBundle\Token\Manager\TokenManagerInterface:
         alias: Darvin\PaymentBundle\Token\Manager\DefaultTokenManager
+
+    Darvin\PaymentBundle\Gateway\ParametersBridge\TelrGatewayParametersBridge:
+        arguments: ['@Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface']
+        tags:
+            - { name: darvin_payment.parameters_bridge, gateway: telr }

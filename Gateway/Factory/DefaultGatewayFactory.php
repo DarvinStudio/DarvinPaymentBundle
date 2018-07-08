@@ -41,8 +41,13 @@ class DefaultGatewayFactory implements GatewayFactoryInterface
      */
     public function createGateway($name)
     {
-        $gateway = Omnipay::create($name, null, $this->requestStack->getMasterRequest());
         $bridge = $this->getGatewayParametersBridge($name);
+        $className = $bridge->getGatewayClassName();
+        if ($className[0] !== '\\') {
+            $className = '\\'.$className;
+        }
+
+        $gateway = Omnipay::create($className, null, $this->requestStack->getMasterRequest());
 
         $gateway->initialize($bridge->initializationParameters());
 

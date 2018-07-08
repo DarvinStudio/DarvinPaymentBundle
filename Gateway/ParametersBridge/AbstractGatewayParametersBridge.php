@@ -9,6 +9,8 @@
 namespace Darvin\PaymentBundle\Gateway\ParametersBridge;
 
 
+use Darvin\PaymentBundle\Entity\PaymentInterface;
+
 abstract class AbstractGatewayParametersBridge implements GatewayParametersBridgeInterface
 {
     /**
@@ -35,5 +37,13 @@ abstract class AbstractGatewayParametersBridge implements GatewayParametersBridg
     public function initializationParameters()
     {
         return $this->getGatewayConfig();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function completePurchaseParameters(PaymentInterface $payment)
+    {
+        return $this->purchaseParameters($payment);
     }
 }
