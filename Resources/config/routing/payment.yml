@@ -1,12 +1,16 @@
 darvin_payment_payment_purchase:
     path: /{gateway_name}/purchase/{id}
-    defaults: { _controller: DarvinPaymentBundle:Payment:purchase}
-    requirements: { id: "\d+" }
+    defaults: { _controller: DarvinPaymentBundle:Payment:purchase }
+    requirements: { id: \d+ }
 
-prepare:
-    path: /prepare
-    defaults: { _controller: DarvinPaymentBundle:Payment:prepare }
+darvin_payment_payment_success_purchase:
+    path: /{gateway_name}/complete-purchase/{token}
+    defaults: { _controller: DarvinPaymentBundle:Payment:successPurchase }
 
-done:
-    path: /done
-    defaults: { _controller: DarvinPaymentBundle:Payment:done }
+darvin_payment_payment_failed_purchase:
+    path: /{gateway_name}/failed-purchase/{token}
+    defaults: { _controller: DarvinPaymentBundle:Payment:failedPurchase }
+
+darvin_payment_payment_cancled_purchase:
+    path: /{gateway_name}/canceled-purchase/{token}
+    defaults: { _controller: DarvinPaymentBundle:Payment:cancelPurchase }

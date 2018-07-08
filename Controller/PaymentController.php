@@ -2,18 +2,28 @@
 
 namespace Darvin\PaymentBundle\Controller;
 
-use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\PaymentManager\PaymentManagerInterface;
+use Darvin\PaymentBundle\Token\Manager\TokenManagerInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 use Omnipay\Common\Message\RedirectResponseInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class PaymentController
+ * @package Darvin\PaymentBundle\Controller
+ */
 class PaymentController extends Controller
 {
+    /**
+     * @param                  $gatewayName
+     * @param PaymentInterface $payment
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function purchaseAction($gatewayName, PaymentInterface $payment)
     {
         $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
@@ -34,8 +44,17 @@ class PaymentController extends Controller
                 return $this->redirect($response->getRedirectUrl());
             }
 
-            
+            $form = $this->createForm(GatewayRedirectType::class, $response->getRedirectData(), [
+                'action' => $response->getRedirectUrl(),
+                'method' => $response->getRedirectMethod()
+            ]);
 
+            return $this->render('@DarvinPayment/Payment/purchase.html.twig', [
+                'form'     => $form->createView(),
+                'payment'  => $payment,
+                'response' => $response,
+                'gateway'  => $gateway
+            ]);
 
         } elseif ($response->isSuccessful()) {
             $manager->markAsPaid($payment);
@@ -46,6 +65,86 @@ class PaymentController extends Controller
 
             return $this->redirect($urlBuilder->getCanceledUrl($payment, $gatewayName));
         }
+    }
+
+    /**
+     * @param $gatewayName
+     * @param $token
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function successPurchaseAction($gatewayName, $token)
+    {
+        $payment = $this->getPaymentFromToken($token);
+
+        $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
+        $bridge = $this->getGatewayFactory()->getGatewayParametersBridge($gatewayName);
+        $manager = $this->getPaymentManager();
+        $urlBuilder = $this->getPaymentUrlBuilder();
+
+        if (!$gateway->supportsCompletePurchase()) {
+            throw new \Exception(sprintf("%s doesn't support complete purchase method", $gatewayName));
+        }
+
+        $response = $gateway->completePurchase($bridge->purchaseParameters($payment))->send();
+
+        if ($response->isSuccessful()) {
+            $manager->markAsPaid($payment);
+
+            return $this->render('@DarvinPayment/Payment/success.html.twig', [
+                'payment'  => $payment,
+                'gateway'  => $gateway,
+                'response' => $response
+            ]);
+        }
+
+        return $this->redirect($response->isCancelled() ?
+            $urlBuilder->getCanceledUrl($payment, $gateway) :
+            $urlBuilder->getFailedUrl($payment, $gateway)
+        );
+    }
+
+    /**
+     * @param $gatewayName
+     * @param $token
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function failedPurchaseAction($gatewayName, $token)
+    {
+        $payment = $this->getPaymentFromToken($token);
+
+        $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
+        $manager = $this->getPaymentManager();
+
+        $manager->markAsFailed($payment);
+
+        return $this->render('@DarvinPayment/Payment/failed.html.twig', [
+            'payment'  => $payment,
+            'gateway'  => $gateway
+        ]);
+    }
+
+    /**
+     * @param $gatewayName
+     * @param $token
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function cancelPurchaseAction($gatewayName, $token)
+    {
+        $payment = $this->getPaymentFromToken($token);
+
+        $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
+        $manager = $this->getPaymentManager();
+
+        $manager->markAsCanceled($payment);
+
+        return $this->render('@DarvinPayment/Payment/canceled.html.twig', [
+            'payment'  => $payment,
+            'gateway'  => $gateway
+        ]);
     }
 
     /**
@@ -72,59 +171,29 @@ class PaymentController extends Controller
         return $this->get(PaymentUrlBuilderInterface::class);
     }
 
-    public function prepareAction()
+    /**
+     * @return \Darvin\PaymentBundle\Token\Manager\TokenManagerInterface
+     */
+    protected function getTokenManager()
     {
-        $gatewayName = 'telr';
-
-        $storage = $this->get('payum')->getStorage(Payment::class);
-
-        $payment = $storage->create();
-        $payment->setNumber(uniqid());
-        $payment->setCurrencyCode('AED');
-        $payment->setTotalAmount(555); // 1.23 EUR
-        $payment->setDescription('A description');
-        $payment->setClientId('anId');
-        $payment->setClientEmail('foo@example.com');
-
-        $storage->update($payment);
-
-        $captureToken = $this->get('payum')->getTokenFactory()->createCaptureToken(
-            $gatewayName,
-            $payment,
-            'done' // the route to redirect after capture
-        )
-        ;
-
-        return $this->redirect($captureToken->getTargetUrl());
+        return $this->get(TokenManagerInterface::class);
     }
 
-    public function doneAction(Request $request)
+    /**
+     * @param $token
+     *
+     * @return PaymentInterface
+     */
+    protected function getPaymentFromToken($token)
     {
-        $token = $this->get('payum')->getHttpRequestVerifier()->verify($request);
+        $payment = $this->getTokenManager()->findPayment($token);
+        if (!$payment) {
+            $this->createNotFoundException(sprintf(
+                "Unable to find payment with token %s",
+                $token
+            ));
+        }
 
-        $gateway = $this->get('payum')->getGateway($token->getGatewayName());
-
-        // You can invalidate the token, so that the URL cannot be requested any more:
-        // $this->get('payum')->getHttpRequestVerifier()->invalidate($token);
-
-        // Once you have the token, you can get the payment entity from the storage directly.
-        // $identity = $token->getDetails();
-        // $payment = $this->get('payum')->getStorage($identity->getClass())->find($identity);
-
-        // Or Payum can fetch the entity for you while executing a request (preferred).
-        $gateway->execute($status = new GetHumanStatus($token));
-        $payment = $status->getFirstModel();
-
-        // Now you have order and payment status
-
-        return new JsonResponse([
-            'status'  => $status->getValue(),
-            'payment' => [
-                'total_amount'  => $payment->getTotalAmount(),
-                'currency_code' => $payment->getCurrencyCode(),
-                'details'       => $payment->getDetails(),
-            ],
-        ]
-        );
+        return $payment;
     }
 }

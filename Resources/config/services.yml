@@ -27,6 +27,14 @@ services:
 
     Darvin\PaymentBundle\UrlBuilder\DefaultPaymentUrlBuilder:
         arguments: ['@router']
+        public: false
 
     Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface:
         alias: Darvin\PaymentBundle\UrlBuilder\DefaultPaymentUrlBuilder
+
+    Darvin\PaymentBundle\Token\Manager\DefaultTokenManager:
+        arguments: ['@doctrine.orm.entity_manager']
+        public: false
+
+    Darvin\PaymentBundle\Token\Manager\TokenManagerInterface:
+        alias: Darvin\PaymentBundle\Token\Manager\DefaultTokenManager

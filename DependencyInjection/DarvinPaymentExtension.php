@@ -29,8 +29,8 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         $loader->load('services.yml');
 
         $definition = $container->getDefinition(DefaultPaymentManager::class);
-        $definition->setArgument(1, $config['payment_class']);
-        $definition->setArgument(2, $config['default_currency']);
+        $definition->setArgument(2, $config['payment_class']);
+        $definition->setArgument(3, $config['default_currency']);
 
         foreach ($config['parameters_bridge'] as $key => $gatewayConfig) {
             $container->setParameter('darvin_payment.config.gateway_parameters_bridge.'.$key, $gatewayConfig);

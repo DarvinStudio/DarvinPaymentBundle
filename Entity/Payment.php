@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\PaymentRepository")
  *
  * @ORM\InheritanceType("SINGLE_TABLE")
  */
@@ -91,6 +91,13 @@ class Payment implements PaymentInterface
      * @DoctrineAssert\Enum(entity="Darvin\PaymentBundle\DBAL\Type\PaymentStatusType")
      */
     protected $status;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(nullable=true)
+     */
+    protected $actionToken;
 
     /**
      * Payment constructor.
@@ -258,5 +265,21 @@ class Payment implements PaymentInterface
     public function isPaid()
     {
         return $this->getStatus() == PaymentStatusType::PAID;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getActionToken()
+    {
+        return $this->actionToken;
+    }
+
+    /**
+     * @param null|string $actionToken
+     */
+    public function setActionToken($actionToken)
+    {
+        $this->actionToken = $actionToken;
     }
 }

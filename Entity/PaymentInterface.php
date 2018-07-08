@@ -72,4 +72,16 @@ interface PaymentInterface
      * @return bool
      */
     public function isPaid();
+
+    /**
+     * @return string|null
+     */
+    public function getActionToken();
+
+    /**
+     * @param string|null $token
+     *
+     * @return void
+     */
+    public function setActionToken($token);
 }

@@ -12,6 +12,7 @@ namespace Darvin\PaymentBundle\PaymentManager;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Token\Manager\TokenManagerInterface;
 use Doctrine\ORM\EntityManager;
 
 class DefaultPaymentManager implements PaymentManagerInterface
@@ -20,6 +21,11 @@ class DefaultPaymentManager implements PaymentManagerInterface
      * @var EntityManager
      */
     protected $entityManager;
+
+    /**
+     * @var TokenManagerInterface
+     */
+    protected $tokenManager;
 
     /**
      * @var string
@@ -32,15 +38,21 @@ class DefaultPaymentManager implements PaymentManagerInterface
     protected $defaultCurrency;
 
     /**
-     * DefaultPaymentFactory constructor.
+     * DefaultPaymentManager constructor.
      *
      * @param EntityManager $entityManager
-     * @param string        $paymentClass
-     * @param string        $defaultCurrency
+     * @param TokenManagerInterface $tokenManager
+     * @param string $paymentClass
+     * @param string $defaultCurrency
      */
-    public function __construct(EntityManager $entityManager, $paymentClass, $defaultCurrency)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        TokenManagerInterface $tokenManager,
+        $paymentClass,
+        $defaultCurrency
+    ) {
         $this->entityManager = $entityManager;
+        $this->tokenManager = $tokenManager;
         $this->paymentClass = $paymentClass;
         $this->defaultCurrency = $defaultCurrency;
     }
@@ -105,6 +117,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
     public function markAsPending(PaymentInterface $payment)
     {
         $this->markAs($payment, PaymentStatusType::PENDING);
+        $this->tokenManager->createActionToken($payment);
     }
 
     /**
@@ -112,7 +125,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
      */
     public function markAsPaid(PaymentInterface $payment)
     {
-        $this->markAs($payment, PaymentStatusType::PAID);
+        $this->markAs($payment, PaymentStatusType::PAID, true);
     }
 
     /**
@@ -120,7 +133,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
      */
     public function markAsCanceled(PaymentInterface $payment)
     {
-        $this->markAs($payment, PaymentStatusType::CANCELED);
+        $this->markAs($payment, PaymentStatusType::CANCELED, true);
     }
 
     /**
@@ -128,7 +141,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
      */
     public function markAsFailed(PaymentInterface $payment)
     {
-        $this->markAs($payment, PaymentStatusType::FAILED);
+        $this->markAs($payment, PaymentStatusType::FAILED, true);
     }
 
     /**
@@ -142,9 +155,13 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAs(PaymentInterface $payment, $status)
+    public function markAs(PaymentInterface $payment, $status, $invalidateActionToken = false)
     {
         $payment->setStatus($status);
         $this->entityManager->flush($payment);
+
+        if ($invalidateActionToken) {
+            $this->tokenManager->invalidateActionToken($payment);
+        }
     }
 }
