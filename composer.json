@@ -1,0 +1,24 @@
+{
+    "name":        "darvinstudio/darvin-payment-bundle",
+    "description": "This bundle provides basic payment logic for Symfony-based applications basic on Omnipay lib.",
+    "keywords":    ["content"],
+    "type":        "symfony-bundle",
+    "license":     "MIT",
+    "authors": [
+        {
+            "name":     "Lev Semin",
+            "email":    "lev@darvin-studio.ru",
+            "homepage": "https://www.darvin-studio.ru"
+        }
+    ],
+    "require": {
+        "php": "^5.6||^7.0",
+        "symfony/symfony": "^3.3||^4.0",
+        "doctrine/orm": "^2.5",
+        "twig/twig": "^1.0||^2.0",
+        "league/omnipay": "^3",
+    },
+    "autoload": {
+        "psr-4": { "Darvin\\PaymentBundle\\": "" }
+    }
+}
