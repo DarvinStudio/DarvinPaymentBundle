@@ -16,7 +16,7 @@
         "symfony/symfony": "^3.3||^4.0",
         "doctrine/orm": "^2.5",
         "twig/twig": "^1.0||^2.0",
-        "league/omnipay": "^3",
+        "league/omnipay": "^3"
     },
     "autoload": {
         "psr-4": { "Darvin\\PaymentBundle\\": "" }
