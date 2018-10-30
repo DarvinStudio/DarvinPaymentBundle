@@ -274,6 +274,11 @@ class Payment implements PaymentInterface
     {
         return $this->actionToken;
     }
+    
+    public function __toString()
+    {
+        return $this->status;
+    }
 
     /**
      * @param null|string $actionToken
