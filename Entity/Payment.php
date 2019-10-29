@@ -108,6 +108,22 @@ class Payment implements PaymentInterface
     }
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPaid()
+    {
+        return PaymentStatusType::PAID === $this->status;
+    }
+
+    /**
      * @return int
      */
     public function getId()
