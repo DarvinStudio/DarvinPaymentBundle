@@ -116,6 +116,18 @@ class Payment implements PaymentInterface
     }
 
     /**
+     * @param int $id
+     *
+     * @return Payment
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getOrderId()
@@ -125,10 +137,14 @@ class Payment implements PaymentInterface
 
     /**
      * @param int $orderId
+     *
+     * @return Payment
      */
     public function setOrderId($orderId)
     {
         $this->orderId = $orderId;
+
+        return $this;
     }
 
     /**
@@ -137,6 +153,18 @@ class Payment implements PaymentInterface
     public function getOrderEntityClass()
     {
         return $this->orderEntityClass;
+    }
+
+    /**
+     * @param string $orderEntityClass
+     *
+     * @return Payment
+     */
+    public function setOrderEntityClass($orderEntityClass)
+    {
+        $this->orderEntityClass = $orderEntityClass;
+
+        return $this;
     }
 
     /**
@@ -149,18 +177,14 @@ class Payment implements PaymentInterface
 
     /**
      * @param null|string $transactionRef
+     *
+     * @return Payment
      */
     public function setTransactionRef($transactionRef)
     {
         $this->transactionRef = $transactionRef;
-    }
 
-    /**
-     * @param string $orderEntityClass
-     */
-    public function setOrderEntityClass($orderEntityClass)
-    {
-        $this->orderEntityClass = $orderEntityClass;
+        return $this;
     }
 
     /**
@@ -173,10 +197,14 @@ class Payment implements PaymentInterface
 
     /**
      * @param float $amount
+     *
+     * @return Payment
      */
     public function setAmount($amount)
     {
         $this->amount = $amount;
+
+        return $this;
     }
 
     /**
@@ -189,10 +217,14 @@ class Payment implements PaymentInterface
 
     /**
      * @param string $currencyCode
+     *
+     * @return Payment
      */
     public function setCurrencyCode($currencyCode)
     {
         $this->currencyCode = $currencyCode;
+
+        return $this;
     }
 
     /**
@@ -205,10 +237,14 @@ class Payment implements PaymentInterface
 
     /**
      * @param int|null|string $clientId
+     *
+     * @return Payment
      */
-    public function setClientId($clientId = null)
+    public function setClientId($clientId)
     {
         $this->clientId = $clientId;
+
+        return $this;
     }
 
     /**
@@ -221,10 +257,14 @@ class Payment implements PaymentInterface
 
     /**
      * @param null|string $clientEmail
+     *
+     * @return Payment
      */
-    public function setClientEmail($clientEmail = null)
+    public function setClientEmail($clientEmail)
     {
         $this->clientEmail = $clientEmail;
+
+        return $this;
     }
 
     /**
@@ -237,10 +277,14 @@ class Payment implements PaymentInterface
 
     /**
      * @param null|string $description
+     *
+     * @return Payment
      */
-    public function setDescription($description = null)
+    public function setDescription($description)
     {
         $this->description = $description;
+
+        return $this;
     }
 
     /**
@@ -253,18 +297,14 @@ class Payment implements PaymentInterface
 
     /**
      * @param string $status
+     *
+     * @return Payment
      */
     public function setStatus($status)
     {
         $this->status = $status;
-    }
 
-    /**
-     * @return bool
-     */
-    public function isPaid()
-    {
-        return $this->getStatus() == PaymentStatusType::PAID;
+        return $this;
     }
 
     /**
@@ -274,17 +314,16 @@ class Payment implements PaymentInterface
     {
         return $this->actionToken;
     }
-    
-    public function __toString()
-    {
-        return $this->status;
-    }
 
     /**
      * @param null|string $actionToken
+     *
+     * @return Payment
      */
     public function setActionToken($actionToken)
     {
         $this->actionToken = $actionToken;
+
+        return $this;
     }
 }
