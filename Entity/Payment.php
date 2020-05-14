@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: levsemin
@@ -39,7 +39,7 @@ class Payment implements PaymentInterface
     /**
      * @var string
      *
-     * @ORM\Column()
+     * @ORM\Column
      */
     protected $orderEntityClass;
 
@@ -59,7 +59,7 @@ class Payment implements PaymentInterface
     /**
      * @var string
      *
-     * @ORM\Column()
+     * @ORM\Column
      */
     protected $currencyCode;
 
@@ -110,15 +110,15 @@ class Payment implements PaymentInterface
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return (string)$this->status;
+        return (string) $this->status;
     }
 
     /**
      * @return bool
      */
-    public function isPaid()
+    public function isPaid(): bool
     {
         return PaymentStatusType::PAID === $this->status;
     }
@@ -126,7 +126,7 @@ class Payment implements PaymentInterface
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -134,7 +134,7 @@ class Payment implements PaymentInterface
     /**
      * @return int
      */
-    public function getOrderId()
+    public function getOrderId(): int
     {
         return $this->orderId;
     }
@@ -142,9 +142,9 @@ class Payment implements PaymentInterface
     /**
      * @param int $orderId
      *
-     * @return Payment
+     * @return self
      */
-    public function setOrderId($orderId)
+    public function setOrderId(int $orderId): self
     {
         $this->orderId = $orderId;
 
@@ -154,7 +154,7 @@ class Payment implements PaymentInterface
     /**
      * @return string
      */
-    public function getOrderEntityClass()
+    public function getOrderEntityClass(): string
     {
         return $this->orderEntityClass;
     }
@@ -162,9 +162,9 @@ class Payment implements PaymentInterface
     /**
      * @param string $orderEntityClass
      *
-     * @return Payment
+     * @return self
      */
-    public function setOrderEntityClass($orderEntityClass)
+    public function setOrderEntityClass(string $orderEntityClass): self
     {
         $this->orderEntityClass = $orderEntityClass;
 
@@ -172,19 +172,19 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getTransactionRef()
+    public function getTransactionRef(): ?string
     {
         return $this->transactionRef;
     }
 
     /**
-     * @param null|string $transactionRef
+     * @param string|null $transactionRef
      *
-     * @return Payment
+     * @return self
      */
-    public function setTransactionRef($transactionRef)
+    public function setTransactionRef(?string $transactionRef): self
     {
         $this->transactionRef = $transactionRef;
 
@@ -202,9 +202,9 @@ class Payment implements PaymentInterface
     /**
      * @param float $amount
      *
-     * @return Payment
+     * @return self
      */
-    public function setAmount($amount)
+    public function setAmount(float $amount): self
     {
         $this->amount = $amount;
 
@@ -214,7 +214,7 @@ class Payment implements PaymentInterface
     /**
      * @return string
      */
-    public function getCurrencyCode()
+    public function getCurrencyCode(): string
     {
         return $this->currencyCode;
     }
@@ -222,9 +222,9 @@ class Payment implements PaymentInterface
     /**
      * @param string $currencyCode
      *
-     * @return Payment
+     * @return self
      */
-    public function setCurrencyCode($currencyCode)
+    public function setCurrencyCode(string $currencyCode): self
     {
         $this->currencyCode = $currencyCode;
 
@@ -240,9 +240,9 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @param int|null|string $clientId
+     * @param string|int|null $clientId
      *
-     * @return Payment
+     * @return self
      */
     public function setClientId($clientId)
     {
@@ -252,19 +252,19 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getClientEmail()
+    public function getClientEmail(): ?string
     {
         return $this->clientEmail;
     }
 
     /**
-     * @param null|string $clientEmail
+     * @param string|null $clientEmail
      *
-     * @return Payment
+     * @return self
      */
-    public function setClientEmail($clientEmail)
+    public function setClientEmail(?string $clientEmail)
     {
         $this->clientEmail = $clientEmail;
 
@@ -272,19 +272,19 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
     /**
-     * @param null|string $description
+     * @param string|null $description
      *
-     * @return Payment
+     * @return self
      */
-    public function setDescription($description)
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -292,19 +292,17 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
 
     /**
-     * @param string $status
-     *
-     * @return Payment
+     * @inheritDoc
      */
-    public function setStatus($status)
+    public function setStatus($status): self
     {
         $this->status = $status;
 
@@ -312,19 +310,17 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
-    public function getActionToken()
+    public function getActionToken(): ?string
     {
         return $this->actionToken;
     }
 
     /**
-     * @param null|string $actionToken
-     *
-     * @return Payment
+     * @inheritDoc
      */
-    public function setActionToken($actionToken)
+    public function setActionToken(?string $actionToken): self
     {
         $this->actionToken = $actionToken;
 

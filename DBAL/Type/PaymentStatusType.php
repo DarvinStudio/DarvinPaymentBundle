@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: levsemin
@@ -7,7 +7,6 @@
  */
 
 namespace Darvin\PaymentBundle\DBAL\Type;
-
 
 use Fresh\DoctrineEnumBundle\DBAL\Types\AbstractEnumType;
 

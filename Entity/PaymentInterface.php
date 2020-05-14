@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: levsemin
@@ -8,45 +8,44 @@
 
 namespace Darvin\PaymentBundle\Entity;
 
-
 interface PaymentInterface
 {
     /**
      * @return int
      */
-    public function getId();
+    public function getId(): int;
 
     /**
      * @return int
      */
-    public function getOrderId();
+    public function getOrderId(): int;
 
     /**
      * @return string Request or Order class name
      */
-    public function getOrderEntityClass();
+    public function getOrderEntityClass(): ?string;
 
     /**
      * @return string|null
      */
-    public function getTransactionRef();
+    public function getTransactionRef(): ?string;
 
     /**
-     * @param $reference
+     * @param string|null $reference
      *
-     * @return void
+     * @return self
      */
-    public function setTransactionRef($reference);
+    public function setTransactionRef(?string $reference);
 
     /**
-     * @return double
+     * @return float
      */
-    public function getAmount();
+    public function getAmount(): float;
 
     /**
      * @return string Currency code in ISO format (USD, RUB, AED...)
      */
-    public function getCurrencyCode();
+    public function getCurrencyCode(): string;
 
     /**
      * @return string|int|null
@@ -56,39 +55,39 @@ interface PaymentInterface
     /**
      * @return string|null
      */
-    public function getClientEmail();
+    public function getClientEmail(): ?string;
 
     /**
      * @return string|null
      */
-    public function getDescription();
+    public function getDescription(): ?string;
 
     /**
      * @return string One of PaymentStatusType constant
      */
-    public function getStatus();
+    public function getStatus(): string;
 
     /**
      * @param string $status One of PaymentStatusType constant
      *
-     * @return void
+     * @return self
      */
-    public function setStatus($status);
+    public function setStatus(string $status);
 
     /**
      * @return bool
      */
-    public function isPaid();
+    public function isPaid(): bool;
 
     /**
      * @return string|null
      */
-    public function getActionToken();
+    public function getActionToken(): ?string;
 
     /**
      * @param string|null $token
      *
-     * @return void
+     * @return self
      */
-    public function setActionToken($token);
+    public function setActionToken(?string $token);
 }

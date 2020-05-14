@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: levsemin
@@ -8,7 +8,6 @@
 
 namespace Darvin\PaymentBundle\Repository;
 
-
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Doctrine\ORM\EntityRepository;
 
@@ -17,7 +16,7 @@ class PaymentRepository extends EntityRepository
     /**
      * @param $token
      *
-     * @return PaymentInterface|null|object
+     * @return PaymentInterface|object|null
      */
     public function findByActionToken($token)
     {
