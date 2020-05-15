@@ -19,7 +19,7 @@ interface PaymentManagerInterface
     /**
      * @param int             $orderId
      * @param string          $orderEntityClass
-     * @param float           $amount
+     * @param string          $amount
      * @param string          $currencyCode
      * @param int|null|string $clientId
      * @param null|string     $clientEmail
@@ -30,14 +30,14 @@ interface PaymentManagerInterface
      * @return PaymentInterface
      */
     public function create(
-        $orderId,
-        $orderEntityClass,
-        $amount,
-        $currencyCode,
-        $clientId = null,
-        $clientEmail = null,
-        $description = null,
-        array $options = []
+        int $orderId,
+        string $orderEntityClass,
+        string $amount,
+        string $currencyCode,
+        $clientId,
+        ?string $clientEmail,
+        ?string $description,
+        ?array $options
     );
 
     /**
@@ -45,42 +45,42 @@ interface PaymentManagerInterface
      *
      * @return void
      */
-    public function markAsNew(PaymentInterface $payment);
+    public function markAsNew(PaymentInterface $payment): void;
 
     /**
      * @param PaymentInterface $payment
      *
      * @return void
      */
-    public function markAsPending(PaymentInterface $payment);
+    public function markAsPending(PaymentInterface $payment): void;
 
     /**
      * @param PaymentInterface $payment
      *
      * @return void
      */
-    public function markAsPaid(PaymentInterface $payment);
+    public function markAsPaid(PaymentInterface $payment): void;
 
     /**
      * @param PaymentInterface $payment
      *
      * @return void
      */
-    public function markAsCanceled(PaymentInterface $payment);
+    public function markAsCanceled(PaymentInterface $payment): void;
 
     /**
      * @param PaymentInterface $payment
      *
      * @return void
      */
-    public function markAsFailed(PaymentInterface $payment);
+    public function markAsFailed(PaymentInterface $payment): void;
 
     /**
      * @param PaymentInterface $payment
      *
      * @return void
      */
-    public function markAsRefund(PaymentInterface $payment);
+    public function markAsRefund(PaymentInterface $payment): void;
 
     /**
      * @param PaymentInterface $payment
@@ -88,21 +88,20 @@ interface PaymentManagerInterface
      *
      * @return void
      */
-    public function markAs(PaymentInterface $payment, $status);
+    public function markAs(PaymentInterface $payment, string $status): void;
 
     /**
      * @param PaymentInterface $payment
-     * @param string|null      $reference
+     * @param string           $reference
      *
      * @return void
      */
-    public function setTransactionReference(PaymentInterface $payment, $reference);
+    public function setTransactionReference(PaymentInterface $payment, string $reference): void;
 
     /**
      * @param int $id
      *
      * @return PaymentInterface|null
      */
-    public function findById($id);
-
+    public function findById(int $id): ?PaymentInterface;
 }

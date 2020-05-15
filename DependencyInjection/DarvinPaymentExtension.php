@@ -3,7 +3,7 @@
 namespace Darvin\PaymentBundle\DependencyInjection;
 
 use Darvin\PaymentBundle\PaymentManager\DefaultPaymentManager;
-use Darvin\PaymentBundle\UrlBuilder\DefaultPaymentUrlBuilder;
+use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilder;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -27,7 +27,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
+        $loader->load('services.yaml');
 
         $this->updatePaymentManagerService($container, $config);
         $this->updateUrlBuilderService($container, $config);
@@ -44,7 +44,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     protected function updatePaymentManagerService(ContainerBuilder $container, array $config)
     {
         $definition = $container->getDefinition(DefaultPaymentManager::class);
-        $definition->setArgument(2, $config['payment_class']);
+//        $definition->setArgument(2, $config['payment_class']);
         $definition->setArgument(3, $config['default_currency']);
     }
 
@@ -54,7 +54,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
      */
     protected function updateUrlBuilderService(ContainerBuilder $container, array $config)
     {
-        $definition = $container->getDefinition(DefaultPaymentUrlBuilder::class);
+        $definition = $container->getDefinition(PaymentUrlBuilder::class);
         $definition->setArgument(1, $config['default_gateway']);
     }
 
@@ -66,7 +66,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                      'doctrine',
                  ] as $extension) {
             if ($container->hasExtension($extension)) {
-                $container->prependExtensionConfig($extension, Yaml::parse(file_get_contents($fileLocator->locate($extension.'.yml')))[$extension]);
+                $container->prependExtensionConfig($extension, Yaml::parse(file_get_contents($fileLocator->locate($extension.'.yaml')))[$extension]);
             }
         }
     }

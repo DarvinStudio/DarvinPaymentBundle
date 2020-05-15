@@ -14,14 +14,12 @@ use Doctrine\ORM\EntityRepository;
 class PaymentRepository extends EntityRepository
 {
     /**
-     * @param $token
+     * @param string $token
      *
-     * @return PaymentInterface|object|null
+     * @return PaymentInterface|null
      */
-    public function findByActionToken($token)
+    public function findByActionToken(string $token): ?PaymentInterface
     {
-        return $this->findOneBy([
-            'actionToken' => $token
-        ]);
+        return $this->findOneBy(['actionToken' => $token]);
     }
 }

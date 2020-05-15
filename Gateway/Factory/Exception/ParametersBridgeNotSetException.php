@@ -11,26 +11,30 @@ namespace Darvin\PaymentBundle\Gateway\Factory\Exception;
 
 class ParametersBridgeNotSetException extends \Exception
 {
+    /**
+     * @var string
+     */
     protected $gatewayName;
 
     /**
      * BridgeNotExistException constructor.
      *
-     * @param $gatewayName
+     * @param string $gatewayName
      */
-    public function __construct($gatewayName)
+    public function __construct(string $gatewayName)
     {
         parent::__construct(sprintf(
             "Parameters bridge for %s gateway not found",
             $gatewayName
         ));
+
         $this->gatewayName = $gatewayName;
     }
 
     /**
      * @return string
      */
-    public function getGatewayName()
+    public function getGatewayName(): string
     {
         return $this->gatewayName;
     }

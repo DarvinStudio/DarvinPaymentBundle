@@ -11,7 +11,7 @@ namespace Darvin\PaymentBundle\Token\Manager;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Doctrine\ORM\EntityManager;
 
-class DefaultTokenManager implements TokenManagerInterface
+class PaymentTokenManager implements PaymentTokenManagerInterface
 {
     /**
      * @var EntityManager
@@ -19,8 +19,6 @@ class DefaultTokenManager implements TokenManagerInterface
     protected $entityManager;
 
     /**
-     * DefaultTokenManager constructor.
-     *
      * @param EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)
@@ -31,7 +29,7 @@ class DefaultTokenManager implements TokenManagerInterface
     /**
      * @inheritDoc
      */
-    public function createActionToken(PaymentInterface $payment)
+    public function attach(PaymentInterface $payment): void
     {
         $token = md5(sprintf("%d:%d", $payment->getId(), time()));
         $payment->setActionToken($token);
@@ -42,7 +40,7 @@ class DefaultTokenManager implements TokenManagerInterface
     /**
      * @inheritDoc
      */
-    public function invalidateActionToken(PaymentInterface $payment)
+    public function invalidate(PaymentInterface $payment): void
     {
         $payment->setActionToken(null);
         $this->entityManager->flush($payment);
@@ -51,7 +49,7 @@ class DefaultTokenManager implements TokenManagerInterface
     /**
      * @inheritDoc
      */
-    public function findPayment($token)
+    public function findPayment($token): ?PaymentInterface
     {
         return $this->entityManager->getRepository(PaymentInterface::class)->findByActionToken($token);
     }

@@ -50,7 +50,7 @@ class Payment implements PaymentInterface
     protected $transactionRef;
 
     /**
-     * @var float
+     * @var string
      *
      * @ORM\Column(type="decimal", scale=2)
      */
@@ -124,17 +124,17 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getOrderId(): int
+    public function getOrderId(): ?int
     {
         return $this->orderId;
     }
@@ -192,19 +192,19 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getAmount()
+    public function getAmount(): string
     {
         return $this->amount;
     }
 
     /**
-     * @param float $amount
+     * @param string $amount
      *
      * @return self
      */
-    public function setAmount(float $amount): self
+    public function setAmount(string $amount): self
     {
         $this->amount = $amount;
 

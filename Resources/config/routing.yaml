@@ -1,0 +1,3 @@
+payment:
+    resource: "routing/payment.yaml"
+    prefix: "/payment"

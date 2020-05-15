@@ -8,9 +8,11 @@
 
 namespace Darvin\PaymentBundle\UrlBuilder\Exception;
 
-
 class ActionNotImplementedException extends \Exception
 {
+    /**
+     * @var string
+     */
     private $actionName;
 
     /**
@@ -18,19 +20,20 @@ class ActionNotImplementedException extends \Exception
      *
      * @param string $actionName
      */
-    public function __construct($actionName)
+    public function __construct(string $actionName)
     {
         parent::__construct(sprintf(
             "Method %s is not implemented yet",
             $actionName
         ));
+
         $this->actionName = $actionName;
     }
 
     /**
      * @return string
      */
-    public function getActionName()
+    public function getActionName(): string
     {
         return $this->actionName;
     }

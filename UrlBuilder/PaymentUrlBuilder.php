@@ -8,13 +8,11 @@
 
 namespace Darvin\PaymentBundle\UrlBuilder;
 
-
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
-use Darvin\PaymentBundle\UrlBuilder\Exception\DefaultGatewayIsNotConfiguredException;
 use Symfony\Component\Routing\RouterInterface;
 
-class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
+class PaymentUrlBuilder implements PaymentUrlBuilderInterface
 {
     /**
      * @var RouterInterface
@@ -22,26 +20,19 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     protected $router;
 
     /**
-     * @var string|null
-     */
-    protected $defaultGateway;
-
-    /**
      * DefaultPaymentUrlBuilder constructor.
      *
      * @param RouterInterface $router
-     * @param string|null     $defaultGateway
      */
-    public function __construct(RouterInterface $router, $defaultGateway = null)
+    public function __construct(RouterInterface $router)
     {
         $this->router = $router;
-        $this->defaultGateway = $defaultGateway;
     }
 
     /**
      * @inheritDoc
      */
-    public function getAuthorizationUrl(PaymentInterface $payment, $gateway = null)
+    public function getAuthorizationUrl(PaymentInterface $payment, string $gatewayName): string
     {
         throw new ActionNotImplementedException('authorization');
     }
@@ -49,7 +40,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getCaptureUrl(PaymentInterface $payment, $gateway = null)
+    public function getCaptureUrl(PaymentInterface $payment, string $gatewayName): string
     {
         throw new ActionNotImplementedException('capture');
     }
@@ -58,12 +49,12 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getPurchaseUrl(PaymentInterface $payment, $gateway = null)
+    public function getPurchaseUrl(PaymentInterface $payment, string $gatewayName): string
     {
         return $this->router->generate('darvin_payment_payment_purchase',
             [
                 'id'          => $payment->getId(),
-                'gatewayName' => $this->getGateway($gateway),
+                'gatewayName' => $gatewayName,
             ],
             RouterInterface::ABSOLUTE_URL
         );
@@ -72,7 +63,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getSuccessUrl(PaymentInterface $payment, $gateway = null, $action = 'purchase')
+    public function getSuccessUrl(PaymentInterface $payment, string $gatewayName, $action = 'purchase'): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
@@ -80,8 +71,8 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
 
         if ($action == 'purchase') {
             return $this->router->generate('darvin_payment_payment_success_purchase', [
-                'gatewayName'  => $this->getGateway($gateway),
-                'token'        => $payment->getActionToken()
+                'gatewayName' => $gatewayName,
+                'token'       => $payment->getActionToken()
             ], RouterInterface::ABSOLUTE_URL);
         }
 
@@ -91,7 +82,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getCanceledUrl(PaymentInterface $payment, $gateway = null, $action = 'purchase')
+    public function getCanceledUrl(PaymentInterface $payment, string $gatewayName, $action = 'purchase'): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
@@ -99,8 +90,8 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
 
         if ($action == 'purchase') {
             return $this->router->generate('darvin_payment_payment_cancled_purchase', [
-                'gatewayName'  => $this->getGateway($gateway),
-                'token'        => $payment->getActionToken()
+                'gatewayName' => $gatewayName,
+                'token'       => $payment->getActionToken()
             ], RouterInterface::ABSOLUTE_URL);
         }
 
@@ -110,7 +101,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getFailedUrl(PaymentInterface $payment, $gateway = null, $action = 'purchase')
+    public function getFailedUrl(PaymentInterface $payment, string $gatewayName, $action = 'purchase'): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
@@ -118,8 +109,8 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
 
         if ($action == 'purchase') {
             return $this->router->generate('darvin_payment_payment_failed_purchase', [
-                'gatewayName'  => $this->getGateway($gateway),
-                'token'        => $payment->getActionToken()
+                'gatewayName' => $gatewayName,
+                'token'       => $payment->getActionToken()
             ], RouterInterface::ABSOLUTE_URL);
         }
 
@@ -129,7 +120,7 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getRefundUrl(PaymentInterface $payment, $gateway = null)
+    public function getRefundUrl(PaymentInterface $payment, string $gateway): string
     {
         throw new ActionNotImplementedException('refund');
     }
@@ -137,27 +128,8 @@ class DefaultPaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getNotifyUrl(PaymentInterface $payment, $gateway = null)
+    public function getNotifyUrl(PaymentInterface $payment, string $gateway): string
     {
         throw new ActionNotImplementedException('notify');
-    }
-
-    /**
-     * @param null $gateway
-     *
-     * @return null|string
-     * @throws DefaultGatewayIsNotConfiguredException
-     */
-    protected function getGateway($gateway = null)
-    {
-        if ($gateway) {
-            return $gateway;
-        }
-
-        if ($this->defaultGateway) {
-            return $this->defaultGateway;
-        }
-
-        throw new DefaultGatewayIsNotConfiguredException();
     }
 }

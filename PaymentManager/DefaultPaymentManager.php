@@ -9,9 +9,9 @@
 namespace Darvin\PaymentBundle\PaymentManager;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
-use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
-use Darvin\PaymentBundle\Token\Manager\TokenManagerInterface;
+use Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface;
+use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManager;
 
 class DefaultPaymentManager implements PaymentManagerInterface
@@ -22,14 +22,14 @@ class DefaultPaymentManager implements PaymentManagerInterface
     protected $entityManager;
 
     /**
-     * @var TokenManagerInterface
+     * @var \Darvin\Utils\ORM\EntityResolverInterface
      */
-    protected $tokenManager;
+    protected $entityResolver;
 
     /**
-     * @var string
+     * @var PaymentTokenManagerInterface
      */
-    protected $paymentClass;
+    protected $tokenManager;
 
     /**
      * @var string
@@ -39,20 +39,20 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * DefaultPaymentManager constructor.
      *
-     * @param EntityManager $entityManager
-     * @param TokenManagerInterface $tokenManager
-     * @param string $paymentClass
-     * @param string $defaultCurrency
+     * @param EntityManager                $entityManager
+     * @param EntityResolverInterface      $entityResolver
+     * @param PaymentTokenManagerInterface $tokenManager
+     * @param string                       $defaultCurrency
      */
     public function __construct(
         EntityManager $entityManager,
-        TokenManagerInterface $tokenManager,
-        $paymentClass,
-        $defaultCurrency
+        EntityResolverInterface $entityResolver,
+        PaymentTokenManagerInterface $tokenManager,
+        string $defaultCurrency
     ) {
         $this->entityManager = $entityManager;
+        $this->entityResolver = $entityResolver;
         $this->tokenManager = $tokenManager;
-        $this->paymentClass = $paymentClass;
         $this->defaultCurrency = $defaultCurrency;
     }
 
@@ -60,41 +60,27 @@ class DefaultPaymentManager implements PaymentManagerInterface
      * @inheritdoc
      */
     public function create(
-        $orderId,
-        $orderEntityClass,
-        $amount,
-        $currencyCode = null,
+        int $orderId,
+        string $orderEntityClass,
+        string $amount,
+        string $currencyCode = null,
         $clientId = null,
-        $clientEmail = null,
-        $description = null,
-        array $options = []
+        ?string $clientEmail = null,
+        ?string $description = null,
+        ?array $options = []
     ) {
-        if (!is_a($this->paymentClass, Payment::class, true)) {
-            throw new \RuntimeException(sprintf(
-                "%s doesn't know how to create object of class %s",
-                self::class,
-                $this->paymentClass
-            ));
-        }
+        $class = $this->entityResolver->resolve(PaymentInterface::class);
 
-        $reflection = new \ReflectionClass($this->paymentClass);
-        if ($reflection->getConstructor()->getNumberOfRequiredParameters()>0) {
-            throw new \RuntimeException(sprintf(
-                "Constructor of %s must have only non-required pa",
-                self::class,
-                $this->paymentClass
-            ));
-        }
-
-        /** @var Payment $object */
-        $object = $reflection->newInstance();
-        $object->setOrderId($orderId);
-        $object->setOrderEntityClass($orderEntityClass);
-        $object->setAmount($amount);
-        $object->setCurrencyCode($currencyCode ? : $this->defaultCurrency);
-        $object->setClientId($clientId);
-        $object->setClientEmail($clientEmail);
-        $object->setDescription($description);
+        /** @var \Darvin\PaymentBundle\Entity\Payment $object */
+        $object = new $class();
+        $object
+            ->setOrderId($orderId)
+            ->setOrderEntityClass($orderEntityClass)
+            ->setAmount($amount)
+            ->setCurrencyCode($currencyCode ?? $this->defaultCurrency)
+            ->setClientId($clientId)
+            ->setClientEmail($clientEmail)
+            ->setDescription($description);
 
         $this->entityManager->persist($object);
         $this->entityManager->flush($object);
@@ -105,7 +91,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsNew(PaymentInterface $payment)
+    public function markAsNew(PaymentInterface $payment): void
     {
         $this->markAs($payment, PaymentStatusType::NEW);
     }
@@ -113,16 +99,16 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsPending(PaymentInterface $payment)
+    public function markAsPending(PaymentInterface $payment): void
     {
         $this->markAs($payment, PaymentStatusType::PENDING);
-        $this->tokenManager->createActionToken($payment);
+        $this->tokenManager->attach($payment);
     }
 
     /**
      * @inheritDoc
      */
-    public function markAsPaid(PaymentInterface $payment)
+    public function markAsPaid(PaymentInterface $payment): void
     {
         $this->markAs($payment, PaymentStatusType::PAID, true);
     }
@@ -130,7 +116,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsCanceled(PaymentInterface $payment)
+    public function markAsCanceled(PaymentInterface $payment): void
     {
         $this->markAs($payment, PaymentStatusType::CANCELED, true);
     }
@@ -138,7 +124,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsFailed(PaymentInterface $payment)
+    public function markAsFailed(PaymentInterface $payment): void
     {
         $this->markAs($payment, PaymentStatusType::FAILED, true);
     }
@@ -146,7 +132,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsRefund(PaymentInterface $payment)
+    public function markAsRefund(PaymentInterface $payment): void
     {
         $this->markAs($payment, PaymentStatusType::REFUND);
     }
@@ -154,20 +140,20 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAs(PaymentInterface $payment, $status, $invalidateActionToken = false)
+    public function markAs(PaymentInterface $payment, $status, $invalidateActionToken = false): void
     {
         $payment->setStatus($status);
         $this->entityManager->flush($payment);
 
         if ($invalidateActionToken) {
-            $this->tokenManager->invalidateActionToken($payment);
+            $this->tokenManager->invalidate($payment);
         }
     }
 
     /**
      * @inheritDoc
      */
-    public function setTransactionReference(PaymentInterface $payment, $reference)
+    public function setTransactionReference(PaymentInterface $payment, string $reference): void
     {
         $payment->setTransactionRef($reference);
         $this->entityManager->flush($payment);
@@ -176,10 +162,8 @@ class DefaultPaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function findById($id)
+    public function findById($id): ?PaymentInterface
     {
         return $this->entityManager->find(PaymentInterface::class, $id);
     }
-
-
 }

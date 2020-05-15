@@ -11,14 +11,14 @@ namespace Darvin\PaymentBundle\Entity;
 interface PaymentInterface
 {
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getOrderId(): int;
+    public function getOrderId(): ?int;
 
     /**
      * @return string Request or Order class name
@@ -38,9 +38,9 @@ interface PaymentInterface
     public function setTransactionRef(?string $reference);
 
     /**
-     * @return float
+     * @return string
      */
-    public function getAmount(): float;
+    public function getAmount(): string;
 
     /**
      * @return string Currency code in ISO format (USD, RUB, AED...)

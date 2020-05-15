@@ -8,7 +8,6 @@
 
 namespace Darvin\PaymentBundle\Gateway\ParametersBridge;
 
-
 use Darvin\OmnipayTelr\TelrGateway;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
@@ -33,7 +32,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
     /**
      * @inheritDoc
      */
-    public function getGatewayClassName()
+    public function getGatewayClassName(): string
     {
         return TelrGateway::class;
     }
@@ -43,7 +42,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
      *
      * @return array
      */
-    public function authorizationParameters(PaymentInterface $payment)
+    public function authorizationParameters(PaymentInterface $payment): array
     {
         // TODO: Implement authorizationParameters() method.
     }
@@ -53,7 +52,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
      *
      * @return array
      */
-    public function captureParameters(PaymentInterface $payment)
+    public function captureParameters(PaymentInterface $payment): array
     {
         // TODO: Implement captureParameters() method.
     }
@@ -63,7 +62,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
      *
      * @return array
      */
-    public function purchaseParameters(PaymentInterface $payment)
+    public function purchaseParameters(PaymentInterface $payment): array
     {
         return [
             'ivp_amount'   => $payment->getAmount(),
@@ -79,7 +78,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
     /**
      * @inheritDoc
      */
-    public function completePurchaseParameters(PaymentInterface $payment)
+    public function completePurchaseParameters(PaymentInterface $payment): array
     {
         return [
             'order_ref' => $payment->getTransactionRef()
@@ -92,7 +91,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
      *
      * @return array
      */
-    public function refundParameters(PaymentInterface $payment)
+    public function refundParameters(PaymentInterface $payment): array
     {
         // TODO: Implement refundParameters() method.
     }
@@ -102,7 +101,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
      *
      * @return array
      */
-    public function acceptNotificationParameters(PaymentInterface $payment)
+    public function acceptNotificationParameters(PaymentInterface $payment): array
     {
         // TODO: Implement acceptNotificationParameters() method.
     }

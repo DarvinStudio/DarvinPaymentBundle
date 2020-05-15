@@ -6,17 +6,50 @@ use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\PaymentManager\PaymentManagerInterface;
-use Darvin\PaymentBundle\Token\Manager\TokenManagerInterface;
+use Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 use Omnipay\Common\Message\RedirectResponseInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * Class PaymentController
  * @package Darvin\PaymentBundle\Controller
  */
-class PaymentController extends Controller
+class PaymentController extends AbstractController
 {
+    /**
+     * @var GatewayFactoryInterface
+     */
+    private $gatewayFactory;
+
+    /**
+     * @var PaymentManagerInterface
+     */
+    private $paymentManager;
+
+    /**
+     * @var PaymentUrlBuilderInterface
+     */
+    private $paymentUrlBuilder;
+
+    /**
+     * @var PaymentTokenManagerInterface
+     */
+    private $tokenManager;
+
+    public function __construct(
+        GatewayFactoryInterface $gatewayFactory,
+        PaymentManagerInterface $paymentManager,
+        PaymentUrlBuilderInterface $paymentUrlBuilder,
+        PaymentTokenManagerInterface $tokenManager
+    )
+    {
+        $this->gatewayFactory = $gatewayFactory;
+        $this->paymentManager = $paymentManager;
+        $this->paymentUrlBuilder = $paymentUrlBuilder;
+        $this->tokenManager = $tokenManager;
+    }
+
     /**
      * @param string $gatewayName
      * @param int $id
@@ -26,12 +59,10 @@ class PaymentController extends Controller
      */
     public function purchaseAction($gatewayName, $id)
     {
-        $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
-        $bridge = $this->getGatewayFactory()->getGatewayParametersBridge($gatewayName);
-        $manager = $this->getPaymentManager();
-        $urlBuilder = $this->getPaymentUrlBuilder();
+        $gateway = $this->gatewayFactory->createGateway($gatewayName);
+        $bridge = $this->gatewayFactory->getGatewayParametersBridge($gatewayName);
 
-        $payment = $manager->findById($id);
+        $payment = $this->paymentManager->findById($id);
         if (!$payment) {
             throw $this->createNotFoundException('Payment with id '.$id.' not found');
         }
@@ -40,11 +71,11 @@ class PaymentController extends Controller
             throw new \Exception(sprintf("%s doesn't support purchase method", $gatewayName));
         }
 
-        $manager->markAsPending($payment);
+        $this->paymentManager->markAsPending($payment);
         $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
 
         if ($response->getTransactionReference()) {
-            $manager->setTransactionReference($payment, $response->getTransactionReference());
+            $this->paymentManager->setTransactionReference($payment, $response->getTransactionReference());
         }
 
         if ($response->isRedirect() && $response instanceof RedirectResponseInterface) {
@@ -65,13 +96,13 @@ class PaymentController extends Controller
             ]);
 
         } elseif ($response->isSuccessful()) {
-            $manager->markAsPaid($payment);
+            $this->paymentManager->markAsPaid($payment);
 
-            return $this->redirect($urlBuilder->getSuccessUrl($payment, $gatewayName));
+            return $this->redirect($this->paymentUrlBuilder->getSuccessUrl($payment, $gatewayName));
         } elseif ($response->isCancelled()) {
-            $manager->markAsCanceled($payment);
+            $this->paymentManager->markAsCanceled($payment);
 
-            return $this->redirect($urlBuilder->getCanceledUrl($payment, $gatewayName));
+            return $this->redirect($this->paymentUrlBuilder->getCanceledUrl($payment, $gatewayName));
         }
     }
 
@@ -86,10 +117,8 @@ class PaymentController extends Controller
     {
         $payment = $this->getPaymentFromToken($token);
 
-        $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
-        $bridge = $this->getGatewayFactory()->getGatewayParametersBridge($gatewayName);
-        $manager = $this->getPaymentManager();
-        $urlBuilder = $this->getPaymentUrlBuilder();
+        $gateway = $this->gatewayFactory->createGateway($gatewayName);
+        $bridge = $this->gatewayFactory->getGatewayParametersBridge($gatewayName);
 
         if (!$gateway->supportsCompletePurchase()) {
             throw new \Exception(sprintf("%s doesn't support complete purchase method", $gatewayName));
@@ -98,7 +127,7 @@ class PaymentController extends Controller
         $response = $gateway->completePurchase($bridge->completePurchaseParameters($payment))->send();
 
         if ($response->isSuccessful()) {
-            $manager->markAsPaid($payment);
+            $this->paymentManager->markAsPaid($payment);
 
             return $this->render('@DarvinPayment/Payment/success.html.twig', [
                 'payment'  => $payment,
@@ -107,9 +136,9 @@ class PaymentController extends Controller
             ]);
         }
 
-        return $this->redirect($response->isCancelled() ?
-            $urlBuilder->getCanceledUrl($payment, $gateway) :
-            $urlBuilder->getFailedUrl($payment, $gateway)
+        return $this->redirect($response->isCancelled()
+            ? $this->paymentUrlBuilder->getCanceledUrl($payment, $gatewayName)
+            : $this->paymentUrlBuilder->getFailedUrl($payment, $gatewayName)
         );
     }
 
@@ -123,10 +152,9 @@ class PaymentController extends Controller
     {
         $payment = $this->getPaymentFromToken($token);
 
-        $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
-        $manager = $this->getPaymentManager();
+        $gateway = $this->gatewayFactory->createGateway($gatewayName);
 
-        $manager->markAsFailed($payment);
+        $this->paymentManager->markAsFailed($payment);
 
         return $this->render('@DarvinPayment/Payment/failed.html.twig', [
             'payment'  => $payment,
@@ -144,47 +172,14 @@ class PaymentController extends Controller
     {
         $payment = $this->getPaymentFromToken($token);
 
-        $gateway = $this->getGatewayFactory()->createGateway($gatewayName);
-        $manager = $this->getPaymentManager();
+        $gateway = $this->gatewayFactory->createGateway($gatewayName);
 
-        $manager->markAsCanceled($payment);
+        $this->paymentManager->markAsCanceled($payment);
 
         return $this->render('@DarvinPayment/Payment/canceled.html.twig', [
             'payment'  => $payment,
             'gateway'  => $gateway
         ]);
-    }
-
-    /**
-     * @return \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface
-     */
-    protected function getGatewayFactory()
-    {
-        return $this->get(GatewayFactoryInterface::class);
-    }
-
-    /**
-     * @return PaymentManagerInterface
-     */
-    protected function getPaymentManager()
-    {
-        return $this->get(PaymentManagerInterface::class);
-    }
-
-    /**
-     * @return \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface
-     */
-    protected function getPaymentUrlBuilder()
-    {
-        return $this->get(PaymentUrlBuilderInterface::class);
-    }
-
-    /**
-     * @return \Darvin\PaymentBundle\Token\Manager\TokenManagerInterface
-     */
-    protected function getTokenManager()
-    {
-        return $this->get(TokenManagerInterface::class);
     }
 
     /**
@@ -194,7 +189,7 @@ class PaymentController extends Controller
      */
     protected function getPaymentFromToken($token)
     {
-        $payment = $this->getTokenManager()->findPayment($token);
+        $payment = $this->tokenManager->findPayment($token);
         if (!$payment) {
             throw $this->createNotFoundException(sprintf(
                 "Unable to find payment with token %s",

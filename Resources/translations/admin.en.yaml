@@ -1,0 +1,8 @@
+payment:
+    status:
+        failed:   Failed
+        canceled: Canceled
+        new:      New
+        paid:     Paid
+        pending:  Pending
+        refund:   Refund

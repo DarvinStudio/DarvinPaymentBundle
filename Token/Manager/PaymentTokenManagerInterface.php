@@ -8,33 +8,32 @@
 
 namespace Darvin\PaymentBundle\Token\Manager;
 
-
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 
 /**
- * Interface TokenManagerInterface
+ * Interface PaymentTokenManagerInterface
  * @package Darvin\PaymentBundle\Token\Manager
  */
-interface TokenManagerInterface
+interface PaymentTokenManagerInterface
 {
     /**
      * @param PaymentInterface $payment
      *
      * @return void
      */
-    public function createActionToken(PaymentInterface $payment);
+    public function attach(PaymentInterface $payment): void;
 
     /**
      * @param PaymentInterface $payment
      *
      * @return void
      */
-    public function invalidateActionToken(PaymentInterface $payment);
+    public function invalidate(PaymentInterface $payment): void;
 
     /**
      * @param $token
      *
      * @return PaymentInterface|null
      */
-    public function findPayment($token);
+    public function findPayment($token): ?PaymentInterface;
 }

@@ -8,9 +8,10 @@
 
 namespace Darvin\PaymentBundle\Gateway\Factory;
 
-
 use Darvin\PaymentBundle\Gateway\ParametersBridge\GatewayParametersBridgeInterface;
 use Darvin\PaymentBundle\Gateway\Factory\Exception\ParametersBridgeNotSetException;
+use Omnipay\Common\AbstractGateway;
+use Omnipay\Common\GatewayInterface;
 use Omnipay\Omnipay;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -39,7 +40,7 @@ class DefaultGatewayFactory implements GatewayFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createGateway($name)
+    public function createGateway($name): GatewayInterface
     {
         $bridge = $this->getGatewayParametersBridge($name);
         $className = $bridge->getGatewayClassName();
@@ -57,7 +58,7 @@ class DefaultGatewayFactory implements GatewayFactoryInterface
     /**
      * @inheritDoc
      */
-    public function getGatewayParametersBridge($name)
+    public function getGatewayParametersBridge($name): GatewayParametersBridgeInterface
     {
         if (!isset($this->bridges[$name])) {
             throw new ParametersBridgeNotSetException($name);
@@ -70,7 +71,7 @@ class DefaultGatewayFactory implements GatewayFactoryInterface
      * @param                                  $name
      * @param GatewayParametersBridgeInterface $bridge
      */
-    public function addGatewayParametersBridge($name, GatewayParametersBridgeInterface $bridge)
+    public function addGatewayParametersBridge($name, GatewayParametersBridgeInterface $bridge): void
     {
         $this->bridges[$name] = $bridge;
     }
