@@ -1,0 +1,14 @@
+parameters:
+    darvin_payment.payment_manager.class: 'Darvin\PaymentBundle\PaymentManager\PaymentManager'
+
+services:
+    Darvin\PaymentBundle\PaymentManager\PaymentManagerInterface: '@darvin_payment.payment_manager'
+
+    darvin_payment.payment_manager:
+        class: '%darvin_payment.payment_manager.class%'
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@Darvin\Utils\ORM\EntityResolverInterface'
+            - '@darvin_payment.token.payment_token_manager'
+            - '%darvin_payment.default_currency%'
+        public: true

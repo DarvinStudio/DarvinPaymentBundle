@@ -14,7 +14,7 @@ use Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManager;
 
-class DefaultPaymentManager implements PaymentManagerInterface
+class PaymentManager implements PaymentManagerInterface
 {
     /**
      * @var EntityManager
@@ -37,7 +37,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
     protected $defaultCurrency;
 
     /**
-     * DefaultPaymentManager constructor.
+     * PaymentManager constructor.
      *
      * @param EntityManager                $entityManager
      * @param EntityResolverInterface      $entityResolver
@@ -63,7 +63,7 @@ class DefaultPaymentManager implements PaymentManagerInterface
         int $orderId,
         string $orderEntityClass,
         string $amount,
-        string $currencyCode = null,
+        string $currencyCode,
         $clientId = null,
         ?string $clientEmail = null,
         ?string $description = null,

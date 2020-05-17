@@ -8,17 +8,16 @@
 
 namespace Darvin\PaymentBundle\Gateway\Factory;
 
-use Darvin\PaymentBundle\Gateway\ParametersBridge\GatewayParametersBridgeInterface;
-use Darvin\PaymentBundle\Gateway\Factory\Exception\ParametersBridgeNotSetException;
-use Omnipay\Common\AbstractGateway;
+use Darvin\PaymentBundle\Bridge\BridgeInterface;
+use Darvin\PaymentBundle\Bridge\Exception\BridgeNotSetException;
 use Omnipay\Common\GatewayInterface;
 use Omnipay\Omnipay;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class DefaultGatewayFactory implements GatewayFactoryInterface
+class GatewayFactory implements GatewayFactoryInterface
 {
     /**
-     * @var array|GatewayParametersBridgeInterface[]
+     * @var array|BridgeInterface[]
      */
     protected $bridges = [];
 
@@ -28,7 +27,7 @@ class DefaultGatewayFactory implements GatewayFactoryInterface
     protected $requestStack;
 
     /**
-     * DefaultGatewayFactory constructor.
+     * GatewayFactory constructor.
      *
      * @param RequestStack $requestStack
      */
@@ -42,7 +41,7 @@ class DefaultGatewayFactory implements GatewayFactoryInterface
      */
     public function createGateway($name): GatewayInterface
     {
-        $bridge = $this->getGatewayParametersBridge($name);
+        $bridge = $this->getBridge($name);
         $className = $bridge->getGatewayClassName();
         if ($className[0] !== '\\') {
             $className = '\\'.$className;
@@ -58,20 +57,20 @@ class DefaultGatewayFactory implements GatewayFactoryInterface
     /**
      * @inheritDoc
      */
-    public function getGatewayParametersBridge($name): GatewayParametersBridgeInterface
+    public function getBridge($name): BridgeInterface
     {
         if (!isset($this->bridges[$name])) {
-            throw new ParametersBridgeNotSetException($name);
+            throw new BridgeNotSetException($name);
         }
 
         return $this->bridges[$name];
     }
 
     /**
-     * @param                                  $name
-     * @param GatewayParametersBridgeInterface $bridge
+     * @param string          $name
+     * @param BridgeInterface $bridge
      */
-    public function addGatewayParametersBridge($name, GatewayParametersBridgeInterface $bridge): void
+    public function addBridge(string $name, BridgeInterface $bridge): void
     {
         $this->bridges[$name] = $bridge;
     }

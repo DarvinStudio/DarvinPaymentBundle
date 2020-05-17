@@ -60,7 +60,7 @@ class PaymentController extends AbstractController
     public function purchaseAction($gatewayName, $id)
     {
         $gateway = $this->gatewayFactory->createGateway($gatewayName);
-        $bridge = $this->gatewayFactory->getGatewayParametersBridge($gatewayName);
+        $bridge = $this->gatewayFactory->getBridge($gatewayName);
 
         $payment = $this->paymentManager->findById($id);
         if (!$payment) {
@@ -118,7 +118,7 @@ class PaymentController extends AbstractController
         $payment = $this->getPaymentFromToken($token);
 
         $gateway = $this->gatewayFactory->createGateway($gatewayName);
-        $bridge = $this->gatewayFactory->getGatewayParametersBridge($gatewayName);
+        $bridge = $this->gatewayFactory->getBridge($gatewayName);
 
         if (!$gateway->supportsCompletePurchase()) {
             throw new \Exception(sprintf("%s doesn't support complete purchase method", $gatewayName));

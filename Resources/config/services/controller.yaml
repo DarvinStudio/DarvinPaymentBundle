@@ -1,0 +1,9 @@
+services:
+    Darvin\PaymentBundle\Controller\PaymentController:
+        arguments:
+            - '@darvin_payment.gateway.gateway_factory'
+            - '@darvin_payment.payment_manager'
+            - '@darvin_payment.url_builder.payment_url_builder'
+            - '@darvin_payment.token.payment_token_manager'
+        tags:
+            - { name: controller.service_arguments }

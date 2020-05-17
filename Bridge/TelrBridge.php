@@ -6,13 +6,13 @@
  * Time: 1:34
  */
 
-namespace Darvin\PaymentBundle\Gateway\ParametersBridge;
+namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\OmnipayTelr\TelrGateway;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 
-class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
+class TelrBridge extends AbstractBridge
 {
     /**
      * @var PaymentUrlBuilderInterface
@@ -20,7 +20,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
     protected $urlBuilder;
 
     /**
-     * TelrGatewayParametersBridge constructor.
+     * TelrBridge constructor.
      *
      * @param PaymentUrlBuilderInterface $urlBuilder
      */
@@ -87,7 +87,7 @@ class TelrGatewayParametersBridge extends AbstractGatewayParametersBridge
 
 
     /**
-     * @param PaymentInterface $payment
+     * @param PaymentInterface 3$payment
      *
      * @return array
      */

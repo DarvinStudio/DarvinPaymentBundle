@@ -6,12 +6,11 @@
  * Time: 23:04
  */
 
-namespace Darvin\PaymentBundle\Gateway\ParametersBridge;
-
+namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 
-interface GatewayParametersBridgeInterface
+interface BridgeInterface
 {
     /**
      * @return string

@@ -18,26 +18,19 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('darvin_payment');
+        $builder = new TreeBuilder('darvin_payment');
+        $root = $builder->getRootNode();
 
-        $rootNode
+        $root
             ->children()
                 ->scalarNode('default_currency')->defaultValue('RUB')->end()
-                ->scalarNode('payment_class')->defaultValue(Payment::class)->end()
                 ->scalarNode('default_gateway')->defaultNull()->end()
-                ->arrayNode('parameters_bridge')
-                    ->isRequired()
-                    ->requiresAtLeastOneElement()
-                    ->useAttributeAsKey('name')
-                    ->arrayPrototype()
-                        ->useAttributeAsKey('key')
-                        ->scalarPrototype()->end()
-                    ->end()
-                ->end()
-            ->end()
+                ->scalarNode('payment_class')->defaultValue(Payment::class)->end()
+                ->arrayNode('bridges')->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->prototype('variable')
         ;
 
-        return $treeBuilder;
+        return $builder;
     }
 }

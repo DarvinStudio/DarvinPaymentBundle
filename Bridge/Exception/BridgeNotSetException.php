@@ -6,10 +6,10 @@
  * Time: 0:01
  */
 
-namespace Darvin\PaymentBundle\Gateway\Factory\Exception;
+namespace Darvin\PaymentBundle\Bridge\Exception;
 
 
-class ParametersBridgeNotSetException extends \Exception
+class BridgeNotSetException extends \Exception
 {
     /**
      * @var string

@@ -6,20 +6,20 @@
  * Time: 0:24
  */
 
-namespace Darvin\PaymentBundle\Gateway\ParametersBridge;
+namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 
-abstract class AbstractGatewayParametersBridge implements GatewayParametersBridgeInterface
+abstract class AbstractBridge implements BridgeInterface
 {
     /**
      * @var array
      */
     private $gatewayConfig = [];
 
-    public function setGatewayConfig(array $config = [])
+    public function setGatewayConfig(array $gatewayConfig = [])
     {
-        $this->gatewayConfig = $config;
+        $this->gatewayConfig = $gatewayConfig;
     }
 
     /**

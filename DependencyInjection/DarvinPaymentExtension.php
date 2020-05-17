@@ -2,14 +2,12 @@
 
 namespace Darvin\PaymentBundle\DependencyInjection;
 
-use Darvin\PaymentBundle\PaymentManager\DefaultPaymentManager;
-use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilder;
+use Darvin\Utils\DependencyInjection\ConfigInjector;
+use Darvin\Utils\DependencyInjection\ConfigLoader;
+use Darvin\Utils\DependencyInjection\ExtensionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -19,55 +17,33 @@ use Symfony\Component\Yaml\Yaml;
 class DarvinPaymentExtension extends Extension implements PrependExtensionInterface
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration(new Configuration(), $configs);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yaml');
+        (new ConfigInjector($container))->inject($this->processConfiguration(new Configuration(), $configs), $this->getAlias());
 
-        $this->updatePaymentManagerService($container, $config);
-        $this->updateUrlBuilderService($container, $config);
-
-        foreach ($config['parameters_bridge'] as $key => $gatewayConfig) {
-            $container->setParameter('darvin_payment.config.gateway_parameters_bridge.'.$key, $gatewayConfig);
-        }
+        (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
+            'controller',
+            'gateway_factory',
+            'payment_manager',
+            'token',
+            'url_builder',
+            'bridges/telr' => ['callback' => function () use ($config): bool {
+                if (isset($config['bridges']['telr'])) {
+                    return true;
+                }
+            }],
+        ]);
     }
 
     /**
-     * @param ContainerBuilder $container
-     * @param array            $config
+     * {@inheritDoc}
      */
-    protected function updatePaymentManagerService(ContainerBuilder $container, array $config)
+    public function prepend(ContainerBuilder $container): void
     {
-        $definition = $container->getDefinition(DefaultPaymentManager::class);
-//        $definition->setArgument(2, $config['payment_class']);
-        $definition->setArgument(3, $config['default_currency']);
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @param array            $config
-     */
-    protected function updateUrlBuilderService(ContainerBuilder $container, array $config)
-    {
-        $definition = $container->getDefinition(PaymentUrlBuilder::class);
-        $definition->setArgument(1, $config['default_gateway']);
-    }
-
-    public function prepend(ContainerBuilder $container)
-    {
-        $fileLocator = new FileLocator(__DIR__.'/../Resources/config/app');
-
-        foreach ([
-                     'doctrine',
-                 ] as $extension) {
-            if ($container->hasExtension($extension)) {
-                $container->prependExtensionConfig($extension, Yaml::parse(file_get_contents($fileLocator->locate($extension.'.yaml')))[$extension]);
-            }
-        }
+        (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('doctrine');
     }
 }
