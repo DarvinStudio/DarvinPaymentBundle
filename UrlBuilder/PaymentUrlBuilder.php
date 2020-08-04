@@ -69,7 +69,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
             throw new \LogicException('Action token must be set for payment');
         }
 
-        if ($action == 'purchase') {
+        if ('purchase' === $action) {
             return $this->router->generate('darvin_payment_payment_success_purchase', [
                 'gatewayName' => $gatewayName,
                 'token'       => $payment->getActionToken()

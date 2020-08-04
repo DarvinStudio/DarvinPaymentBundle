@@ -19,6 +19,8 @@ interface GatewayFactoryInterface
      * @param $name
      *
      * @return GatewayInterface
+     *
+     * @throws BridgeNotSetException
      */
     public function createGateway($name): GatewayInterface;
 

@@ -6,13 +6,16 @@
  * Time: 21:07
  */
 
-namespace Darvin\PaymentBundle\PaymentManager;
+namespace Darvin\PaymentBundle\Manager;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Event\ChangedStatusEvent;
+use Darvin\PaymentBundle\Event\PaymentEvents;
 use Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PaymentManager implements PaymentManagerInterface
 {
@@ -25,6 +28,11 @@ class PaymentManager implements PaymentManagerInterface
      * @var \Darvin\Utils\ORM\EntityResolverInterface
      */
     protected $entityResolver;
+
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * @var PaymentTokenManagerInterface
@@ -41,17 +49,20 @@ class PaymentManager implements PaymentManagerInterface
      *
      * @param EntityManager                $entityManager
      * @param EntityResolverInterface      $entityResolver
+     * @param EventDispatcherInterface     $eventDispatcher
      * @param PaymentTokenManagerInterface $tokenManager
      * @param string                       $defaultCurrency
      */
     public function __construct(
         EntityManager $entityManager,
         EntityResolverInterface $entityResolver,
+        EventDispatcherInterface $eventDispatcher,
         PaymentTokenManagerInterface $tokenManager,
         string $defaultCurrency
     ) {
         $this->entityManager = $entityManager;
         $this->entityResolver = $entityResolver;
+        $this->eventDispatcher = $eventDispatcher;
         $this->tokenManager = $tokenManager;
         $this->defaultCurrency = $defaultCurrency;
     }
@@ -144,6 +155,10 @@ class PaymentManager implements PaymentManagerInterface
     {
         $payment->setStatus($status);
         $this->entityManager->flush($payment);
+
+        $this->eventDispatcher->dispatch(new ChangedStatusEvent($payment), PaymentEvents::CHANGED_STATUS);
+
+        // TODO: Закоментил на время тестов
 
         if ($invalidateActionToken) {
             $this->tokenManager->invalidate($payment);

@@ -2,13 +2,15 @@
 
 namespace Darvin\PaymentBundle\Controller;
 
+use Darvin\PaymentBundle\Bridge\BridgeInterface;
+use Darvin\PaymentBundle\Bridge\Exception\BridgeNotSetException;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
-use Darvin\PaymentBundle\PaymentManager\PaymentManagerInterface;
+use Darvin\PaymentBundle\Manager\PaymentManagerInterface;
 use Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
-use Omnipay\Common\Message\RedirectResponseInterface;
+use Omnipay\Common\GatewayInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -42,8 +44,7 @@ class PaymentController extends AbstractController
         PaymentManagerInterface $paymentManager,
         PaymentUrlBuilderInterface $paymentUrlBuilder,
         PaymentTokenManagerInterface $tokenManager
-    )
-    {
+    ) {
         $this->gatewayFactory = $gatewayFactory;
         $this->paymentManager = $paymentManager;
         $this->paymentUrlBuilder = $paymentUrlBuilder;
@@ -55,55 +56,53 @@ class PaymentController extends AbstractController
      * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function purchaseAction($gatewayName, $id)
     {
-        $gateway = $this->gatewayFactory->createGateway($gatewayName);
-        $bridge = $this->gatewayFactory->getBridge($gatewayName);
-
-        $payment = $this->paymentManager->findById($id);
-        if (!$payment) {
-            throw $this->createNotFoundException('Payment with id '.$id.' not found');
-        }
-
-        if (!$gateway->supportsPurchase()) {
-            throw new \Exception(sprintf("%s doesn't support purchase method", $gatewayName));
-        }
+        $bridge = $this->getBridge($gatewayName);
+        $gateway = $this->getGateway($gatewayName);
+        $payment = $this->getPaymentFromId($id);
 
         $this->paymentManager->markAsPending($payment);
         $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
 
-        if ($response->getTransactionReference()) {
+        if ($response->getTransactionReference() !== null) {
             $this->paymentManager->setTransactionReference($payment, $response->getTransactionReference());
         }
 
-        if ($response->isRedirect() && $response instanceof RedirectResponseInterface) {
-            if ($response->getRedirectMethod() != 'POST') {
+        if ($response->isRedirect()) {
+            if ($response->getRedirectMethod() !== 'POST') {
                 return $this->redirect($response->getRedirectUrl());
             }
 
             $form = $this->createForm(GatewayRedirectType::class, $response->getRedirectData(), [
                 'action' => $response->getRedirectUrl(),
-                'method' => $response->getRedirectMethod()
+                'method' => $response->getRedirectMethod(),
             ]);
 
             return $this->render('@DarvinPayment/Payment/purchase.html.twig', [
                 'form'     => $form->createView(),
                 'payment'  => $payment,
                 'response' => $response,
-                'gateway'  => $gateway
+                'gateway'  => $gateway,
             ]);
+        }
 
-        } elseif ($response->isSuccessful()) {
+        if ($response->isSuccessful()) {
             $this->paymentManager->markAsPaid($payment);
 
             return $this->redirect($this->paymentUrlBuilder->getSuccessUrl($payment, $gatewayName));
-        } elseif ($response->isCancelled()) {
+        }
+
+        if ($response->isCancelled()) {
             $this->paymentManager->markAsCanceled($payment);
 
             return $this->redirect($this->paymentUrlBuilder->getCanceledUrl($payment, $gatewayName));
         }
+
+        throw $this->createNotFoundException('Undefined response');
     }
 
     /**
@@ -111,18 +110,14 @@ class PaymentController extends AbstractController
      * @param $token
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function successPurchaseAction($gatewayName, $token)
     {
-        $payment = $this->getPaymentFromToken($token);
-
-        $gateway = $this->gatewayFactory->createGateway($gatewayName);
-        $bridge = $this->gatewayFactory->getBridge($gatewayName);
-
-        if (!$gateway->supportsCompletePurchase()) {
-            throw new \Exception(sprintf("%s doesn't support complete purchase method", $gatewayName));
-        }
+        $bridge = $this->getBridge($gatewayName);
+        $gateway = $this->getGateway($gatewayName);
+        $payment = $this->getPaymentByToken($token);
 
         $response = $gateway->completePurchase($bridge->completePurchaseParameters($payment))->send();
 
@@ -147,18 +142,20 @@ class PaymentController extends AbstractController
      * @param $token
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function failedPurchaseAction($gatewayName, $token)
     {
-        $payment = $this->getPaymentFromToken($token);
+        $payment = $this->getPaymentByToken($token);
 
-        $gateway = $this->gatewayFactory->createGateway($gatewayName);
+        $gateway = $this->getGateway($gatewayName);
 
         $this->paymentManager->markAsFailed($payment);
 
         return $this->render('@DarvinPayment/Payment/failed.html.twig', [
             'payment'  => $payment,
-            'gateway'  => $gateway
+            'gateway' => $gateway,
         ]);
     }
 
@@ -170,33 +167,85 @@ class PaymentController extends AbstractController
      */
     public function cancelPurchaseAction($gatewayName, $token)
     {
-        $payment = $this->getPaymentFromToken($token);
+        $payment = $this->getPaymentByToken($token);
 
-        $gateway = $this->gatewayFactory->createGateway($gatewayName);
+        $gateway = $this->getGateway($gatewayName);
 
         $this->paymentManager->markAsCanceled($payment);
 
         return $this->render('@DarvinPayment/Payment/canceled.html.twig', [
-            'payment'  => $payment,
-            'gateway'  => $gateway
+            'payment' => $payment,
+            'gateway' => $gateway,
         ]);
     }
 
     /**
-     * @param $token
+     * @param int $id
      *
      * @return PaymentInterface
      */
-    protected function getPaymentFromToken($token)
+    private function getPaymentFromId(int $id): PaymentInterface
     {
-        $payment = $this->tokenManager->findPayment($token);
+        $payment = $this->paymentManager->findById($id);
         if (!$payment) {
-            throw $this->createNotFoundException(sprintf(
-                "Unable to find payment with token %s",
-                $token
-            ));
+            throw $this->createNotFoundException(sprintf('Payment with id %s not found', $id));
         }
 
         return $payment;
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return PaymentInterface
+     */
+    private function getPaymentByToken(string $token): PaymentInterface
+    {
+        $payment = $this->tokenManager->findPayment($token);
+        if (!$payment) {
+            throw $this->createNotFoundException(sprintf('Unable to find payment with token %s', $token));
+        }
+
+        return $payment;
+    }
+
+    /**
+     * @param string $gatewayName
+     *
+     * @return GatewayInterface
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    private function getGateway(string $gatewayName): GatewayInterface
+    {
+        try {
+            $gateway = $this->gatewayFactory->createGateway($gatewayName);
+        } catch (BridgeNotSetException $ex) {
+            throw $this->createNotFoundException($ex->getMessage());
+        }
+
+        if (!$gateway->supportsPurchase()) {
+            throw $this->createNotFoundException(sprintf("%s doesn't support purchase method", $gatewayName));
+        }
+
+        return $gateway;
+    }
+
+    /**
+     * @param string $gatewayName
+     *
+     * @return BridgeInterface
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    private function getBridge(string $gatewayName): BridgeInterface
+    {
+        try {
+            $bridge = $this->gatewayFactory->getBridge($gatewayName);
+        } catch (BridgeNotSetException $ex) {
+            throw $this->createNotFoundException($ex->getMessage());
+        }
+
+        return $bridge;
     }
 }

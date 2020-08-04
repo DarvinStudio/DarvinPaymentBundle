@@ -6,13 +6,13 @@
  * Time: 21:00
  */
 
-namespace Darvin\PaymentBundle\PaymentManager;
+namespace Darvin\PaymentBundle\Manager;
 
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 
 /**
  * Interface PaymentManagerInterface
- * @package Darvin\PaymentBundle\PaymentManager
+ * @package Darvin\PaymentBundle\Manager
  */
 interface PaymentManagerInterface
 {

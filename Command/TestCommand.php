@@ -3,7 +3,7 @@
 namespace Darvin\PaymentBundle\Command;
 
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
-use Darvin\PaymentBundle\PaymentManager\PaymentManagerInterface;
+use Darvin\PaymentBundle\Manager\PaymentManagerInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

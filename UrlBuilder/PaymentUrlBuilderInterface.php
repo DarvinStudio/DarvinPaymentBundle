@@ -65,6 +65,8 @@ interface PaymentUrlBuilderInterface
      * @param string           $action
      *
      * @return string
+     *
+     * @throws ActionNotImplementedException
      */
     public function getCanceledUrl(PaymentInterface $payment, string $gatewayName, string $action = 'purchase'): string;
 
