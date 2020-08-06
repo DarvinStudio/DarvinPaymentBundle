@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: levsemin
- * Date: 06.07.2018
- * Time: 17:10
+ * @author    Darvin Studio <info@darvin-studio.ru>
+ * @copyright Copyright (c) 2018-2020, Darvin Studio
+ * @link      https://www.darvin-studio.ru
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Darvin\PaymentBundle\DBAL\Type;
