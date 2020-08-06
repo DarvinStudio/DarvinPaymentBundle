@@ -151,12 +151,12 @@ class PaymentManager implements PaymentManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAs(PaymentInterface $payment, $status, $invalidateActionToken = false): void
+    public function markAs(PaymentInterface $payment, string $status, bool $invalidateActionToken = false): void
     {
         $payment->setStatus($status);
         $this->entityManager->flush($payment);
 
-        $this->eventDispatcher->dispatch(new ChangedStatusEvent($payment), PaymentEvents::CHANGED_STATUS);
+        $this->eventDispatcher->dispatch(new ChangedStatusEvent($payment));
 
         // TODO: Закоментил на время тестов
 

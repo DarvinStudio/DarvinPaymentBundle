@@ -51,8 +51,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
      */
     public function getPurchaseUrl(PaymentInterface $payment, string $gatewayName): string
     {
-        return $this->router->generate('darvin_payment_payment_purchase',
-            [
+        return $this->router->generate('darvin_payment_payment_purchase', [
                 'id'          => $payment->getId(),
                 'gatewayName' => $gatewayName,
             ],
@@ -88,7 +87,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
             throw new \LogicException('Action token must be set for payment');
         }
 
-        if ($action == 'purchase') {
+        if ('purchase' === $action) {
             return $this->router->generate('darvin_payment_payment_cancled_purchase', [
                 'gatewayName' => $gatewayName,
                 'token'       => $payment->getActionToken()
@@ -107,7 +106,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
             throw new \LogicException('Action token must be set for payment');
         }
 
-        if ($action == 'purchase') {
+        if ('purchase' === $action) {
             return $this->router->generate('darvin_payment_payment_failed_purchase', [
                 'gatewayName' => $gatewayName,
                 'token'       => $payment->getActionToken()

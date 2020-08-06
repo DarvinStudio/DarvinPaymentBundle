@@ -11,6 +11,9 @@ namespace Darvin\PaymentBundle\Token\Manager;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Class payment token manager
+ */
 class PaymentTokenManager implements PaymentTokenManagerInterface
 {
     /**

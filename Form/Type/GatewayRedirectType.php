@@ -18,7 +18,6 @@ class GatewayRedirectType extends AbstractType
             $data = $event->getData();
             $form = $event->getForm();
 
-
             foreach ($form as $key=>$child) {
                 $form->remove($key);
             }

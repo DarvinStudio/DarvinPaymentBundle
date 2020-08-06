@@ -9,13 +9,15 @@ use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\Manager\PaymentManagerInterface;
 use Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface;
+use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 use Omnipay\Common\GatewayInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class PaymentController
- * @package Darvin\PaymentBundle\Controller
+ * Class payment controller
  */
 class PaymentController extends AbstractController
 {
@@ -59,7 +61,7 @@ class PaymentController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function purchaseAction($gatewayName, $id)
+    public function purchaseAction($gatewayName, $id): Response
     {
         $bridge = $this->getBridge($gatewayName);
         $gateway = $this->getGateway($gatewayName);
@@ -93,13 +95,17 @@ class PaymentController extends AbstractController
         if ($response->isSuccessful()) {
             $this->paymentManager->markAsPaid($payment);
 
-            return $this->redirect($this->paymentUrlBuilder->getSuccessUrl($payment, $gatewayName));
+            return $this->createRedirect(function(PaymentInterface $payment, string $gatewayName): RedirectResponse {
+                return $this->redirect($this->paymentUrlBuilder->getSuccessUrl($payment, $gatewayName));
+            });
         }
 
         if ($response->isCancelled()) {
             $this->paymentManager->markAsCanceled($payment);
 
-            return $this->redirect($this->paymentUrlBuilder->getCanceledUrl($payment, $gatewayName));
+            return $this->createRedirect(function(PaymentInterface $payment, string $gatewayName): RedirectResponse {
+                return $this->redirect($this->paymentUrlBuilder->getCanceledUrl($payment, $gatewayName));
+            });
         }
 
         throw $this->createNotFoundException('Undefined response');
@@ -113,7 +119,7 @@ class PaymentController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function successPurchaseAction($gatewayName, $token)
+    public function successPurchaseAction($gatewayName, $token): Response
     {
         $bridge = $this->getBridge($gatewayName);
         $gateway = $this->getGateway($gatewayName);
@@ -131,10 +137,27 @@ class PaymentController extends AbstractController
             ]);
         }
 
-        return $this->redirect($response->isCancelled()
-            ? $this->paymentUrlBuilder->getCanceledUrl($payment, $gatewayName)
-            : $this->paymentUrlBuilder->getFailedUrl($payment, $gatewayName)
-        );
+        $this->paymentManager->markAsFailed($payment);
+
+        return $this->createRedirect(function($payment, $gatewayName): RedirectResponse {
+            return $this->redirect($this->paymentUrlBuilder->getFailedUrl($payment, $gatewayName));
+        });
+    }
+
+    /**
+     * @param callable $callable
+     *
+     * @return RedirectResponse
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    private function createRedirect(callable $callable): RedirectResponse
+    {
+        try {
+            return $callable();
+        } catch (ActionNotImplementedException $ex) {
+            throw $this->createNotFoundException($ex->getMessage());
+        }
     }
 
     /**
@@ -145,7 +168,7 @@ class PaymentController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function failedPurchaseAction($gatewayName, $token)
+    public function failedPurchaseAction($gatewayName, $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
@@ -165,7 +188,7 @@ class PaymentController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function cancelPurchaseAction($gatewayName, $token)
+    public function cancelPurchaseAction($gatewayName, $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 

@@ -45,6 +45,7 @@ class Payment implements PaymentInterface
 
     /**
      * @var string|null
+     *
      * @ORM\Column(nullable=true)
      */
     protected $transactionRef;
