@@ -40,9 +40,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @param PaymentInterface $payment
-     *
-     * @return array
+     * @inheritDoc
      */
     public function authorizationParameters(PaymentInterface $payment): array
     {
@@ -50,9 +48,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @param PaymentInterface $payment
-     *
-     * @return array
+     * @inheritDoc
      */
     public function captureParameters(PaymentInterface $payment): array
     {
@@ -60,9 +56,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @param PaymentInterface $payment
-     *
-     * @return array
+     * @inheritDoc
      */
     public function purchaseParameters(PaymentInterface $payment): array
     {
@@ -89,9 +83,7 @@ class TelrBridge extends AbstractBridge
 
 
     /**
-     * @param PaymentInterface 3$payment
-     *
-     * @return array
+     * @inheritDoc
      */
     public function refundParameters(PaymentInterface $payment): array
     {
@@ -99,9 +91,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @param PaymentInterface $payment
-     *
-     * @return array
+     * @inheritDoc
      */
     public function acceptNotificationParameters(PaymentInterface $payment): array
     {

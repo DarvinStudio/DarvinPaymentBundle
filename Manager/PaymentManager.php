@@ -158,9 +158,7 @@ class PaymentManager implements PaymentManagerInterface
         $payment->setStatus($status);
         $this->entityManager->flush($payment);
 
-        $this->eventDispatcher->dispatch(new ChangedStatusEvent($payment));
-
-        // TODO: Закоментил на время тестов
+        $this->eventDispatcher->dispatch(new ChangedStatusEvent($payment), PaymentEvents::CHANGED_STATUS);
 
         if ($invalidateActionToken) {
             $this->tokenManager->invalidate($payment);

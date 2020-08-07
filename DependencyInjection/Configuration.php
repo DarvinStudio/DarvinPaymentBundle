@@ -24,7 +24,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $builder = new TreeBuilder('darvin_payment');
         $root = $builder->getRootNode();
@@ -34,6 +34,11 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('default_currency')->defaultValue('RUB')->end()
                 ->scalarNode('default_gateway')->defaultNull()->end()
                 ->scalarNode('payment_class')->defaultValue(Payment::class)->end()
+                ->arrayNode('mailer')->canBeDisabled()->end()
+                ->arrayNode('email')->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('public')->canBeDisabled()->end()
+                        ->arrayNode('service')->canBeDisabled()->end()
                 ->arrayNode('bridges')->useAttributeAsKey('name')
                     ->prototype('array')
                         ->prototype('variable')

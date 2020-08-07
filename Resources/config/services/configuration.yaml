@@ -1,0 +1,10 @@
+parameters:
+    darvin_payment.configuration.class: Darvin\PaymentBundle\Config\PaymentConfig
+
+services:
+    darvin_payment.configuration:
+        class: '%darvin_payment.configuration.class%'
+        arguments:
+            - '%darvin_payment.mailer.enabled%'
+        tags:
+            - { name: darvin_config.configuration }

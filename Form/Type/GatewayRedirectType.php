@@ -18,15 +18,22 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class Gateway redirect type
+ */
 class GatewayRedirectType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    /**
+     * @param FormBuilderInterface $builder Form Builder
+     * @param array                $options Options
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event){
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, static function (FormEvent $event){
             $data = $event->getData();
             $form = $event->getForm();
 
-            foreach ($form as $key=>$child) {
+            foreach ($form as $key => $child) {
                 $form->remove($key);
             }
 
@@ -40,7 +47,10 @@ class GatewayRedirectType extends AbstractType
         });
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    /**
+     * @param OptionsResolver $resolver Options resolver
+     */
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setRequired('action')
@@ -48,7 +58,10 @@ class GatewayRedirectType extends AbstractType
         ;
     }
 
-    public function getBlockPrefix()
+    /**
+     * @return string
+     */
+    public function getBlockPrefix(): string
     {
         return '';
     }

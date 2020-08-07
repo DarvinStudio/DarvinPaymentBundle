@@ -16,6 +16,9 @@ use Omnipay\Common\GatewayInterface;
 use Omnipay\Omnipay;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * Class gateway factory
+ */
 class GatewayFactory implements GatewayFactoryInterface
 {
     /**
@@ -41,7 +44,7 @@ class GatewayFactory implements GatewayFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createGateway($name): GatewayInterface
+    public function createGateway(string $name): GatewayInterface
     {
         $bridge = $this->getBridge($name);
         $className = $bridge->getGatewayClassName();
@@ -59,7 +62,7 @@ class GatewayFactory implements GatewayFactoryInterface
     /**
      * @inheritDoc
      */
-    public function getBridge($name): BridgeInterface
+    public function getBridge(string $name): BridgeInterface
     {
         if (!isset($this->bridges[$name])) {
             throw new BridgeNotSetException($name);

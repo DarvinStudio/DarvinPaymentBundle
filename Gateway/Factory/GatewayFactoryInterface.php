@@ -18,20 +18,20 @@ use Omnipay\Common\GatewayInterface;
 interface GatewayFactoryInterface
 {
     /**
-     * @param $name
+     * @param string $name Bridge name
      *
      * @return GatewayInterface
      *
      * @throws BridgeNotSetException
      */
-    public function createGateway($name): GatewayInterface;
+    public function createGateway(string $name): GatewayInterface;
 
     /**
-     * @param $name
+     * @param string $name Bridge name
      *
      * @return BridgeInterface
      *
      * @throws BridgeNotSetException
      */
-    public function getBridge($name): BridgeInterface;
+    public function getBridge(string $name): BridgeInterface;
 }
