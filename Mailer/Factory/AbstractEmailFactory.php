@@ -60,7 +60,7 @@ abstract class AbstractEmailFactory implements EmailFactoryInterface
      * @return \Darvin\MailerBundle\Model\Email
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
-    private function createEmail(string $emailType, $to, string $subject, string $template, Payment $payment, ?BaseUser $user = null): Email
+    protected function createEmail(string $emailType, $to, string $subject, string $template, Payment $payment, ?BaseUser $user = null): Email
     {
         return $this->genericFactory->createEmail(
             $emailType,

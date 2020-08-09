@@ -12,9 +12,7 @@ namespace Darvin\PaymentBundle\Config;
 
 use Darvin\ConfigBundle\Configuration\AbstractConfiguration;
 use Darvin\ConfigBundle\Parameter\ParameterModel;
-use Darvin\OrderBundle\Form\Type\Config\NotificationEmailsType;
-use Darvin\OrderBundle\Type\Model\OrderType;
-use Darvin\OrderBundle\Type\Provider\OrderTypeProviderInterface;
+use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
 
 /**
  * Payment configuration
@@ -40,16 +38,18 @@ class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterf
     public function getModel(): iterable
     {
         if ($this->mailerEnabled) {
-            // TODO написать вставку email для разных событий
+            foreach (PaymentStatusType::getChoices() as $choice) {
+                // TODO config emails
+            }
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getNotificationEmailsByType(OrderType $type): array
+    public function getNotificationEmailsByStatus(string $status): array
     {
-        return $this->__get('notification_emails')[$type->getName()] ?? [];
+        return $this->__get('notification_emails')[$status] ?? [];
     }
 
     /**

@@ -10,9 +10,12 @@
 
 namespace Darvin\PaymentBundle\DependencyInjection;
 
+use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
 use Darvin\PaymentBundle\Entity\Payment;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Form\FormTypeInterface;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.
@@ -35,10 +38,24 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('default_gateway')->defaultNull()->end()
                 ->scalarNode('payment_class')->defaultValue(Payment::class)->end()
                 ->arrayNode('mailer')->canBeDisabled()->end()
-                ->arrayNode('email')->addDefaultsIfNotSet()
-                    ->children()
-                        ->arrayNode('public')->canBeDisabled()->end()
-                        ->arrayNode('service')->canBeDisabled()->end()
+                    ->arrayNode('notification')->addDefaultsIfNotSet()
+                        ->children()
+                            ->arrayNode('public')->canBeDisabled()->end()
+                            ->arrayNode('service')->canBeDisabled()->end()
+                            ->arrayNode('statuses')
+                                ->useAttributeAsKey('name')
+                                    ->validate()
+                                        ->ifTrue(static function (string $name): bool {
+                                            return null !== $name && !in_array($name, PaymentStatusType::getChoices());
+                                        })
+                                        ->thenInvalid('Unknown status')
+                                    ->end()
+                                    ->prototype('array')
+                                        ->canBeDisabled()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                    ->scalarNode('template')->defaultValue('@DarvinMailer/email/submitted.html.twig')->cannotBeEmpty()->end()
                 ->arrayNode('bridges')->useAttributeAsKey('name')
                     ->prototype('array')
                         ->prototype('variable')

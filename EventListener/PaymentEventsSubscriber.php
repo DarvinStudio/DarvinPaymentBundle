@@ -56,12 +56,51 @@ class PaymentEventsSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * @param ChangedStatusEvent $event
+     */
+    public function changedStatus(ChangedStatusEvent $event): void
+    {
+        $payment = $event->getPayment();
+
+        if (PaymentStatusType::PAID !== $payment->getStatus()) {
+            return;
+        }
+
+        $email = $this->emailFactory->createEmail($payment->getClientEmail(), 'Thank you. Application Successfully Completed!', []);
+
+        $email->setBody($this->renderer->renderEmail(EmailType::PUBLIC, $email, 'payment/client_email.html.twig', []));
+
+        try {
+            $this->mailer->mustSend($email);
+        } catch (MailerException $ex) {
+        }
+    }
+
+    /**
      * @param \Darvin\PaymentBundle\Event\ChangedStatusEvent $event Event
      */
     public function sendEmails(ChangedStatusEvent $event): void
     {
         $payment = $event->getPayment();
 
-        // TODO Отправка email
+        if (PaymentStatusType::PAID !== $payment->getStatus()) {
+            try {
+                $publicEmail = $this->emailFactory->createPublicEmailPaid($payment);
+            } catch (CantCreateEmailException $ex) {
+                $publicEmail = null;
+            }
+            if (null !== $publicEmail) {
+                $this->mailer->send($publicEmail);
+            }
+
+            try {
+                $serviceEmail = $this->emailFactory->createServiceEmail($payment, $event->getUser());
+            } catch (CantCreateEmailException $ex) {
+                $serviceEmail = null;
+            }
+            if (null !== $serviceEmail) {
+                $this->mailer->send($serviceEmail);
+            }
+        }
     }
 }

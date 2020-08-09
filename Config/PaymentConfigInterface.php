@@ -10,17 +10,15 @@
 
 namespace Darvin\PaymentBundle\Config;
 
-use Darvin\OrderBundle\Type\Model\OrderType;
-
 /**
  * Payment configuration
  */
 interface PaymentConfigInterface
 {
     /**
-     * @param \Darvin\OrderBundle\Type\Model\OrderType $type Order type
+     * @param string $status Payment status
      *
      * @return string[]
      */
-    public function getNotificationEmailsByType(OrderType $type): array;
+    public function getNotificationEmailsByStatus(string $status): array;
 }

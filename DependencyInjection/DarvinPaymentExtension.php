@@ -36,7 +36,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
             'controller',
             'gateway_factory',
-            'mailer' => ['callback' => function () use ($config): bool {
+            'mailer' => ['callback' => static function () use ($config): bool {
                 return $config['mailer']['enabled'];
             }],
             'payment_manager',
@@ -56,5 +56,13 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     public function prepend(ContainerBuilder $container): void
     {
         (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('doctrine');
+
+        if (!isset($bundles['DarvinMailerBundle'])) {
+            $container->prependExtensionConfig($this->getAlias(), [
+                'mailer' => [
+                    'enabled' => false,
+                ],
+            ]);
+        }
     }
 }
