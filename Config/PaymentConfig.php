@@ -12,7 +12,8 @@ namespace Darvin\PaymentBundle\Config;
 
 use Darvin\ConfigBundle\Configuration\AbstractConfiguration;
 use Darvin\ConfigBundle\Parameter\ParameterModel;
-use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
+use Darvin\PaymentBundle\Form\Type\Config\NotificationEmailsType;
+use Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface;
 
 /**
  * Payment configuration
@@ -20,15 +21,22 @@ use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
 class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterface
 {
     /**
+     * @var \Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface
+     */
+    private $statusProvider;
+
+    /**
      * @var bool
      */
     private $mailerEnabled;
 
     /**
-     * @param bool $mailerEnabled     Is mailer enabled
+     * @param \Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface $statusProvider Provider
+     * @param bool                                                          $mailerEnabled  Is mailer enabled
      */
-    public function __construct(bool $mailerEnabled)
+    public function __construct(StatusProviderInterface $statusProvider, bool $mailerEnabled)
     {
+        $this->statusProvider = $statusProvider;
         $this->mailerEnabled = $mailerEnabled;
     }
 
@@ -38,18 +46,28 @@ class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterf
     public function getModel(): iterable
     {
         if ($this->mailerEnabled) {
-            foreach (PaymentStatusType::getChoices() as $choice) {
-                // TODO config emails
+            $defaultNotificationEmails = [];
+
+            foreach ($this->statusProvider->getAllStatuses() as $paymentStatus) {
+                if ($paymentStatus->getEmail()->getServiceEmail()->isEnabled()) {
+                    $defaultNotificationEmails[$paymentStatus->getName()] = [];
+                }
             }
+
+            yield new ParameterModel('notification_emails', ParameterModel::TYPE_ARRAY, $defaultNotificationEmails, [
+                'form' => [
+                    'type' => NotificationEmailsType::class,
+                ],
+            ]);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getNotificationEmailsByStatus(string $status): array
+    public function getEmailsByStatusName(string $name): array
     {
-        return $this->__get('notification_emails')[$status] ?? [];
+        return $this->__get('notification_emails')[$name] ?? [];
     }
 
     /**

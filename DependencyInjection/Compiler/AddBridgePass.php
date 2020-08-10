@@ -10,16 +10,13 @@
 
 namespace Darvin\PaymentBundle\DependencyInjection\Compiler;
 
-use Darvin\PaymentBundle\Bridge\TelrBridge;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 class AddBridgePass implements CompilerPassInterface
 {
     private const GATEWAY_FACTORY = 'darvin_payment.gateway.gateway_factory';
-    private const URL_BUILDER     = 'darvin_payment.url_builder.payment_url_builder';
     private const PREFIX_BRIDGE   = 'darvin_payment.bridge.';
 
     /**

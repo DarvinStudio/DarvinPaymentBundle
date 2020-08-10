@@ -3,6 +3,8 @@ parameters:
 
     darvin_payment.mailer.subscriber.payment_events.class: Darvin\PaymentBundle\EventListener\PaymentEventsSubscriber
 
+    darvin_payment.mailer.status_provider.class: Darvin\PaymentBundle\Mailer\Provider\StatusProvider
+
 services:
     darvin_payment.mailer.factory:
         class: '%darvin_payment.mailer.factory.class%'
@@ -18,3 +20,6 @@ services:
             - '@darvin_mailer.mailer'
         tags:
             - { name: kernel.event_subscriber }
+
+    darvin_payment.mailer.status_provider:
+        class: '%darvin_payment.mailer.status_provider.class%'
