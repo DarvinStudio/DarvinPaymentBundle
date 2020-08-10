@@ -16,9 +16,9 @@ namespace Darvin\PaymentBundle\Config;
 interface PaymentConfigInterface
 {
     /**
-     * @param string $status Payment status
+     * @param string $statusName Payment status
      *
      * @return string[]
      */
-    public function getNotificationEmailsByStatus(string $status): array;
+    public function getEmailsByStatusName(string $statusName): array;
 }

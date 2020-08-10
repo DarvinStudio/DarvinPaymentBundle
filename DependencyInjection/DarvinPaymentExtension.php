@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle\DependencyInjection;
 
+use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
 use Darvin\Utils\DependencyInjection\ConfigInjector;
 use Darvin\Utils\DependencyInjection\ConfigLoader;
 use Darvin\Utils\DependencyInjection\ExtensionConfigurator;
@@ -34,6 +35,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         (new ConfigInjector($container))->inject($this->processConfiguration(new Configuration(), $configs), $this->getAlias());
 
         (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
+            'configuration',
             'controller',
             'gateway_factory',
             'mailer' => ['callback' => static function () use ($config): bool {
@@ -57,12 +59,22 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     {
         (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('doctrine');
 
-        if (!isset($bundles['DarvinMailerBundle'])) {
-            $container->prependExtensionConfig($this->getAlias(), [
-                'mailer' => [
-                    'enabled' => false,
+        $bundles = $container->getParameter('kernel.bundles');
+
+        $container->prependExtensionConfig($this->getAlias(), [
+            'mailer' => [
+                'enabled' => isset($bundles['DarvinMailerBundle']),
+                'payment_statuses' => [
+                    PaymentStatusType::PAID => [
+                        'public' => [
+                            'enabled' => true,
+                        ],
+                        'service' => [
+                            'enabled' => true,
+                        ],
+                    ],
                 ],
-            ]);
-        }
+            ],
+        ]);
     }
 }

@@ -33,7 +33,7 @@ class PublicEmailFactory extends AbstractEmailFactory
         // TODO creating email about paid
         return $this->createEmail(
             EmailType::PUBLIC,
-            $this->paymentConfig->getNotificationEmailsByStatus(PaymentStatusType::PAID),
+            $this->paymentConfig->getEmailsByStatusName(PaymentStatusType::PAID),
             'payment.email.subject.paid',
             'template',
             []
