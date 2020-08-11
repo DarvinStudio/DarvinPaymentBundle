@@ -10,17 +10,19 @@
 
 namespace Darvin\PaymentBundle\Mailer\Factory;
 
+use Darvin\MailerBundle\Factory\Exception\CantCreateEmailException;
 use Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface;
 use Darvin\MailerBundle\Model\Email;
+use Darvin\MailerBundle\Model\EmailType;
 use Darvin\PaymentBundle\Config\PaymentConfigInterface;
-use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\UserBundle\Entity\BaseUser;
+use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Status\Model\PaymentStatus;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Abstract email factory
+ * Payment email factory
  */
-abstract class AbstractEmailFactory implements EmailFactoryInterface
+class EmailFactory implements EmailFactoryInterface
 {
     /**
      * @var \Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface
@@ -50,28 +52,44 @@ abstract class AbstractEmailFactory implements EmailFactoryInterface
     }
 
     /**
-     * @param string                                   $emailType Email type
-     * @param mixed                                    $to        To
-     * @param string                                   $subject   Subject
-     * @param string                                   $template  Template
-     * @param \Darvin\PaymentBundle\Entity\Payment     $payment   Payment
-     * @param \Darvin\UserBundle\Entity\BaseUser|null  $user      User
-     *
-     * @return \Darvin\MailerBundle\Model\Email
-     * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
+     * @inheritDoc
      */
-    protected function createEmail(string $emailType, $to, string $subject, string $template, Payment $payment, ?BaseUser $user = null): Email
+    public function createPublicEmail(PaymentInterface $payment, PaymentStatus $paymentStatus): Email
     {
+        if (null === $payment->getClientEmail()) {
+            throw new CantCreateEmailException('Client email is not filled');
+        }
+
         return $this->genericFactory->createEmail(
-            $emailType,
-            $to,
-            $subject,
-            $template,
+            EmailType::PUBLIC,
+            $payment->getClientEmail(),
+            $this->translator->trans(sprintf('email.payment.public.%s.subject', $payment->getStatus()), [], 'messages'),
+            $paymentStatus->getEmail()->getPublicEmail()->getTemplate(),
             [
                 'payment'  => $payment,
-                'user'  => $user,
-            ],
-            []
+            ]
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createServiceEmail(PaymentInterface $payment, PaymentStatus $paymentStatus): Email
+    {
+        $serviceEmails = $this->paymentConfig->getEmailsByStatusName($paymentStatus->getName());
+
+        if (empty($serviceEmails)) {
+            throw new CantCreateEmailException(sprintf('Service email for status "%s" is not specified', $paymentStatus->getName()));
+        }
+
+        return $this->genericFactory->createEmail(
+            EmailType::SERVICE,
+            $serviceEmails,
+            $this->translator->trans(sprintf('email.payment.service.%s.subject', $payment->getStatus()), [], 'messages'),
+            $paymentStatus->getEmail()->getPublicEmail()->getTemplate(),
+            [
+                'payment'  => $payment,
+            ]
         );
     }
 }

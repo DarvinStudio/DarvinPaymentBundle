@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Mailer\Model\Email;
+namespace Darvin\PaymentBundle\Status\Model\Email;
 
 /**
  * Order type public email

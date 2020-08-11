@@ -7,7 +7,7 @@ services:
     darvin_payment.configuration:
         class: '%darvin_payment.configuration.class%'
         arguments:
-            - '@darvin_payment.mailer.status_provider'
+            - '@darvin_payment.status.provider'
             - '%darvin_payment.mailer.enabled%'
         tags:
             - { name: darvin_config.configuration }
@@ -15,6 +15,7 @@ services:
     darvin_payment.configuration.notification_emails_form_type:
         class: '%darvin_payment.configuration.notification_emails_form_type.class%'
         arguments:
-            - '@darvin_payment.mailer.status_provider'
+            - '@darvin_payment.status.provider'
+            - '@translator'
         tags:
             - { name: form.type }

@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Mailer\Provider;
+namespace Darvin\PaymentBundle\Status\Provider;
 
-use Darvin\PaymentBundle\Mailer\Model\PaymentStatus;
+use Darvin\PaymentBundle\Status\Model\PaymentStatus;
 
 /**
  * Payment status provider
@@ -20,8 +20,9 @@ interface StatusProviderInterface
     /**
      * @param string $name Type name
      *
-     * @return \Darvin\PaymentBundle\Mailer\Model\PaymentStatus
-     * @throws \InvalidArgumentException
+     * @return \Darvin\PaymentBundle\Status\Model\PaymentStatus
+     *
+     * @throws \Darvin\PaymentBundle\Status\Exception\UnknownStatusException
      */
     public function getStatus(string $name): PaymentStatus;
 
@@ -33,7 +34,7 @@ interface StatusProviderInterface
     public function hasStatus(?string $name): bool;
 
     /**
-     * @return \Darvin\PaymentBundle\Mailer\Model\PaymentStatus[]
+     * @return \Darvin\PaymentBundle\Status\Model\PaymentStatus[]
      */
     public function getAllStatuses(): array;
 

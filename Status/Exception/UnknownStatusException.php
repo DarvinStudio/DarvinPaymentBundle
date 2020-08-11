@@ -8,38 +8,38 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Bridge\Exception;
+namespace Darvin\PaymentBundle\Status\Exception;
 
 /**
- * Class Bridge not set exception
+ * Class unknown status exception
  */
-class BridgeNotSetException extends \Exception
+class UnknownStatusException extends \Exception
 {
     /**
      * @var string
      */
-    protected $gatewayName;
+    protected $statusName;
 
     /**
-     * BridgeNotExistException constructor.
+     * UnknownStatusException constructor.
      *
-     * @param string $gatewayName
+     * @param string $statusName
      */
-    public function __construct(string $gatewayName)
+    public function __construct(string $statusName)
     {
         parent::__construct(sprintf(
-            "Parameters bridge for %s gateway not found",
-            $gatewayName
+            'Unknown status  "%s"',
+            $statusName
         ));
 
-        $this->gatewayName = $gatewayName;
+        $this->statusName = $statusName;
     }
 
     /**
      * @return string
      */
-    public function getGatewayName(): string
+    public function getStatusName(): string
     {
-        return $this->gatewayName;
+        return $this->statusName;
     }
 }

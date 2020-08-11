@@ -16,22 +16,24 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * Add order type providers to pool compiler pass
  */
-class AddPaymentStatusProviderPass implements CompilerPassInterface
+class AddPaymentStatusPass implements CompilerPassInterface
 {
-    private const CONFIG_MAILER_PAYMENT_STATUSES = 'darvin_payment.mailer.payment_statuses';
-    private const PAYMENT_STATUS_PROVIDER = 'darvin_payment.provider.payment_statuses';
+    private const SERVICE_PAYMENT_STATUS_PROVIDER = 'darvin_payment.status.provider';
 
     /**
      * {@inheritDoc}
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->has(self::CONFIG_MAILER_PAYMENT_STATUSES)) {
+        if (!$container->has(self::SERVICE_PAYMENT_STATUS_PROVIDER)) {
             return;
         }
 
-        $container->getDefinition(self::PAYMENT_STATUS_PROVIDER)->addMethodCall('addConfigs', [
-            $container->getParameter(self::CONFIG_MAILER_PAYMENT_STATUSES)
-        ]);
+        foreach ($container->getParameter('darvin_payment.mailer.payment_statuses') as $name => $value) {
+            $container->getDefinition(self::SERVICE_PAYMENT_STATUS_PROVIDER)->addMethodCall('addConfig', [
+                $name,
+                $value,
+            ]);
+        }
     }
 }

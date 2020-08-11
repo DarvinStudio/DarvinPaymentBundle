@@ -8,12 +8,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Mailer\Provider;
+namespace Darvin\PaymentBundle\Status\Provider;
 
-use Darvin\PaymentBundle\Mailer\Model\Email\Email;
-use Darvin\PaymentBundle\Mailer\Model\Email\PublicEmail;
-use Darvin\PaymentBundle\Mailer\Model\Email\ServiceEmail;
-use Darvin\PaymentBundle\Mailer\Model\PaymentStatus;
+use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
+use Darvin\PaymentBundle\Status\Exception\UnknownStatusException;
+use Darvin\PaymentBundle\Status\Model\Email\Email;
+use Darvin\PaymentBundle\Status\Model\Email\PublicEmail;
+use Darvin\PaymentBundle\Status\Model\Email\ServiceEmail;
+use Darvin\PaymentBundle\Status\Model\PaymentStatus;
+use http\Exception\UnexpectedValueException;
 
 /**
  * Payment status provider
@@ -21,7 +24,7 @@ use Darvin\PaymentBundle\Mailer\Model\PaymentStatus;
 class StatusProvider implements StatusProviderInterface
 {
     /**
-     * @var \Darvin\PaymentBundle\Mailer\Model\PaymentStatus[]|null
+     * @var \Darvin\PaymentBundle\Status\Model\PaymentStatus[]|null
      */
     private $statuses;
 
@@ -37,11 +40,18 @@ class StatusProvider implements StatusProviderInterface
     }
 
     /**
-     * @param array $configs
+     * @param string $name   Status name
+     * @param array  $config Config of status
+     *
+     * @throws \Darvin\PaymentBundle\Status\Exception\UnknownStatusException
      */
-    public function addConfigs(array $configs): void
+    public function addConfig(string $name, array $config): void
     {
-        $this->configs = $configs;
+        if (!PaymentStatusType::isValueExist($name)) {
+            throw new UnknownStatusException($name);
+        }
+
+        $this->configs[$name] = $config;
     }
 
     /**
@@ -56,12 +66,12 @@ class StatusProvider implements StatusProviderInterface
                     $name,
                     new Email(
                         new PublicEmail(
-                            $config['email']['public']['enabled'],
-                            $config['email']['public']['template']
+                            $config['public']['enabled'],
+                            $config['public']['template']
                         ),
                         new ServiceEmail(
-                            $config['email']['service']['enabled'],
-                            $config['email']['service']['template']
+                            $config['service']['enabled'],
+                            $config['service']['template']
                         )
                     )
                 );
@@ -82,7 +92,7 @@ class StatusProvider implements StatusProviderInterface
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('Payment status "%s" does not exist.', $name));
+        throw new UnknownStatusException($name);
     }
 
     /**

@@ -11,29 +11,31 @@
 namespace Darvin\PaymentBundle\Mailer\Factory;
 
 use Darvin\MailerBundle\Model\Email;
-use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\UserBundle\Entity\BaseUser;
+use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Status\Model\PaymentStatus;
 
 /**
- * Payment email factory
+ * Payment email factory interface
  */
 interface EmailFactoryInterface
 {
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
-     * @param \Darvin\UserBundle\Entity\BaseUser   $user    User
+     * @param \Darvin\PaymentBundle\Entity\PaymentInterface    $payment       Payment
+     * @param \Darvin\PaymentBundle\Status\Model\PaymentStatus $paymentStatus Payment status model
      *
      * @return \Darvin\MailerBundle\Model\Email
+     *
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
-    public function createPaidStatusEmail(Payment $payment, ?BaseUser $user): Email;
+    public function createPublicEmail(PaymentInterface $payment, PaymentStatus $paymentStatus): Email;
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
-     * @param \Darvin\UserBundle\Entity\BaseUser   $user    User
+     * @param \Darvin\PaymentBundle\Entity\PaymentInterface    $payment       Payment
+     * @param \Darvin\PaymentBundle\Status\Model\PaymentStatus $paymentStatus Payment status model
      *
      * @return \Darvin\MailerBundle\Model\Email
+     *
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
-    public function createFailedStatusEmail(Payment $payment, ?BaseUser $user): Email;
+    public function createServiceEmail(PaymentInterface $payment, PaymentStatus $paymentStatus): Email;
 }

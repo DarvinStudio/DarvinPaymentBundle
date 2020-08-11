@@ -42,12 +42,11 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                 return $config['mailer']['enabled'];
             }],
             'payment_manager',
+            'status',
             'token',
             'url_builder',
             'bridges/telr' => ['callback' => static function () use ($config): bool {
-                if (isset($config['bridges']['telr'])) {
-                    return true;
-                }
+                return $config['bridges']['telr']['enabled'];
             }],
         ]);
     }
@@ -63,18 +62,39 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
 
         $container->prependExtensionConfig($this->getAlias(), [
             'mailer' => [
-                'enabled' => isset($bundles['DarvinMailerBundle']),
-                'payment_statuses' => [
-                    PaymentStatusType::PAID => [
-                        'public' => [
-                            'enabled' => true,
-                        ],
-                        'service' => [
-                            'enabled' => true,
-                        ],
-                    ],
-                ],
+                'enabled'          => isset($bundles['DarvinMailerBundle']),
+                'payment_statuses' => $this->initPaymentStatuses(),
             ],
         ]);
+    }
+
+    /**
+     * @return array
+     */
+    private function initPaymentStatuses(): array
+    {
+        $data = [];
+
+        foreach (PaymentStatusType::getChoices() as $choice) {
+            $data[$choice] = [
+                'public' => [
+                    'enabled' => false,
+                ],
+                'service' => [
+                    'enabled' => false,
+                ],
+            ];
+        }
+
+        $data[PaymentStatusType::PAID] = [
+            'public' => [
+                'enabled' => true,
+            ],
+            'service' => [
+                'enabled' => true,
+            ],
+        ];
+
+        return $data;
     }
 }

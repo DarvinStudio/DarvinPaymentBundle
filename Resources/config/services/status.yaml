@@ -1,0 +1,6 @@
+parameters:
+    darvin_payment.status.provider.class: Darvin\PaymentBundle\Status\Provider\StatusProvider
+
+services:
+    darvin_payment.status.provider:
+        class: '%darvin_payment.status.provider.class%'

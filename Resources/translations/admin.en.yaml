@@ -1,3 +1,10 @@
+configuration:
+    darvin_payment:
+        parameter:
+            notification_emails: Notification emails
+            notification_for_status: Notification for status «%status%»
+        title: Online Payment
+
 payment:
     status:
         failed:   Failed

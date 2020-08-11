@@ -1,0 +1,10 @@
+email:
+    payment:
+        public:
+            paid:
+                subject: 'Thank you.'
+                text:    'Payment successfully completed!'
+        service:
+            paid:
+                subject: 'Payment is done'
+                text:    'Payment successfully completed!'

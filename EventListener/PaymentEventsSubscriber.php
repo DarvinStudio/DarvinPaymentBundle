@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 /**
  * @author    Alexander Volodin <mr-stanlik@yandex.ru>
- * @copyright Copyright (c) 2019, Darvin Studio
+ * @copyright Copyright (c) 2020, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -11,13 +11,11 @@
 namespace Darvin\PaymentBundle\EventListener;
 
 use Darvin\MailerBundle\Factory\Exception\CantCreateEmailException;
-use Darvin\MailerBundle\Mailer\Exception\MailerException;
 use Darvin\MailerBundle\Mailer\MailerInterface;
-use Darvin\MailerBundle\Model\EmailType;
-use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
 use Darvin\PaymentBundle\Event\ChangedStatusEvent;
 use Darvin\PaymentBundle\Event\PaymentEvents;
 use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
+use Darvin\PaymentBundle\Status\Provider\StatusProviderInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -36,13 +34,23 @@ class PaymentEventsSubscriber implements EventSubscriberInterface
     private $mailer;
 
     /**
-     * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface $emailFactory Payment email factory
-     * @param \Darvin\MailerBundle\Mailer\MailerInterface                $mailer       Mailer
+     * @var \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface
      */
-    public function __construct(EmailFactoryInterface $emailFactory, MailerInterface $mailer)
-    {
+    private $statusProvider;
+
+    /**
+     * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface    $emailFactory   Payment email factory
+     * @param \Darvin\MailerBundle\Mailer\MailerInterface                   $mailer         Mailer
+     * @param \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface $statusProvider Provider
+     */
+    public function __construct(
+        EmailFactoryInterface $emailFactory,
+        MailerInterface $mailer,
+        StatusProviderInterface $statusProvider
+    ) {
         $this->emailFactory = $emailFactory;
         $this->mailer = $mailer;
+        $this->statusProvider = $statusProvider;
     }
 
     /**
@@ -56,50 +64,36 @@ class PaymentEventsSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param ChangedStatusEvent $event
-     */
-    public function changedStatus(ChangedStatusEvent $event): void
-    {
-        $payment = $event->getPayment();
-
-        if (PaymentStatusType::PAID !== $payment->getStatus()) {
-            return;
-        }
-
-        $email = $this->emailFactory->createEmail($payment->getClientEmail(), 'Thank you. Application Successfully Completed!', []);
-
-        $email->setBody($this->renderer->renderEmail(EmailType::PUBLIC, $email, 'payment/client_email.html.twig', []));
-
-        try {
-            $this->mailer->mustSend($email);
-        } catch (MailerException $ex) {
-        }
-    }
-
-    /**
      * @param \Darvin\PaymentBundle\Event\ChangedStatusEvent $event Event
+     *
+     * @throws \Darvin\PaymentBundle\Status\Exception\UnknownStatusException
      */
     public function sendEmails(ChangedStatusEvent $event): void
     {
         $payment = $event->getPayment();
+        $paymentStatus = $this->statusProvider->getStatus($payment->getStatus());
 
-        if (PaymentStatusType::PAID !== $payment->getStatus()) {
+        if ($paymentStatus->getEmail()->getPublicEmail()->isEnabled()) {
             try {
-                $publicEmail = $this->emailFactory->createPublicEmailPaid($payment);
+                $email = $this->emailFactory->createPublicEmail($payment, $paymentStatus);
             } catch (CantCreateEmailException $ex) {
-                $publicEmail = null;
-            }
-            if (null !== $publicEmail) {
-                $this->mailer->send($publicEmail);
+                $email = null;
             }
 
-            try {
-                $serviceEmail = $this->emailFactory->createServiceEmail($payment, $event->getUser());
-            } catch (CantCreateEmailException $ex) {
-                $serviceEmail = null;
+            if (null !== $email) {
+                $this->mailer->send($email);
             }
-            if (null !== $serviceEmail) {
-                $this->mailer->send($serviceEmail);
+        }
+
+        if ($paymentStatus->getEmail()->getServiceEmail()->isEnabled()) {
+            try {
+                $email = $this->emailFactory->createServiceEmail($payment, $paymentStatus);
+            } catch (CantCreateEmailException $ex) {
+                $email = null;
+            }
+
+            if (null !== $email) {
+                $this->mailer->send($email);
             }
         }
     }

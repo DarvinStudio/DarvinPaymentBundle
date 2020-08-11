@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Mailer\Model\Email;
+namespace Darvin\PaymentBundle\Status\Model\Email;
 
 /**
  * Email for payment status
@@ -16,18 +16,18 @@ namespace Darvin\PaymentBundle\Mailer\Model\Email;
 class Email
 {
     /**
-     * @var \Darvin\PaymentBundle\Mailer\Model\Email\PublicEmail
+     * @var \Darvin\PaymentBundle\Status\Model\Email\PublicEmail
      */
     private $publicEmail;
 
     /**
-     * @var \Darvin\PaymentBundle\Mailer\Model\Email\ServiceEmail
+     * @var \Darvin\PaymentBundle\Status\Model\Email\ServiceEmail
      */
     private $serviceEmail;
 
     /**
-     * @param \Darvin\PaymentBundle\Mailer\Model\Email\PublicEmail  $publicEmail  Public email
-     * @param \Darvin\PaymentBundle\Mailer\Model\Email\ServiceEmail $serviceEmail Service email
+     * @param \Darvin\PaymentBundle\Status\Model\Email\PublicEmail  $publicEmail  Public email
+     * @param \Darvin\PaymentBundle\Status\Model\Email\ServiceEmail $serviceEmail Service email
      */
     public function __construct(PublicEmail $publicEmail, ServiceEmail $serviceEmail)
     {
@@ -36,7 +36,7 @@ class Email
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Mailer\Model\Email\PublicEmail
+     * @return \Darvin\PaymentBundle\Status\Model\Email\PublicEmail
      */
     public function getPublicEmail(): PublicEmail
     {
@@ -44,7 +44,7 @@ class Email
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Mailer\Model\Email\ServiceEmail
+     * @return \Darvin\PaymentBundle\Status\Model\Email\ServiceEmail
      */
     public function getServiceEmail(): ServiceEmail
     {

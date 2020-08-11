@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Config;
 use Darvin\ConfigBundle\Configuration\AbstractConfiguration;
 use Darvin\ConfigBundle\Parameter\ParameterModel;
 use Darvin\PaymentBundle\Form\Type\Config\NotificationEmailsType;
-use Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface;
+use Darvin\PaymentBundle\Status\Provider\StatusProviderInterface;
 
 /**
  * Payment configuration
@@ -21,7 +21,7 @@ use Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface;
 class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterface
 {
     /**
-     * @var \Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface
+     * @var \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface
      */
     private $statusProvider;
 
@@ -31,7 +31,7 @@ class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterf
     private $mailerEnabled;
 
     /**
-     * @param \Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface $statusProvider Provider
+     * @param \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface $statusProvider Provider
      * @param bool                                                          $mailerEnabled  Is mailer enabled
      */
     public function __construct(StatusProviderInterface $statusProvider, bool $mailerEnabled)

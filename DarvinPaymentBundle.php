@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle;
 
 use Darvin\PaymentBundle\DependencyInjection\Compiler\AddBridgePass;
-use Darvin\PaymentBundle\DependencyInjection\Compiler\AddPaymentStatusProviderPass;
+use Darvin\PaymentBundle\DependencyInjection\Compiler\AddPaymentStatusPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -24,7 +24,7 @@ class DarvinPaymentBundle extends Bundle
     {
         parent::build($container);
         $container->addCompilerPass(new AddBridgePass());
-        $container->addCompilerPass(new AddPaymentStatusProviderPass());
+        $container->addCompilerPass(new AddPaymentStatusPass());
     }
 
 }

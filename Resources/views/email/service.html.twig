@@ -1,0 +1,15 @@
+{% extends '@DarvinMailer/email/layout.html.twig' %}
+
+{% block heading %}{{ ('email.payment.service.' ~ payment.status ~ '.subject')|trans([], 'email') }}{% endblock %}
+
+{% block content %}
+    <div class="details-list__title"
+         style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
+        <a href="{{ admin_url(order) }}"
+           style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
+            {% trans %}email.order_submitted.order{% endtrans %}
+        </a>
+    </div>
+
+    <p>{{ ('email.payment.service.' ~ payment.status ~ '.text')|trans([], 'email')  }}</p>
+{% endblock %}

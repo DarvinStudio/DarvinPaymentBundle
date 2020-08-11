@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Mailer\Model;
+namespace Darvin\PaymentBundle\Status\Model;
 
-use Darvin\PaymentBundle\Mailer\Model\Email\Email;
+use Darvin\PaymentBundle\Status\Model\Email\Email;
 
 /**
  * Payment status model
@@ -23,7 +23,7 @@ class PaymentStatus
     private $name;
 
     /**
-     * @var \Darvin\PaymentBundle\Mailer\Model\Email\Email
+     * @var \Darvin\PaymentBundle\Status\Model\Email\Email
      */
     private $email;
 
@@ -34,14 +34,14 @@ class PaymentStatus
 
     /**
      * @param string                                         $name  Name
-     * @param \Darvin\PaymentBundle\Mailer\Model\Email\Email $email Email
+     * @param \Darvin\PaymentBundle\Status\Model\Email\Email $email Email
      */
     public function __construct(string $name, Email $email)
     {
         $this->name = $name;
         $this->email = $email;
 
-        $this->title = sprintf('darvin_payment.status.%s', $name);
+        $this->title = sprintf('payment.status.%s', $name);
     }
 
     /**
@@ -53,7 +53,7 @@ class PaymentStatus
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Mailer\Model\Email\Email
+     * @return \Darvin\PaymentBundle\Status\Model\Email\Email
      */
     public function getEmail(): Email
     {

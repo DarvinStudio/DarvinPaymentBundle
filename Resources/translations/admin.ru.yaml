@@ -1,0 +1,15 @@
+configuration:
+    darvin_payment:
+        parameter:
+            notification_emails: Email для уведомлений
+            notification_for_status: Уведомеления о статусе «%status%»
+        title: Онлайн оплата
+
+payment:
+    status:
+        failed:   Неисправность
+        canceled: Отменен
+        new:      Новый
+        paid:     Оплачен
+        pending:  Ждет оплаты
+        refund:   Возврат

@@ -11,7 +11,7 @@
 
 namespace Darvin\PaymentBundle\Form\Type\Config;
 
-use Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface;
+use Darvin\PaymentBundle\Status\Provider\StatusProviderInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -20,6 +20,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Configuration notification emails form type
@@ -27,16 +28,23 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class NotificationEmailsType extends AbstractType
 {
     /**
-     * @var \Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface
+     * @var \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface
      */
     private $statusProvider;
 
     /**
-     * @param \Darvin\PaymentBundle\Mailer\Provider\StatusProviderInterface $statusProvider Payment status provider
+     * @var \Symfony\Contracts\Translation\TranslatorInterface
      */
-    public function __construct(StatusProviderInterface $statusProvider)
+    protected $translator;
+
+    /**
+     * @param \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface $statusProvider Payment status provider
+     * @param \Symfony\Contracts\Translation\TranslatorInterface            $translator     Translator
+     */
+    public function __construct(StatusProviderInterface $statusProvider, TranslatorInterface $translator)
     {
         $this->statusProvider = $statusProvider;
+        $this->translator = $translator;
     }
 
     /**
@@ -44,16 +52,14 @@ class NotificationEmailsType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $statusProvider = $this->statusProvider;
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, static function (FormEvent $event) use ($statusProvider): void {
             foreach (array_keys($event->getData()) as $name) {
-                if (!$statusProvider->hasStatus($name)) {
+                if (!$this->statusProvider->hasStatus($name)) {
                     continue;
                 }
 
                 $event->getForm()->add($name, CollectionType::class, [
-                    'label'         => $statusProvider->getStatus($name)->getTitle(),
                     'allow_add'     => true,
                     'allow_delete'  => true,
                     'delete_empty'  => true,
@@ -64,6 +70,11 @@ class NotificationEmailsType extends AbstractType
                             new Email(),
                         ],
                     ],
+                    'label' => $this->translator->trans(
+                        'configuration.darvin_payment.parameter.notification_for_status',
+                        ['%status%' => $this->translator->trans(sprintf('payment.status.%s', $name), [], 'admin')],
+                        'admin'
+                    ),
                 ]);
             }
         });

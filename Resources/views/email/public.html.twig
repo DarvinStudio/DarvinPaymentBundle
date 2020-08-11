@@ -1,0 +1,7 @@
+{% extends '@DarvinMailer/email/layout.html.twig' %}
+
+{% block heading %}{{ ('email.payment.public.' ~ payment.status ~ '.subject')|trans([], 'email') }}{% endblock %}
+
+{% block content %}
+    <p>{{ ('email.payment.public.' ~ payment.status ~ '.text')|trans([], 'email')  }}</p>
+{% endblock %}
