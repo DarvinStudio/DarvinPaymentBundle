@@ -15,7 +15,6 @@ use Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface;
 use Darvin\MailerBundle\Model\Email;
 use Darvin\MailerBundle\Model\EmailType;
 use Darvin\PaymentBundle\Config\PaymentConfigInterface;
-use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Status\Model\PaymentStatus;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -54,19 +53,16 @@ class EmailFactory implements EmailFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createPublicEmail(PaymentInterface $payment, PaymentStatus $paymentStatus): Email
+    public function createPublicEmail(?object $order, PaymentStatus $paymentStatus, string $clientEmail): Email
     {
-        if (null === $payment->getClientEmail()) {
-            throw new CantCreateEmailException('Client email is not filled');
-        }
-
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
-            $payment->getClientEmail(),
-            $this->translator->trans(sprintf('email.payment.public.%s.subject', $payment->getStatus()), [], 'messages'),
+            $clientEmail,
+            $this->translator->trans(sprintf('email.payment.public.%s.subject', $paymentStatus->getName()), [], 'messages'),
             $paymentStatus->getEmail()->getPublicEmail()->getTemplate(),
             [
-                'payment'  => $payment,
+                'order'  => $order,
+                'status' => $paymentStatus->getName(),
             ]
         );
     }
@@ -74,7 +70,7 @@ class EmailFactory implements EmailFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createServiceEmail(PaymentInterface $payment, PaymentStatus $paymentStatus): Email
+    public function createServiceEmail(?object $order, PaymentStatus $paymentStatus): Email
     {
         $serviceEmails = $this->paymentConfig->getEmailsByStatusName($paymentStatus->getName());
 
@@ -85,10 +81,11 @@ class EmailFactory implements EmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans(sprintf('email.payment.service.%s.subject', $payment->getStatus()), [], 'messages'),
+            $this->translator->trans(sprintf('email.payment.service.%s.subject', $paymentStatus->getName()), [], 'messages'),
             $paymentStatus->getEmail()->getPublicEmail()->getTemplate(),
             [
-                'payment'  => $payment,
+                'order'  => $order,
+                'status' => $paymentStatus->getName(),
             ]
         );
     }

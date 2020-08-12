@@ -1,0 +1,23 @@
+email:
+    payment:
+        order: Заказ
+        public:
+            canceled:
+                subject: 'Оплата отменена'
+                text:    'Онлайн оплата заказ №{orderId} была отменена.'
+            failed:
+                subject: 'Упс, что-то пошло не так..'
+                text:    'Во время онлайн оплаты произошла ошибка. Наш менеджер скоро свяжется с вами.'
+            paid:
+                subject: 'Успешно! Заказ №{orderId}'
+                text:    'Спасибо! Онлайн оплата успешно произведена!'
+        service:
+            canceled:
+                subject: 'Оплата отменена. Заказ №{orderId}'
+                text:    'Оплата заказа №{orderId} была отменена'
+            failed:
+                subject: 'Ошибка при оплате. Заказ №{orderId}'
+                text:    'При оплате заказа {orderId} произошла ошибка: {message}'
+            paid:
+                subject: 'Оплата произведена. Заказ №{orderId}'
+                text:    'Заказ №{orderId} успешно оплачен.'

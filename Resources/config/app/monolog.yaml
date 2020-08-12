@@ -1,0 +1,8 @@
+#monolog:
+#    channels: ['payment']
+#    handlers:
+#        payment:
+#            level:    error
+#            type:     stream
+#            path:     '%kernel.root_dir%/%kernel.environment%.payment.log'
+#            channels: [payment]

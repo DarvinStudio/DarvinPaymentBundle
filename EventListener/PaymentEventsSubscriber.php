@@ -11,11 +11,14 @@
 namespace Darvin\PaymentBundle\EventListener;
 
 use Darvin\MailerBundle\Factory\Exception\CantCreateEmailException;
+use Darvin\MailerBundle\Mailer\Exception\MailerException;
 use Darvin\MailerBundle\Mailer\MailerInterface;
 use Darvin\PaymentBundle\Event\ChangedStatusEvent;
 use Darvin\PaymentBundle\Event\PaymentEvents;
 use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
 use Darvin\PaymentBundle\Status\Provider\StatusProviderInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -39,18 +42,31 @@ class PaymentEventsSubscriber implements EventSubscriberInterface
     private $statusProvider;
 
     /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
+     * @var \Psr\Log\LoggerInterface|null
+     */
+    private $logger;
+
+    /**
      * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface    $emailFactory   Payment email factory
      * @param \Darvin\MailerBundle\Mailer\MailerInterface                   $mailer         Mailer
      * @param \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface $statusProvider Provider
+     * @param \Doctrine\ORM\EntityManagerInterface                          $entityManager  EntityManagerInterface
      */
     public function __construct(
         EmailFactoryInterface $emailFactory,
         MailerInterface $mailer,
-        StatusProviderInterface $statusProvider
+        StatusProviderInterface $statusProvider,
+        EntityManagerInterface $entityManager
     ) {
         $this->emailFactory = $emailFactory;
         $this->mailer = $mailer;
         $this->statusProvider = $statusProvider;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -67,34 +83,53 @@ class PaymentEventsSubscriber implements EventSubscriberInterface
      * @param \Darvin\PaymentBundle\Event\ChangedStatusEvent $event Event
      *
      * @throws \Darvin\PaymentBundle\Status\Exception\UnknownStatusException
+     * @throws \Darvin\PaymentBundle\Status\Exception\UnknownStatusException
      */
     public function sendEmails(ChangedStatusEvent $event): void
     {
-        $payment = $event->getPayment();
-        $paymentStatus = $this->statusProvider->getStatus($payment->getStatus());
+        $paymentStatus = $this->statusProvider->getStatus($event->getStatus());
+        $order = $this->entityManager->find($event->getOrderClass(), $event->getOrderId());
 
-        if ($paymentStatus->getEmail()->getPublicEmail()->isEnabled()) {
+        if ($event->getClientEmail() !== null &&
+            $paymentStatus->getEmail()->getPublicEmail()->isEnabled()) {
+
             try {
-                $email = $this->emailFactory->createPublicEmail($payment, $paymentStatus);
+                $email = $this->emailFactory->createPublicEmail($order, $paymentStatus, $event->getClientEmail());
+                $this->mailer->mustSend($email);
             } catch (CantCreateEmailException $ex) {
-                $email = null;
-            }
-
-            if (null !== $email) {
-                $this->mailer->send($email);
+                $this->addErrorLog($ex);
+            } catch (MailerException $ex) {
+                $this->addErrorLog($ex);
             }
         }
 
         if ($paymentStatus->getEmail()->getServiceEmail()->isEnabled()) {
             try {
-                $email = $this->emailFactory->createServiceEmail($payment, $paymentStatus);
+                $email = $this->emailFactory->createServiceEmail($order, $paymentStatus);
+                $this->mailer->mustSend($email);
             } catch (CantCreateEmailException $ex) {
-                $email = null;
+                $this->addErrorLog($ex);
+            } catch (MailerException $ex) {
+                $this->addErrorLog($ex);
             }
+        }
+    }
 
-            if (null !== $email) {
-                $this->mailer->send($email);
-            }
+    /**
+     * @param \Psr\Log\LoggerInterface|null $logger Logger
+     */
+    public function setLogger(?LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param \Exception $exception Logger
+     */
+    private function addErrorLog(\Exception $exception): void
+    {
+        if (null !== $this->logger) {
+            $this->logger->error($exception->getMessage());
         }
     }
 }

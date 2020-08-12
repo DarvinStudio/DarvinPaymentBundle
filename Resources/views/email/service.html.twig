@@ -1,15 +1,18 @@
 {% extends '@DarvinMailer/email/layout.html.twig' %}
 
-{% block heading %}{{ ('email.payment.service.' ~ payment.status ~ '.subject')|trans([], 'email') }}{% endblock %}
+{% block heading %}{{ ('email.payment.service.' ~ status.name ~ '.subject')|trans([], 'email') }}{% endblock %}
 
 {% block content %}
-    <div class="details-list__title"
-         style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
-        <a href="{{ admin_url(order) }}"
-           style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
-            {% trans %}email.order_submitted.order{% endtrans %}
-        </a>
-    </div>
+    {% if order != null %}
+        {% set orderId = order.id %}
+        <div class="details-list__title"
+             style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
+            <a href="{{ admin_url(order) }}"
+               style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
+                {% trans %}email.payment.order{% endtrans %}
+            </a>
+        </div>
+    {% endif %}
 
-    <p>{{ ('email.payment.service.' ~ payment.status ~ '.text')|trans([], 'email')  }}</p>
+    <p>{{ ('email.payment.service.' ~ status.name ~ '.text')|trans(['orderId': orderId], 'email')  }}</p>
 {% endblock %}

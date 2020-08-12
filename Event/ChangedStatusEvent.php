@@ -19,23 +19,79 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ChangedStatusEvent extends Event
 {
     /**
-     * @var \Darvin\PaymentBundle\Entity\PaymentInterface
+     * @var int
      */
-    private $payment;
+    private $paymentId;
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\PaymentInterface $payment Payment
+     * @var int
+     */
+    private $orderId;
+
+    /**
+     * @var string
+     */
+    private $orderClass;
+
+    /**
+     * @var string
+     */
+    private $status;
+
+    /**
+     * @var string|null
+     */
+    private $clientEmail;
+
+    /**
+     * @param PaymentInterface $payment Payment object
      */
     public function __construct(PaymentInterface $payment)
     {
-        $this->payment = $payment;
+        $this->paymentId = $payment->getId();
+        $this->orderId = $payment->getOrderId();
+        $this->orderClass = $payment->getOrderEntityClass();
+        $this->status = $payment->getStatus();
+        $this->clientEmail = $payment->getClientEmail();
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Entity\PaymentInterface
+     * @return int
      */
-    public function getPayment(): PaymentInterface
+    public function getPaymentId(): int
     {
-        return $this->payment;
+        return $this->paymentId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrderId(): int
+    {
+        return $this->orderId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrderClass(): string
+    {
+        return $this->orderClass;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getClientEmail(): string
+    {
+        return $this->clientEmail;
     }
 }

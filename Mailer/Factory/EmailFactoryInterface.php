@@ -11,7 +11,6 @@
 namespace Darvin\PaymentBundle\Mailer\Factory;
 
 use Darvin\MailerBundle\Model\Email;
-use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Status\Model\PaymentStatus;
 
 /**
@@ -20,22 +19,23 @@ use Darvin\PaymentBundle\Status\Model\PaymentStatus;
 interface EmailFactoryInterface
 {
     /**
-     * @param \Darvin\PaymentBundle\Entity\PaymentInterface    $payment       Payment
+     * @param object                                           $order         Order
      * @param \Darvin\PaymentBundle\Status\Model\PaymentStatus $paymentStatus Payment status model
+     * @param string                                           $clientEmail   Client Email
      *
      * @return \Darvin\MailerBundle\Model\Email
      *
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
-    public function createPublicEmail(PaymentInterface $payment, PaymentStatus $paymentStatus): Email;
+    public function createPublicEmail(?object $order, PaymentStatus $paymentStatus, string $clientEmail): Email;
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\PaymentInterface    $payment       Payment
+     * @param object                                           $order         Order
      * @param \Darvin\PaymentBundle\Status\Model\PaymentStatus $paymentStatus Payment status model
      *
      * @return \Darvin\MailerBundle\Model\Email
      *
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
-    public function createServiceEmail(PaymentInterface $payment, PaymentStatus $paymentStatus): Email;
+    public function createServiceEmail(?object $order, PaymentStatus $paymentStatus): Email;
 }
