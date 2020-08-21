@@ -1,13 +1,13 @@
 {
     "name":        "darvinstudio/darvin-payment-bundle",
     "description": "This bundle provides basic payment logic for Symfony-based applications basic on Omnipay lib.",
-    "keywords":    ["darvincms", "payment"],
+    "keywords":    ["content"],
     "type":        "symfony-bundle",
     "license":     "MIT",
     "authors": [
         {
-            "name":     "Lev Semin",
-            "email":    "lev@darvin-studio.ru",
+            "name":     "Darvin Studio",
+            "email":    "info@darvin-studio.ru",
             "homepage": "https://www.darvin-studio.ru"
         }
     ],

@@ -12,25 +12,12 @@ namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\OmnipayTelr\TelrGateway;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
-use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 
+/**
+ * Telr gateway parameters bridge
+ */
 class TelrBridge extends AbstractBridge
 {
-    /**
-     * @var PaymentUrlBuilderInterface
-     */
-    protected $urlBuilder;
-
-    /**
-     * TelrBridge constructor.
-     *
-     * @param PaymentUrlBuilderInterface $urlBuilder
-     */
-    public function __construct(PaymentUrlBuilderInterface $urlBuilder)
-    {
-        $this->urlBuilder = $urlBuilder;
-    }
-
     /**
      * @inheritDoc
      */

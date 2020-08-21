@@ -26,5 +26,4 @@ class DarvinPaymentBundle extends Bundle
         $container->addCompilerPass(new AddBridgePass());
         $container->addCompilerPass(new AddPaymentStatusPass());
     }
-
 }
