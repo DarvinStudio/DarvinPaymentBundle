@@ -15,14 +15,14 @@ use Darvin\PaymentBundle\Entity\PaymentInterface;
 /**
  * Payment status provider
  */
-interface ReceiptBuilderInterface
+interface ReceiptFactoryInterface
 {
     /**
      * @param PaymentInterface $payment
      *
-     * @return string
+     * @return array
      *
      * @throws \Darvin\PaymentBundle\Order\Exception\CantCreateReceiptException
      */
-    public function createReceipt(PaymentInterface $payment): string;
+    public function createReceipt(PaymentInterface $payment): array;
 }

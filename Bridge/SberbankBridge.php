@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * @author    Darvin Studio <info@darvin-studio.ru>
  * @copyright Copyright (c) 2018-2020, Darvin Studio
@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\PaymentInterface;
-use Darvin\PaymentBundle\Order\ReceiptBuilderInterface;
+use Darvin\PaymentBundle\Order\ReceiptFactoryInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 
 /**
@@ -20,20 +20,20 @@ use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 class SberbankBridge extends AbstractBridge
 {
     /**
-     * @var ReceiptBuilderInterface
+     * @var ReceiptFactoryInterface
      */
-    private $receiptBuilder;
+    private $receiptFactory;
 
     /**
-     * @param PaymentUrlBuilderInterface $urlBuilder
-     * @param ReceiptBuilderInterface    $receiptBuilder
+     * @param \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface $urlBuilder
+     * @param \Darvin\PaymentBundle\Order\ReceiptFactoryInterface         $receiptFactory
      */
     public function __construct(
         PaymentUrlBuilderInterface $urlBuilder,
-        ReceiptBuilderInterface $receiptBuilder
+        ReceiptFactoryInterface $receiptFactory
     ) {
         parent::__construct($urlBuilder);
-        $this->receiptBuilder = $receiptBuilder;
+        $this->receiptFactory = $receiptFactory;
     }
 
     /**
@@ -41,7 +41,7 @@ class SberbankBridge extends AbstractBridge
      */
     public function getGatewayClassName(): string
     {
-        return \Omnipay\Sberbank\SberbankGateway::class;
+        return \Darvin\Omnipay\Sberbank\SberbankGateway::class;
     }
 
     /**
@@ -56,17 +56,22 @@ class SberbankBridge extends AbstractBridge
             'returnUrl'          => $this->urlBuilder->getSuccessUrl($payment, 'sberbank'),
             'failUrl'            => $this->urlBuilder->getFailedUrl($payment, 'sberbank'),
             'sessionTimeoutSecs' => $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 28800,
+            'clientId'           => $payment->getClientId(),
+            'email'              => $payment->getClientEmail(),
             'taxSystem'          => $this->getGatewayConfig()['taxSystem'] ?? null,
-            'orderBundle'        => $this->receiptBuilder->createReceipt($payment),
+            'orderBundle'        => json_encode($this->receiptFactory->createReceipt($payment)),
         ];
     }
 
     /**
      * @inheritDoc
      */
-    public function captureParameters(PaymentInterface $payment): array
+    public function completeAuthorizationParameters(PaymentInterface $payment): array
     {
-        return [];
+        return [
+            'orderId' => $payment->getTransactionRef(),
+            'amount'  => $payment->getAmount(),
+        ];
     }
 
     /**
@@ -80,9 +85,31 @@ class SberbankBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
+    public function completePurchaseParameters(PaymentInterface $payment): array
+    {
+        return $this->completeAuthorizationParameters($payment);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function captureParameters(PaymentInterface $payment): array
+    {
+        return [
+            'orderId' => $payment->getTransactionRef(),
+            'amount'  => $payment->getAmount(),
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function refundParameters(PaymentInterface $payment): array
     {
-        // TODO: Implement refundParameters() method.
+        return [
+            'orderId' => $payment->getTransactionRef(),
+            'amount'  => $payment->getAmount(),
+        ];
     }
 
     /**

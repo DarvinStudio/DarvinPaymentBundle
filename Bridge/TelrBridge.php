@@ -31,7 +31,7 @@ class TelrBridge extends AbstractBridge
      */
     public function authorizationParameters(PaymentInterface $payment): array
     {
-        // TODO: Implement authorizationParameters() method.
+        return $this->purchaseParameters($payment);
     }
 
     /**
@@ -66,6 +66,14 @@ class TelrBridge extends AbstractBridge
         return [
             'order_ref' => $payment->getTransactionRef()
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function completeAuthorizationParameters(PaymentInterface $payment): array
+    {
+        return $this->completePurchaseParameters($payment);
     }
 
 

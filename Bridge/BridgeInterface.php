@@ -36,6 +36,13 @@ interface BridgeInterface
      *
      * @return array
      */
+    public function completeAuthorizationParameters(PaymentInterface $payment): array;
+
+    /**
+     * @param PaymentInterface $payment
+     *
+     * @return array
+     */
     public function captureParameters(PaymentInterface $payment): array;
 
     /**
