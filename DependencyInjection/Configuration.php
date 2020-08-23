@@ -10,12 +10,9 @@
 
 namespace Darvin\PaymentBundle\DependencyInjection;
 
-use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
 use Darvin\PaymentBundle\Entity\Payment;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\Form\FormTypeInterface;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.

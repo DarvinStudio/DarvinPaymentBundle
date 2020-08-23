@@ -12,7 +12,6 @@ namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Order\ReceiptFactoryInterface;
-use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 
 /**
  * Sberbank gateway parameters bridge
@@ -20,19 +19,15 @@ use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 class SberbankBridge extends AbstractBridge
 {
     /**
-     * @var ReceiptFactoryInterface
+     * @var ReceiptFactoryInterface|null
      */
     private $receiptFactory;
 
     /**
-     * @param \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface $urlBuilder
-     * @param \Darvin\PaymentBundle\Order\ReceiptFactoryInterface         $receiptFactory
+     * @param \Darvin\PaymentBundle\Order\ReceiptFactoryInterface $receiptFactory Order receipt factory
      */
-    public function __construct(
-        PaymentUrlBuilderInterface $urlBuilder,
-        ReceiptFactoryInterface $receiptFactory
-    ) {
-        parent::__construct($urlBuilder);
+    public function setReceiptFactory(ReceiptFactoryInterface $receiptFactory): void
+    {
         $this->receiptFactory = $receiptFactory;
     }
 
@@ -59,7 +54,7 @@ class SberbankBridge extends AbstractBridge
             'clientId'           => $payment->getClientId(),
             'email'              => $payment->getClientEmail(),
             'taxSystem'          => $this->getGatewayConfig()['taxSystem'] ?? null,
-            'orderBundle'        => json_encode($this->receiptFactory->createReceipt($payment)),
+            'orderBundle'        => $this->getReceipt($payment),
         ];
     }
 
@@ -118,5 +113,19 @@ class SberbankBridge extends AbstractBridge
     public function acceptNotificationParameters(PaymentInterface $payment): array
     {
         // TODO: Implement acceptNotificationParameters() method.
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\PaymentInterface $payment Payment
+     *
+     * @return string|null
+     */
+    private function getReceipt(PaymentInterface $payment): ?string
+    {
+        if (null !== $this->receiptFactory) {
+            return json_encode($this->receiptFactory->createReceipt($payment));
+        }
+
+        return null;
     }
 }

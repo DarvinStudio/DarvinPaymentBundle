@@ -48,6 +48,9 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'bridges/telr' => ['callback' => static function () use ($config): bool {
                 return $config['bridges']['telr']['enabled'];
             }],
+            'bridges/sberbank' => ['callback' => static function () use ($config): bool {
+                return $config['bridges']['sberbank']['enabled'];
+            }],
         ]);
     }
 

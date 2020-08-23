@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class payment controller
+ * Payment controller
  */
 class PaymentController extends AbstractController
 {
@@ -62,14 +62,14 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param string $gatewayName
-     * @param int $id
+     * @param string $gatewayName Gateway name
+     * @param int    $id          Payment ID
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function purchaseAction($gatewayName, $id): Response
+    public function purchaseAction(string $gatewayName, int $id): Response
     {
         $bridge = $this->getBridge($gatewayName);
         $gateway = $this->getGateway($gatewayName);
@@ -120,14 +120,14 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param $gatewayName
-     * @param $token
+     * @param string $gatewayName Gateway name
+     * @param string $token       Payment token
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function successPurchaseAction($gatewayName, $token): Response
+    public function successPurchaseAction(string $gatewayName, string $token): Response
     {
         $bridge = $this->getBridge($gatewayName);
         $gateway = $this->getGateway($gatewayName);
@@ -169,14 +169,14 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param $gatewayName
-     * @param $token
+     * @param string $gatewayName Gateway name
+     * @param string $token       Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function failedPurchaseAction($gatewayName, $token): Response
+    public function failedPurchaseAction(string $gatewayName, string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
@@ -191,12 +191,12 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param $gatewayName
-     * @param $token
+     * @param string $gatewayName Gateway name
+     * @param string $token       Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function cancelPurchaseAction($gatewayName, $token): Response
+    public function cancelPurchaseAction(string $gatewayName, string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
@@ -211,7 +211,7 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param int $id
+     * @param int $id Payment ID
      *
      * @return PaymentInterface
      */
@@ -226,7 +226,7 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param string $token
+     * @param string $token Payment token
      *
      * @return PaymentInterface
      */
@@ -241,7 +241,7 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param string $gatewayName
+     * @param string $gatewayName Gateway name
      *
      * @return GatewayInterface
      *
@@ -263,7 +263,7 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param string $gatewayName
+     * @param string $gatewayName Gateway name
      *
      * @return BridgeInterface
      *
