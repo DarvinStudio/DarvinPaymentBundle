@@ -16,7 +16,6 @@ use Darvin\PaymentBundle\Status\Model\Email\Email;
 use Darvin\PaymentBundle\Status\Model\Email\PublicEmail;
 use Darvin\PaymentBundle\Status\Model\Email\ServiceEmail;
 use Darvin\PaymentBundle\Status\Model\PaymentStatus;
-use http\Exception\UnexpectedValueException;
 
 /**
  * Payment status provider

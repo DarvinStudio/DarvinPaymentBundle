@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Order;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 
 /**
- * Payment status provider
+ * Receipt factory interface
  */
 interface ReceiptFactoryInterface
 {

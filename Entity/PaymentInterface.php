@@ -10,12 +10,15 @@
 
 namespace Darvin\PaymentBundle\Entity;
 
+/**
+ * Payment interface
+ */
 interface PaymentInterface
 {
     /**
-     * @return int|null
+     * @return int
      */
-    public function getId(): ?int;
+    public function getId(): int;
 
     /**
      * @return int|null
@@ -33,13 +36,6 @@ interface PaymentInterface
     public function getTransactionRef(): ?string;
 
     /**
-     * @param string|null $reference
-     *
-     * @return self
-     */
-    public function setTransactionRef(?string $reference);
-
-    /**
      * @return string
      */
     public function getAmount(): string;
@@ -50,9 +46,9 @@ interface PaymentInterface
     public function getCurrencyCode(): string;
 
     /**
-     * @return string|int|null
+     * @return int|null
      */
-    public function getClientId();
+    public function getClientId(): ?int;
 
     /**
      * @return string|null
@@ -70,13 +66,6 @@ interface PaymentInterface
     public function getStatus(): string;
 
     /**
-     * @param string $status One of PaymentStatusType constant
-     *
-     * @return self
-     */
-    public function setStatus(string $status);
-
-    /**
      * @return bool
      */
     public function isPaid(): bool;
@@ -85,11 +74,4 @@ interface PaymentInterface
      * @return string|null
      */
     public function getActionToken(): ?string;
-
-    /**
-     * @param string|null $token
-     *
-     * @return self
-     */
-    public function setActionToken(?string $token);
 }

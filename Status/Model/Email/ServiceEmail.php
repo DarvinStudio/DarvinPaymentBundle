@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Status\Model\Email;
 
 /**
- * Order type service email
+ * Model for order type "Service email"
  */
 class ServiceEmail
 {

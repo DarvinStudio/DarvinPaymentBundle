@@ -30,22 +30,22 @@ use Symfony\Component\HttpFoundation\Response;
 class PaymentController extends AbstractController
 {
     /**
-     * @var GatewayFactoryInterface
+     * @var \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface
      */
     private $gatewayFactory;
 
     /**
-     * @var PaymentManagerInterface
+     * @var \Darvin\PaymentBundle\Manager\PaymentManagerInterface
      */
     private $paymentManager;
 
     /**
-     * @var PaymentUrlBuilderInterface
+     * @var \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface
      */
     private $paymentUrlBuilder;
 
     /**
-     * @var PaymentTokenManagerInterface
+     * @var \Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface
      */
     private $tokenManager;
 
@@ -127,7 +127,7 @@ class PaymentController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function successPurchaseAction(string $gatewayName, string $token): Response
+    public function successAction(string $gatewayName, string $token): Response
     {
         $bridge = $this->getBridge($gatewayName);
         $gateway = $this->getGateway($gatewayName);
@@ -153,22 +153,6 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @param callable $callable
-     *
-     * @return RedirectResponse
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     */
-    private function createRedirect(callable $callable): RedirectResponse
-    {
-        try {
-            return $callable();
-        } catch (ActionNotImplementedException $ex) {
-            throw $this->createNotFoundException($ex->getMessage());
-        }
-    }
-
-    /**
      * @param string $gatewayName Gateway name
      * @param string $token       Payment token
      *
@@ -176,7 +160,7 @@ class PaymentController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function failedPurchaseAction(string $gatewayName, string $token): Response
+    public function failedAction(string $gatewayName, string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
@@ -196,7 +180,7 @@ class PaymentController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function cancelPurchaseAction(string $gatewayName, string $token): Response
+    public function canceledAction(string $gatewayName, string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
@@ -208,6 +192,22 @@ class PaymentController extends AbstractController
             'payment' => $payment,
             'gateway' => $gateway,
         ]);
+    }
+
+    /**
+     * @param callable $callable
+     *
+     * @return RedirectResponse
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    private function createRedirect(callable $callable): RedirectResponse
+    {
+        try {
+            return $callable();
+        } catch (ActionNotImplementedException $ex) {
+            throw $this->createNotFoundException($ex->getMessage());
+        }
     }
 
     /**

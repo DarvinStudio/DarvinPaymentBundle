@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Bridge\Exception;
 
 /**
- * Class Bridge not set exception
+ * Exception for case bridge not set
  */
 class BridgeNotSetException extends \Exception
 {

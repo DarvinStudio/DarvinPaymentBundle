@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Order\Exception;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 
 /**
- * Class Can't create receipt exception
+ * Exception for case can't create receipt
  */
 class CantCreateReceiptException extends \Exception
 {

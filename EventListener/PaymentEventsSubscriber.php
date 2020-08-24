@@ -96,9 +96,7 @@ class PaymentEventsSubscriber implements EventSubscriberInterface
             try {
                 $email = $this->emailFactory->createPublicEmail($order, $paymentStatus, $event->getClientEmail());
                 $this->mailer->mustSend($email);
-            } catch (CantCreateEmailException $ex) {
-                $this->addErrorLog($ex);
-            } catch (MailerException $ex) {
+            } catch (CantCreateEmailException | MailerException $ex) {
                 $this->addErrorLog($ex);
             }
         }
@@ -107,9 +105,7 @@ class PaymentEventsSubscriber implements EventSubscriberInterface
             try {
                 $email = $this->emailFactory->createServiceEmail($order, $paymentStatus);
                 $this->mailer->mustSend($email);
-            } catch (CantCreateEmailException $ex) {
-                $this->addErrorLog($ex);
-            } catch (MailerException $ex) {
+            } catch (CantCreateEmailException | MailerException $ex) {
                 $this->addErrorLog($ex);
             }
         }

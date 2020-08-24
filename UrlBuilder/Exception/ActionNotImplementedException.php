@@ -10,6 +10,9 @@
 
 namespace Darvin\PaymentBundle\UrlBuilder\Exception;
 
+/**
+ * Exception for action is not implemented
+ */
 class ActionNotImplementedException extends \Exception
 {
     /**

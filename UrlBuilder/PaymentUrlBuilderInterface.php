@@ -10,19 +10,17 @@
 
 namespace Darvin\PaymentBundle\UrlBuilder;
 
-
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
 
 /**
- * Interface PaymentUrlBuilderInterface
- * @package Darvin\PaymentBundle\UrlBuilder
+ * Payment url builder interface
  */
 interface PaymentUrlBuilderInterface
 {
     /**
-     * @param PaymentInterface $payment
-     * @param string           $gatewayName
+     * @param PaymentInterface $payment     Payment
+     * @param string           $gatewayName Gateway name
      *
      * @return string
      *
@@ -31,8 +29,8 @@ interface PaymentUrlBuilderInterface
     public function getAuthorizationUrl(PaymentInterface $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment
-     * @param string           $gatewayName
+     * @param PaymentInterface $payment     Payment
+     * @param string           $gatewayName Gateway name
      *
      * @return string
      *
@@ -41,8 +39,8 @@ interface PaymentUrlBuilderInterface
     public function getCaptureUrl(PaymentInterface $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment
-     * @param string           $gatewayName
+     * @param PaymentInterface $payment     Payment
+     * @param string           $gatewayName Gateway name
      *
      * @return string
      *
@@ -51,41 +49,38 @@ interface PaymentUrlBuilderInterface
     public function getPurchaseUrl(PaymentInterface $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment
-     * @param string           $gatewayName
-     * @param string           $action
+     * @param PaymentInterface $payment     Payment
+     * @param string           $gatewayName Gateway name
      *
      * @return string
      *
      * @throws ActionNotImplementedException
      */
-    public function getSuccessUrl(PaymentInterface $payment, string $gatewayName, string $action = 'purchase'): string;
+    public function getSuccessUrl(PaymentInterface $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment
-     * @param string           $gatewayName
-     * @param string           $action
+     * @param PaymentInterface $payment     Payment
+     * @param string           $gatewayName Gateway name
      *
      * @return string
      *
      * @throws ActionNotImplementedException
      */
-    public function getCanceledUrl(PaymentInterface $payment, string $gatewayName, string $action = 'purchase'): string;
+    public function getCanceledUrl(PaymentInterface $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment
-     * @param string           $gatewayName
-     * @param string           $action
+     * @param PaymentInterface $payment     Payment
+     * @param string           $gatewayName Gateway name
      *
      * @return string
      *
      * @throws ActionNotImplementedException
      */
-    public function getFailedUrl(PaymentInterface $payment, string $gatewayName, string $action = 'purchase'): string;
+    public function getFailedUrl(PaymentInterface $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment
-     * @param string           $gatewayName
+     * @param PaymentInterface $payment     Payment
+     * @param string           $gatewayName Gateway name
      *
      * @return string
      *
@@ -94,8 +89,8 @@ interface PaymentUrlBuilderInterface
     public function getRefundUrl(PaymentInterface $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment
-     * @param string           $gatewayName
+     * @param PaymentInterface $payment     Payment
+     * @param string           $gatewayName Gateway name
      *
      * @return string
      *

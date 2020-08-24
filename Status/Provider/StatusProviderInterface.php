@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Status\Provider;
 use Darvin\PaymentBundle\Status\Model\PaymentStatus;
 
 /**
- * Payment status provider
+ * Payment status provider interface
  */
 interface StatusProviderInterface
 {

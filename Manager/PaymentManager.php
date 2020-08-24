@@ -72,21 +72,21 @@ class PaymentManager implements PaymentManagerInterface
     /**
      * @inheritdoc
      */
-    public function create(
+    public function createPayment(
         int $orderId,
         string $orderEntityClass,
         string $amount,
         string $currencyCode,
-        $clientId = null,
-        ?string $clientEmail = null,
-        ?string $description = null,
-        ?array $options = []
-    ) {
+        ?int $clientId,
+        ?string $clientEmail,
+        ?string $description,
+        ?array $options
+    ): PaymentInterface {
         $class = $this->entityResolver->resolve(PaymentInterface::class);
 
-        /** @var \Darvin\PaymentBundle\Entity\Payment $object */
-        $object = new $class();
-        $object
+        /** @var \Darvin\PaymentBundle\Entity\Payment $payment */
+        $payment = new $class();
+        $payment
             ->setOrderId($orderId)
             ->setOrderEntityClass($orderEntityClass)
             ->setAmount($amount)
@@ -95,10 +95,10 @@ class PaymentManager implements PaymentManagerInterface
             ->setClientEmail($clientEmail)
             ->setDescription($description);
 
-        $this->entityManager->persist($object);
-        $this->entityManager->flush($object);
+        $this->entityManager->persist($payment);
+        $this->entityManager->flush($payment);
 
-        return $object;
+        return $payment;
     }
 
     /**

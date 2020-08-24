@@ -27,7 +27,7 @@ class Payment implements PaymentInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @var integer $id
+     * @var int $id
      */
     protected $id;
 
@@ -67,7 +67,7 @@ class Payment implements PaymentInterface
     protected $currencyCode;
 
     /**
-     * @var string|int|null
+     * @var int|null
      *
      * @ORM\Column(nullable=true)
      */
@@ -119,23 +119,15 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
-    public function isPaid(): bool
-    {
-        return PaymentStatusType::PAID === $this->status;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @return int|null
+     * @inheritDoc
      */
     public function getOrderId(): ?int
     {
@@ -155,9 +147,9 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
-    public function getOrderEntityClass(): string
+    public function getOrderEntityClass(): ?string
     {
         return $this->orderEntityClass;
     }
@@ -175,7 +167,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return string|null
+     * @inheritDoc
      */
     public function getTransactionRef(): ?string
     {
@@ -195,7 +187,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getAmount(): string
     {
@@ -215,7 +207,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getCurrencyCode(): string
     {
@@ -235,9 +227,9 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return int|null|string
+     * @inheritDoc
      */
-    public function getClientId()
+    public function getClientId(): ?int
     {
         return $this->clientId;
     }
@@ -247,7 +239,7 @@ class Payment implements PaymentInterface
      *
      * @return self
      */
-    public function setClientId($clientId)
+    public function setClientId($clientId): self
     {
         $this->clientId = $clientId;
 
@@ -255,7 +247,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return string|null
+     * @inheritDoc
      */
     public function getClientEmail(): ?string
     {
@@ -267,7 +259,7 @@ class Payment implements PaymentInterface
      *
      * @return self
      */
-    public function setClientEmail(?string $clientEmail)
+    public function setClientEmail(?string $clientEmail): self
     {
         $this->clientEmail = $clientEmail;
 
@@ -303,13 +295,23 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @param $status
+     *
+     * @return self
      */
     public function setStatus($status): self
     {
         $this->status = $status;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPaid(): bool
+    {
+        return PaymentStatusType::PAID === $this->status;
     }
 
     /**
@@ -321,7 +323,9 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string|null $actionToken
+     *
+     * @return $this
      */
     public function setActionToken(?string $actionToken): self
     {

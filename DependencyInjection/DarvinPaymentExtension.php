@@ -46,10 +46,10 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'token',
             'url_builder',
             'bridges/telr' => ['callback' => static function () use ($config): bool {
-                return $config['bridges']['telr']['enabled'];
+                return $config['bridges']['telr']['enabled'] ?? false;
             }],
             'bridges/sberbank' => ['callback' => static function () use ($config): bool {
-                return $config['bridges']['sberbank']['enabled'];
+                return $config['bridges']['sberbank']['enabled'] ?? false;
             }],
         ]);
     }

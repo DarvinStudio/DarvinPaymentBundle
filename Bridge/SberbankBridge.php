@@ -123,7 +123,12 @@ class SberbankBridge extends AbstractBridge
     private function getReceipt(PaymentInterface $payment): ?string
     {
         if (null !== $this->receiptFactory) {
-            return json_encode($this->receiptFactory->createReceipt($payment));
+            try {
+                return json_encode($this->receiptFactory->createReceipt($payment));
+            } catch (\Darvin\PaymentBundle\Order\Exception\CantCreateReceiptException $ex) {
+                // TODO Need add logger
+                return null;
+            }
         }
 
         return null;

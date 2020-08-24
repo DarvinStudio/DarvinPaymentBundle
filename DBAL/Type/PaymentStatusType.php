@@ -12,6 +12,9 @@ namespace Darvin\PaymentBundle\DBAL\Type;
 
 use Fresh\DoctrineEnumBundle\DBAL\Types\AbstractEnumType;
 
+/**
+ * Payment status types
+ */
 class PaymentStatusType extends AbstractEnumType
 {
     public const NEW      = 'new';

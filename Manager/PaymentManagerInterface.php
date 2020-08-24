@@ -13,34 +13,32 @@ namespace Darvin\PaymentBundle\Manager;
 use Darvin\PaymentBundle\Entity\PaymentInterface;
 
 /**
- * Interface PaymentManagerInterface
- * @package Darvin\PaymentBundle\Manager
+ * Payment manager interface
  */
 interface PaymentManagerInterface
 {
     /**
-     * @param int             $orderId
-     * @param string          $orderEntityClass
-     * @param string          $amount
-     * @param string          $currencyCode
-     * @param int|null|string $clientId
-     * @param null|string     $clientEmail
-     * @param null|string     $description
-     *
-     * @param array           $options
+     * @param int         $orderId
+     * @param string      $orderEntityClass
+     * @param string      $amount
+     * @param string      $currencyCode
+     * @param int|null    $clientId
+     * @param string|null $clientEmail
+     * @param string|null $description
+     * @param array|null  $options
      *
      * @return PaymentInterface
      */
-    public function create(
+    public function createPayment(
         int $orderId,
         string $orderEntityClass,
         string $amount,
         string $currencyCode,
-        $clientId,
+        ?int $clientId,
         ?string $clientEmail,
         ?string $description,
         ?array $options
-    );
+    ): PaymentInterface;
 
     /**
      * @param PaymentInterface $payment

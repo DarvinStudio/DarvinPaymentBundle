@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Status\Model\Email;
 
 /**
- * Order type public email
+ * Model for order type "Public email"
  */
 class PublicEmail
 {

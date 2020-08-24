@@ -21,9 +21,7 @@ class UnknownStatusException extends \Exception
     protected $statusName;
 
     /**
-     * UnknownStatusException constructor.
-     *
-     * @param string $statusName
+     * @param string $statusName Status name
      */
     public function __construct(string $statusName)
     {
