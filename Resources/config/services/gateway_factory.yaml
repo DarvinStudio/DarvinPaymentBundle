@@ -2,10 +2,7 @@ parameters:
     darvin_payment.gateway.gateway_factory.class: Darvin\PaymentBundle\Gateway\Factory\GatewayFactory
 
 services:
-    Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface: '@darvin_payment.gateway.gateway_factory'
-
     darvin_payment.gateway.gateway_factory:
         class: '%darvin_payment.gateway.gateway_factory.class%'
         arguments:
             - '@request_stack'
-        public: true

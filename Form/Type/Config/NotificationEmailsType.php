@@ -11,7 +11,7 @@
 
 namespace Darvin\PaymentBundle\Form\Type\Config;
 
-use Darvin\PaymentBundle\Status\Provider\StatusProviderInterface;
+use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -28,9 +28,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class NotificationEmailsType extends AbstractType
 {
     /**
-     * @var \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface
+     * @var \Darvin\PaymentBundle\State\Provider\StateProviderInterface
      */
-    private $statusProvider;
+    private $stateProvider;
 
     /**
      * @var \Symfony\Contracts\Translation\TranslatorInterface
@@ -38,12 +38,12 @@ class NotificationEmailsType extends AbstractType
     protected $translator;
 
     /**
-     * @param \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface $statusProvider Payment status provider
+     * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Payment state provider
      * @param \Symfony\Contracts\Translation\TranslatorInterface            $translator     Translator
      */
-    public function __construct(StatusProviderInterface $statusProvider, TranslatorInterface $translator)
+    public function __construct(StateProviderInterface $stateProvider, TranslatorInterface $translator)
     {
-        $this->statusProvider = $statusProvider;
+        $this->stateProvider = $stateProvider;
         $this->translator = $translator;
     }
 
@@ -55,7 +55,7 @@ class NotificationEmailsType extends AbstractType
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
 
             foreach (array_keys($event->getData()) as $name) {
-                if (!$this->statusProvider->hasStatus($name)) {
+                if (!$this->stateProvider->hasState($name)) {
                     continue;
                 }
 
@@ -71,8 +71,8 @@ class NotificationEmailsType extends AbstractType
                         ],
                     ],
                     'label' => $this->translator->trans(
-                        'configuration.darvin_payment.parameter.notification_for_status',
-                        ['%status%' => $this->translator->trans(sprintf('payment.status.%s', $name), [], 'admin')],
+                        'configuration.darvin_payment.parameter.notification_for_state',
+                        ['%state%' => $this->translator->trans(sprintf('payment.state.%s', $name), [], 'admin')],
                         'admin'
                     ),
                 ]);

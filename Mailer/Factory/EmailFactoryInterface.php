@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Mailer\Factory;
 
 use Darvin\MailerBundle\Model\Email;
-use Darvin\PaymentBundle\Status\Model\PaymentStatus;
+use Darvin\PaymentBundle\State\Model\State;
 
 /**
  * Payment email factory interface
@@ -19,23 +19,23 @@ use Darvin\PaymentBundle\Status\Model\PaymentStatus;
 interface EmailFactoryInterface
 {
     /**
-     * @param object                                           $order         Order
-     * @param \Darvin\PaymentBundle\Status\Model\PaymentStatus $paymentStatus Payment status model
-     * @param string                                           $clientEmail   Client Email
+     * @param object|null                             $order       Order
+     * @param \Darvin\PaymentBundle\State\Model\State $state       Payment state model
+     * @param string                                  $clientEmail Client Email
      *
      * @return \Darvin\MailerBundle\Model\Email
      *
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
-    public function createPublicEmail(?object $order, PaymentStatus $paymentStatus, string $clientEmail): Email;
+    public function createPublicEmail(?object $order, State $state, string $clientEmail): Email;
 
     /**
-     * @param object                                           $order         Order
-     * @param \Darvin\PaymentBundle\Status\Model\PaymentStatus $paymentStatus Payment status model
+     * @param object|null                             $order Order
+     * @param \Darvin\PaymentBundle\State\Model\State $state Payment state model
      *
      * @return \Darvin\MailerBundle\Model\Email
      *
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
-    public function createServiceEmail(?object $order, PaymentStatus $paymentStatus): Email;
+    public function createServiceEmail(?object $order, State $state): Email;
 }

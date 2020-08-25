@@ -61,9 +61,9 @@ interface PaymentInterface
     public function getDescription(): ?string;
 
     /**
-     * @return string One of PaymentStatusType constant
+     * @return string One of PaymentStateType constant
      */
-    public function getStatus(): string;
+    public function getState(): string;
 
     /**
      * @return bool

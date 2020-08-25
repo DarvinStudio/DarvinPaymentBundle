@@ -1,0 +1,6 @@
+parameters:
+    darvin_payment.receipt.receipt_factory_registry.class: 'Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistry'
+
+services:
+    darvin_payment.receipt.receipt_factory_registry:
+        class: '%darvin_payment.receipt.receipt_factory_registry.class%'

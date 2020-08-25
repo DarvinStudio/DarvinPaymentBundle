@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Entity;
 
-use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -90,10 +90,10 @@ class Payment implements PaymentInterface
     /**
      * @var string
      *
-     * @ORM\Column(type="PaymentStatusType", nullable=false)
-     * @DoctrineAssert\Enum(entity="Darvin\PaymentBundle\DBAL\Type\PaymentStatusType")
+     * @ORM\Column(type="PaymentStateType", nullable=false)
+     * @DoctrineAssert\Enum(entity="Darvin\PaymentBundle\DBAL\Type\PaymentStateType")
      */
-    protected $status;
+    protected $state;
 
     /**
      * @var string|null
@@ -107,7 +107,7 @@ class Payment implements PaymentInterface
      */
     public function __construct()
     {
-        $this->status = PaymentStatusType::NEW;
+        $this->state = PaymentStateType::NEW;
     }
 
     /**
@@ -115,7 +115,7 @@ class Payment implements PaymentInterface
      */
     public function __toString(): string
     {
-        return (string) $this->status;
+        return (string) $this->state;
     }
 
     /**
@@ -289,19 +289,19 @@ class Payment implements PaymentInterface
     /**
      * @inheritDoc
      */
-    public function getStatus(): string
+    public function getState(): string
     {
-        return $this->status;
+        return $this->state;
     }
 
     /**
-     * @param $status
+     * @param $state
      *
      * @return self
      */
-    public function setStatus($status): self
+    public function setState($state): self
     {
-        $this->status = $status;
+        $this->state = $state;
 
         return $this;
     }
@@ -311,7 +311,7 @@ class Payment implements PaymentInterface
      */
     public function isPaid(): bool
     {
-        return PaymentStatusType::PAID === $this->status;
+        return PaymentStateType::PAID === $this->state;
     }
 
     /**

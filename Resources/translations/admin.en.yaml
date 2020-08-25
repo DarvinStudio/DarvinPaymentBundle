@@ -2,14 +2,14 @@ configuration:
     darvin_payment:
         parameter:
             notification_emails: Notification emails
-            notification_for_status: Notification for status «%status%»
+            notification_for_state: Notification for state «%state%»
         title: Online Payment
 
 payment:
-    status:
-        failed:   Failed
-        canceled: Canceled
-        new:      New
-        paid:     Paid
-        pending:  Pending
-        refund:   Refund
+    state:
+        canceled:  Canceled
+        completed: Completed
+        failed:    Failed
+        new:       New
+        pending:   Pending
+        refund:    Refund

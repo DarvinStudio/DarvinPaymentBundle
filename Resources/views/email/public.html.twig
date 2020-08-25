@@ -1,8 +1,8 @@
 {% extends '@DarvinMailer/email/layout.html.twig' %}
 
-{% block heading %}{{ ('email.payment.public.' ~ status.name ~ '.subject')|trans([], 'email') }}{% endblock %}
+{% block heading %}{{ ('email.payment.public.' ~ state.name ~ '.subject')|trans([], 'email') }}{% endblock %}
 
 {% block content %}
     {% set orderId = order != null ? orderId.id : null %}
-    <p>{{ ('email.payment.public.' ~ status.name ~ '.text')|trans(['orderId': orderId], 'email')  }}</p>
+    <p>{{ ('email.payment.public.' ~ state.name ~ '.text')|trans(['orderId': orderId], 'email')  }}</p>
 {% endblock %}

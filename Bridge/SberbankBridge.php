@@ -11,7 +11,8 @@
 namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\PaymentInterface;
-use Darvin\PaymentBundle\Order\ReceiptFactoryInterface;
+use Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface;
+use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 
 /**
  * Sberbank gateway parameters bridge
@@ -19,16 +20,20 @@ use Darvin\PaymentBundle\Order\ReceiptFactoryInterface;
 class SberbankBridge extends AbstractBridge
 {
     /**
-     * @var ReceiptFactoryInterface|null
+     * @var \Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface|null
      */
-    private $receiptFactory;
+    private $receiptFactoryRegistry;
 
     /**
-     * @param \Darvin\PaymentBundle\Order\ReceiptFactoryInterface $receiptFactory Order receipt factory
+     * @param ReceiptFactoryRegistryInterface $receiptFactoryRegistry Registry of receipt factories
+     * @param PaymentUrlBuilderInterface      $urlBuilder             URL Builder
      */
-    public function setReceiptFactory(ReceiptFactoryInterface $receiptFactory): void
-    {
-        $this->receiptFactory = $receiptFactory;
+    public function __construct(
+        ReceiptFactoryRegistryInterface $receiptFactoryRegistry,
+        PaymentUrlBuilderInterface $urlBuilder
+    ) {
+        parent::__construct($urlBuilder);
+        $this->receiptFactoryRegistry = $receiptFactoryRegistry;
     }
 
     /**
@@ -122,10 +127,17 @@ class SberbankBridge extends AbstractBridge
      */
     private function getReceipt(PaymentInterface $payment): ?string
     {
-        if (null !== $this->receiptFactory) {
+        if ($this->receiptFactoryRegistry->hasFactory($payment)) {
             try {
-                return json_encode($this->receiptFactory->createReceipt($payment));
-            } catch (\Darvin\PaymentBundle\Order\Exception\CantCreateReceiptException $ex) {
+                $factory = $this->receiptFactoryRegistry->getFactory($payment);
+            } catch (\Darvin\PaymentBundle\Receipt\Exception\FactoryNotExistException $ex) {
+                // TODO Need add logger
+                return null;
+            }
+
+            try {
+                return json_encode($factory->createReceipt($payment));
+            } catch (\Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException $ex) {
                 // TODO Need add logger
                 return null;
             }

@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Config;
 use Darvin\ConfigBundle\Configuration\AbstractConfiguration;
 use Darvin\ConfigBundle\Parameter\ParameterModel;
 use Darvin\PaymentBundle\Form\Type\Config\NotificationEmailsType;
-use Darvin\PaymentBundle\Status\Provider\StatusProviderInterface;
+use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
 
 /**
  * Payment configuration
@@ -21,9 +21,9 @@ use Darvin\PaymentBundle\Status\Provider\StatusProviderInterface;
 class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterface
 {
     /**
-     * @var \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface
+     * @var \Darvin\PaymentBundle\State\Provider\StateProviderInterface
      */
-    private $statusProvider;
+    private $stateProvider;
 
     /**
      * @var bool
@@ -31,12 +31,12 @@ class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterf
     private $mailerEnabled;
 
     /**
-     * @param \Darvin\PaymentBundle\Status\Provider\StatusProviderInterface $statusProvider Provider
-     * @param bool                                                          $mailerEnabled  Is mailer enabled
+     * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Provider
+     * @param bool                                                        $mailerEnabled Is mailer enabled
      */
-    public function __construct(StatusProviderInterface $statusProvider, bool $mailerEnabled)
+    public function __construct(StateProviderInterface $stateProvider, bool $mailerEnabled)
     {
-        $this->statusProvider = $statusProvider;
+        $this->stateProvider = $stateProvider;
         $this->mailerEnabled = $mailerEnabled;
     }
 
@@ -48,9 +48,9 @@ class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterf
         if ($this->mailerEnabled) {
             $defaultNotificationEmails = [];
 
-            foreach ($this->statusProvider->getAllStatuses() as $paymentStatus) {
-                if ($paymentStatus->getEmail()->getServiceEmail()->isEnabled()) {
-                    $defaultNotificationEmails[$paymentStatus->getName()] = [];
+            foreach ($this->stateProvider->getAllStates() as $state) {
+                if ($state->getEmail()->getServiceEmail()->isEnabled()) {
+                    $defaultNotificationEmails[$state->getName()] = [];
                 }
             }
 
@@ -65,7 +65,7 @@ class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterf
     /**
      * {@inheritDoc}
      */
-    public function getEmailsByStatusName(string $name): array
+    public function getEmailsByStateName(string $name): array
     {
         return $this->__get('notification_emails')[$name] ?? [];
     }

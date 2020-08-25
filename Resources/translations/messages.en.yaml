@@ -8,7 +8,7 @@ email:
             failed:
                 subject: 'Oops, something wrong'
                 text:    'An error occurred while online payment. Our manager will contact you soon.'
-            paid:
+            completed:
                 subject: 'Success!'
                 text:    'Thank you! Payment successfully completed.'
         service:
@@ -18,6 +18,6 @@ email:
             failed:
                 subject: 'Error while payment of order №{orderId}'
                 text:    'An error occurred while payment: {message}'
-            paid:
+            completed:
                 subject: 'Payment is done'
                 text:    'Payment successfully completed!'

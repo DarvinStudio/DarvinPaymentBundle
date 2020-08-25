@@ -24,19 +24,13 @@ class AddBridgePass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->has(self::GATEWAY_FACTORY)) {
-            return;
-        }
-
         foreach ($container->getParameter('darvin_payment.bridges') as $name => $attr) {
-            if (!$attr['enabled']) {
-                continue;
+            if ($attr['enabled']) {
+                $container->getDefinition(self::GATEWAY_FACTORY)->addMethodCall('addBridge', [
+                    $name,
+                    new Reference(self::PREFIX_BRIDGE.$name)
+                ]);
             }
-
-            $container->getDefinition(self::GATEWAY_FACTORY)->addMethodCall('addBridge', [
-                $name,
-                new Reference(self::PREFIX_BRIDGE.$name)
-            ]);
         }
     }
 }

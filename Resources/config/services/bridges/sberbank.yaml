@@ -6,5 +6,6 @@ services:
         class: '%darvin_payment.bridge.sberbank_bridge.class%'
         arguments:
             - '@darvin_payment.url_builder.payment_url_builder'
+            - '@darvin_payment.receipt.receipt_factory_registry'
         calls:
             - [ setGatewayConfig, [ '%darvin_payment.bridges.sberbank.parameters%' ] ]

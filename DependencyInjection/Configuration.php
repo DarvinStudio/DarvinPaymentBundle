@@ -45,7 +45,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->arrayNode('mailer')->canBeDisabled()
                     ->children()
-                        ->arrayNode('payment_statuses')->useAttributeAsKey('name')
+                        ->arrayNode('states')->useAttributeAsKey('name')
                             ->prototype('array')
                                 ->children()
                                     ->arrayNode('public')->canBeDisabled()

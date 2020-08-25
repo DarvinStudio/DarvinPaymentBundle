@@ -15,7 +15,7 @@ use Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface;
 use Darvin\MailerBundle\Model\Email;
 use Darvin\MailerBundle\Model\EmailType;
 use Darvin\PaymentBundle\Config\PaymentConfigInterface;
-use Darvin\PaymentBundle\Status\Model\PaymentStatus;
+use Darvin\PaymentBundle\State\Model\State;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -43,8 +43,11 @@ class EmailFactory implements EmailFactoryInterface
      * @param \Darvin\PaymentBundle\Config\PaymentConfigInterface        $paymentConfig  Payment configuration
      * @param \Symfony\Contracts\Translation\TranslatorInterface         $translator     Translator
      */
-    public function __construct(TemplateEmailFactoryInterface $genericFactory, PaymentConfigInterface $paymentConfig, TranslatorInterface $translator)
-    {
+    public function __construct(
+        TemplateEmailFactoryInterface $genericFactory,
+        PaymentConfigInterface $paymentConfig,
+        TranslatorInterface $translator
+    ) {
         $this->genericFactory = $genericFactory;
         $this->paymentConfig = $paymentConfig;
         $this->translator = $translator;
@@ -53,16 +56,17 @@ class EmailFactory implements EmailFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createPublicEmail(?object $order, PaymentStatus $paymentStatus, string $clientEmail): Email
+    public function createPublicEmail(?object $order, State $state, string $clientEmail): Email
     {
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
             $clientEmail,
-            $this->translator->trans(sprintf('email.payment.public.%s.subject', $paymentStatus->getName()), [], 'messages'),
-            $paymentStatus->getEmail()->getPublicEmail()->getTemplate(),
+            $this->translator->trans($state->getEmail()->getPublicEmail()->getSubject(), [], 'messages'),
+            $state->getEmail()->getPublicEmail()->getTemplate(),
             [
-                'order'  => $order,
-                'status' => $paymentStatus->getName(),
+                'order'   => $order,
+                'state'   => $state->getName(),
+                'content' => $state->getEmail()->getPublicEmail()->getContent(),
             ]
         );
     }
@@ -70,22 +74,22 @@ class EmailFactory implements EmailFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createServiceEmail(?object $order, PaymentStatus $paymentStatus): Email
+    public function createServiceEmail(?object $order, State $state): Email
     {
-        $serviceEmails = $this->paymentConfig->getEmailsByStatusName($paymentStatus->getName());
+        $serviceEmails = $this->paymentConfig->getEmailsByStateName($state->getName());
 
         if (empty($serviceEmails)) {
-            throw new CantCreateEmailException(sprintf('Service email for status "%s" is not specified', $paymentStatus->getName()));
+            throw new CantCreateEmailException(sprintf('Service email for state "%s" is not specified', $state->getName()));
         }
 
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans(sprintf('email.payment.service.%s.subject', $paymentStatus->getName()), [], 'messages'),
-            $paymentStatus->getEmail()->getPublicEmail()->getTemplate(),
+            $this->translator->trans(sprintf('email.payment.service.%s.subject', $state->getName()), [], 'messages'),
+            $state->getEmail()->getPublicEmail()->getTemplate(),
             [
                 'order'  => $order,
-                'status' => $paymentStatus->getName(),
+                'state' => $state->getName(),
             ]
         );
     }

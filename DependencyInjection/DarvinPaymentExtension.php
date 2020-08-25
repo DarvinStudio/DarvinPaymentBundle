@@ -10,7 +10,8 @@
 
 namespace Darvin\PaymentBundle\DependencyInjection;
 
-use Darvin\PaymentBundle\DBAL\Type\PaymentStatusType;
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
+use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
 use Darvin\Utils\DependencyInjection\ConfigInjector;
 use Darvin\Utils\DependencyInjection\ConfigLoader;
 use Darvin\Utils\DependencyInjection\ExtensionConfigurator;
@@ -25,12 +26,16 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class DarvinPaymentExtension extends Extension implements PrependExtensionInterface
 {
+    public const TAG_RECEIPT_FACTORY = 'darvin_payment.receipt_factory';
+
     /**
      * {@inheritDoc}
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $config = $this->processConfiguration(new Configuration(), $configs);
+
+        $container->registerForAutoconfiguration(ReceiptFactoryInterface::class)->addTag(self::TAG_RECEIPT_FACTORY);
 
         (new ConfigInjector($container))->inject($this->processConfiguration(new Configuration(), $configs), $this->getAlias());
 
@@ -41,8 +46,8 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'mailer' => ['callback' => static function () use ($config): bool {
                 return $config['mailer']['enabled'];
             }],
-            'payment_manager',
-            'status',
+            'payment',
+            'state',
             'token',
             'url_builder',
             'bridges/telr' => ['callback' => static function () use ($config): bool {
@@ -65,8 +70,8 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
 
         $container->prependExtensionConfig($this->getAlias(), [
             'mailer' => [
-                'enabled'          => isset($bundles['DarvinMailerBundle']),
-                'payment_statuses' => $this->initPaymentStatuses(),
+                'enabled' => isset($bundles['DarvinMailerBundle']),
+                'states'  => $this->initPaymentStates(),
             ],
         ]);
     }
@@ -74,11 +79,11 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     /**
      * @return array
      */
-    private function initPaymentStatuses(): array
+    private function initPaymentStates(): array
     {
         $data = [];
 
-        foreach (PaymentStatusType::getChoices() as $choice) {
+        foreach (PaymentStateType::getChoices() as $choice) {
             $data[$choice] = [
                 'public' => [
                     'enabled' => false,
@@ -89,7 +94,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             ];
         }
 
-        $data[PaymentStatusType::PAID] = [
+        $data[PaymentStateType::COMPLETED] = [
             'public' => [
                 'enabled' => true,
             ],

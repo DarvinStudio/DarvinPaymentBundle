@@ -29,7 +29,7 @@ abstract class AbstractBridge implements BridgeInterface
     private $gatewayConfig;
 
     /**
-     * @param \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface $urlBuilder
+     * @param \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface $urlBuilder URL Builder
      */
     public function __construct(PaymentUrlBuilderInterface $urlBuilder)
     {

@@ -8,4 +8,3 @@ services:
         class: '%darvin_payment.token.payment_token_manager.class%'
         arguments:
             - '@doctrine.orm.entity_manager'
-        public: true

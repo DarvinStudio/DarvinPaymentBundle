@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Gateway\Factory;
 
 use Darvin\PaymentBundle\Bridge\BridgeInterface;
-use Darvin\PaymentBundle\Bridge\Exception\BridgeNotSetException;
+use Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException;
 use Omnipay\Common\GatewayInterface;
 use Omnipay\Omnipay;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -65,7 +65,7 @@ class GatewayFactory implements GatewayFactoryInterface
     public function getBridge(string $name): BridgeInterface
     {
         if (!isset($this->bridges[$name])) {
-            throw new BridgeNotSetException($name);
+            throw new BridgeNotExistsException($name);
         }
 
         return $this->bridges[$name];

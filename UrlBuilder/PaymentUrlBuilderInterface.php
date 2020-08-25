@@ -43,8 +43,6 @@ interface PaymentUrlBuilderInterface
      * @param string           $gatewayName Gateway name
      *
      * @return string
-     *
-     * @throws ActionNotImplementedException
      */
     public function getPurchaseUrl(PaymentInterface $payment, string $gatewayName): string;
 
@@ -53,8 +51,6 @@ interface PaymentUrlBuilderInterface
      * @param string           $gatewayName Gateway name
      *
      * @return string
-     *
-     * @throws ActionNotImplementedException
      */
     public function getSuccessUrl(PaymentInterface $payment, string $gatewayName): string;
 
@@ -63,8 +59,6 @@ interface PaymentUrlBuilderInterface
      * @param string           $gatewayName Gateway name
      *
      * @return string
-     *
-     * @throws ActionNotImplementedException
      */
     public function getCanceledUrl(PaymentInterface $payment, string $gatewayName): string;
 
@@ -73,8 +67,6 @@ interface PaymentUrlBuilderInterface
      * @param string           $gatewayName Gateway name
      *
      * @return string
-     *
-     * @throws ActionNotImplementedException
      */
     public function getFailedUrl(PaymentInterface $payment, string $gatewayName): string;
 

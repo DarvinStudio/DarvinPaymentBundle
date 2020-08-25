@@ -28,7 +28,7 @@ class ActionNotImplementedException extends \Exception
     public function __construct(string $actionName)
     {
         parent::__construct(sprintf(
-            "Method %s is not implemented yet",
+            'Method "%s" of UrlBuilderInterface is not implemented yet',
             $actionName
         ));
 
