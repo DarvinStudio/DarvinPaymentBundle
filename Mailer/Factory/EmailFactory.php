@@ -19,7 +19,7 @@ use Darvin\PaymentBundle\State\Model\State;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Payment email factory
+ * Email factory
  */
 class EmailFactory implements EmailFactoryInterface
 {
@@ -58,15 +58,17 @@ class EmailFactory implements EmailFactoryInterface
      */
     public function createPublicEmail(?object $order, State $state, string $clientEmail): Email
     {
+        $emailData = $state->getEmail()->getPublicEmail();
+
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
             $clientEmail,
-            $this->translator->trans($state->getEmail()->getPublicEmail()->getSubject(), [], 'messages'),
-            $state->getEmail()->getPublicEmail()->getTemplate(),
+            $this->translator->trans($emailData->getSubject(), [], 'messages'),
+            $emailData->getTemplate(),
             [
                 'order'   => $order,
                 'state'   => $state->getName(),
-                'content' => $state->getEmail()->getPublicEmail()->getContent(),
+                'content' => $emailData->getContent(),
             ]
         );
     }
@@ -76,6 +78,7 @@ class EmailFactory implements EmailFactoryInterface
      */
     public function createServiceEmail(?object $order, State $state): Email
     {
+        $emailData = $state->getEmail()->getServiceEmail();
         $serviceEmails = $this->paymentConfig->getEmailsByStateName($state->getName());
 
         if (empty($serviceEmails)) {
@@ -85,11 +88,12 @@ class EmailFactory implements EmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans(sprintf('email.payment.service.%s.subject', $state->getName()), [], 'messages'),
-            $state->getEmail()->getPublicEmail()->getTemplate(),
+            $this->translator->trans($emailData->getSubject(), [], 'messages'),
+            $emailData->getTemplate(),
             [
-                'order'  => $order,
-                'state' => $state->getName(),
+                'order'   => $order,
+                'state'   => $state->getName(),
+                'content' => $emailData->getContent()
             ]
         );
     }

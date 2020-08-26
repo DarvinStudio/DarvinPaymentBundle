@@ -14,6 +14,9 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * Add bridge to gateway factory
+ */
 class AddBridgePass implements CompilerPassInterface
 {
     private const GATEWAY_FACTORY = 'darvin_payment.gateway.gateway_factory';

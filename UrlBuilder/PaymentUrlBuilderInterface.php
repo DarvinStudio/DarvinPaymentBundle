@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\UrlBuilder;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
 
 /**
@@ -19,74 +19,72 @@ use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
 interface PaymentUrlBuilderInterface
 {
     /**
-     * @param PaymentInterface $payment     Payment
+     * @param Payment $payment     Payment
+     * @param string           $gatewayName Gateway name
+     *
+     * @return string
+     */
+    public function getAuthorizeUrl(Payment $payment, string $gatewayName): string;
+
+    /**
+     * @param Payment $payment     Payment
      * @param string           $gatewayName Gateway name
      *
      * @return string
      *
      * @throws ActionNotImplementedException
      */
-    public function getAuthorizationUrl(PaymentInterface $payment, string $gatewayName): string;
+    public function getCaptureUrl(Payment $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment     Payment
+     * @param Payment $payment     Payment
+     * @param string           $gatewayName Gateway name
+     *
+     * @return string
+     */
+    public function getPurchaseUrl(Payment $payment, string $gatewayName): string;
+
+    /**
+     * @param Payment $payment     Payment
+     * @param string           $gatewayName Gateway name
+     *
+     * @return string
+     */
+    public function getSuccessUrl(Payment $payment, string $gatewayName): string;
+
+    /**
+     * @param Payment $payment     Payment
+     * @param string           $gatewayName Gateway name
+     *
+     * @return string
+     */
+    public function getCanceledUrl(Payment $payment, string $gatewayName): string;
+
+    /**
+     * @param Payment $payment     Payment
+     * @param string           $gatewayName Gateway name
+     *
+     * @return string
+     */
+    public function getFailedUrl(Payment $payment, string $gatewayName): string;
+
+    /**
+     * @param Payment $payment     Payment
      * @param string           $gatewayName Gateway name
      *
      * @return string
      *
      * @throws ActionNotImplementedException
      */
-    public function getCaptureUrl(PaymentInterface $payment, string $gatewayName): string;
+    public function getRefundUrl(Payment $payment, string $gatewayName): string;
 
     /**
-     * @param PaymentInterface $payment     Payment
-     * @param string           $gatewayName Gateway name
-     *
-     * @return string
-     */
-    public function getPurchaseUrl(PaymentInterface $payment, string $gatewayName): string;
-
-    /**
-     * @param PaymentInterface $payment     Payment
-     * @param string           $gatewayName Gateway name
-     *
-     * @return string
-     */
-    public function getSuccessUrl(PaymentInterface $payment, string $gatewayName): string;
-
-    /**
-     * @param PaymentInterface $payment     Payment
-     * @param string           $gatewayName Gateway name
-     *
-     * @return string
-     */
-    public function getCanceledUrl(PaymentInterface $payment, string $gatewayName): string;
-
-    /**
-     * @param PaymentInterface $payment     Payment
-     * @param string           $gatewayName Gateway name
-     *
-     * @return string
-     */
-    public function getFailedUrl(PaymentInterface $payment, string $gatewayName): string;
-
-    /**
-     * @param PaymentInterface $payment     Payment
+     * @param Payment $payment     Payment
      * @param string           $gatewayName Gateway name
      *
      * @return string
      *
      * @throws ActionNotImplementedException
      */
-    public function getRefundUrl(PaymentInterface $payment, string $gatewayName): string;
-
-    /**
-     * @param PaymentInterface $payment     Payment
-     * @param string           $gatewayName Gateway name
-     *
-     * @return string
-     *
-     * @throws ActionNotImplementedException
-     */
-    public function getNotifyUrl(PaymentInterface $payment, string $gatewayName): string;
+    public function getNotifyUrl(Payment $payment, string $gatewayName): string;
 }

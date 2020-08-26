@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\State\Manager;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 
 /**
  * State manager interface
@@ -18,44 +18,51 @@ use Darvin\PaymentBundle\Entity\PaymentInterface;
 interface StateManagerInterface
 {
     /**
-     * @param PaymentInterface $payment Payment
+     * @param Payment $payment Payment
      *
      * @return void
      */
-    public function markAsNew(PaymentInterface $payment): void;
+    public function markAsNew(Payment $payment): void;
 
     /**
-     * @param PaymentInterface $payment Payment
+     * @param Payment $payment Payment
      *
      * @return void
      */
-    public function markAsPending(PaymentInterface $payment): void;
+    public function markAsPending(Payment $payment): void;
 
     /**
-     * @param PaymentInterface $payment Payment
+     * @param Payment $payment Payment
      *
      * @return void
      */
-    public function markAsCompleted(PaymentInterface $payment): void;
+    public function markAsCompleted(Payment $payment): void;
 
     /**
-     * @param PaymentInterface $payment Payment
+     * @param Payment $payment Payment
      *
      * @return void
      */
-    public function markAsCanceled(PaymentInterface $payment): void;
+    public function markAsCanceled(Payment $payment): void;
 
     /**
-     * @param PaymentInterface $payment Payment
+     * @param Payment $payment Payment
      *
      * @return void
      */
-    public function markAsFailed(PaymentInterface $payment): void;
+    public function markAsFailed(Payment $payment): void;
 
     /**
-     * @param PaymentInterface $payment Payment
+     * @param Payment $payment Payment
      *
      * @return void
      */
-    public function markAsRefund(PaymentInterface $payment): void;
+    public function markAsRefund(Payment $payment): void;
+
+    /**
+     * @param Payment $payment Payment
+     *
+     * @return bool
+     */
+    public function isCompleted(Payment $payment): bool;
 }

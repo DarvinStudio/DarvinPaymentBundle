@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Bridge;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 
@@ -47,7 +47,7 @@ class SberbankBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function authorizationParameters(PaymentInterface $payment): array
+    public function authorizeParameters(Payment $payment): array
     {
         return [
             'orderNumber'        => $payment->getOrderId(),
@@ -66,7 +66,7 @@ class SberbankBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function completeAuthorizationParameters(PaymentInterface $payment): array
+    public function completeAuthorizeParameters(Payment $payment): array
     {
         return [
             'orderId' => $payment->getTransactionRef(),
@@ -77,34 +77,23 @@ class SberbankBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function purchaseParameters(PaymentInterface $payment): array
+    public function purchaseParameters(Payment $payment): array
     {
-        return $this->authorizationParameters($payment);
+        return $this->authorizeParameters($payment);
     }
 
     /**
      * @inheritDoc
      */
-    public function completePurchaseParameters(PaymentInterface $payment): array
+    public function completePurchaseParameters(Payment $payment): array
     {
-        return $this->completeAuthorizationParameters($payment);
+        return $this->completeAuthorizeParameters($payment);
     }
 
     /**
      * @inheritDoc
      */
-    public function captureParameters(PaymentInterface $payment): array
-    {
-        return [
-            'orderId' => $payment->getTransactionRef(),
-            'amount'  => $payment->getAmount(),
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function refundParameters(PaymentInterface $payment): array
+    public function captureParameters(Payment $payment): array
     {
         return [
             'orderId' => $payment->getTransactionRef(),
@@ -115,25 +104,31 @@ class SberbankBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function acceptNotificationParameters(PaymentInterface $payment): array
+    public function refundParameters(Payment $payment): array
+    {
+        return [
+            'orderId' => $payment->getTransactionRef(),
+            'amount'  => $payment->getAmount(),
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function acceptNotificationParameters(Payment $payment): array
     {
         // TODO: Implement acceptNotificationParameters() method.
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\PaymentInterface $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string|null
      */
-    private function getReceipt(PaymentInterface $payment): ?string
+    private function getReceipt(Payment $payment): ?string
     {
         if ($this->receiptFactoryRegistry->hasFactory($payment)) {
-            try {
-                $factory = $this->receiptFactoryRegistry->getFactory($payment);
-            } catch (\Darvin\PaymentBundle\Receipt\Exception\FactoryNotExistException $ex) {
-                // TODO Need add logger
-                return null;
-            }
+            $factory = $this->receiptFactoryRegistry->getFactory($payment);
 
             try {
                 return json_encode($factory->createReceipt($payment));

@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\State\Manager;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Event\State\ChangedEvent;
 use Darvin\PaymentBundle\Event\State\StateEvents;
 use Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface;
@@ -55,7 +55,7 @@ class StateManager implements StateManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsNew(PaymentInterface $payment): void
+    public function markAsNew(Payment $payment): void
     {
         $this->markAs($payment, PaymentStateType::NEW);
     }
@@ -63,7 +63,7 @@ class StateManager implements StateManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsPending(PaymentInterface $payment): void
+    public function markAsPending(Payment $payment): void
     {
         $this->markAs($payment, PaymentStateType::PENDING);
         $this->tokenManager->attach($payment);
@@ -72,7 +72,7 @@ class StateManager implements StateManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsCompleted(PaymentInterface $payment): void
+    public function markAsCompleted(Payment $payment): void
     {
         $this->markAs($payment, PaymentStateType::COMPLETED, true);
     }
@@ -80,7 +80,7 @@ class StateManager implements StateManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsCanceled(PaymentInterface $payment): void
+    public function markAsCanceled(Payment $payment): void
     {
         $this->markAs($payment, PaymentStateType::CANCELED, true);
     }
@@ -88,7 +88,7 @@ class StateManager implements StateManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsFailed(PaymentInterface $payment): void
+    public function markAsFailed(Payment $payment): void
     {
         $this->markAs($payment, PaymentStateType::FAILED, true);
     }
@@ -96,32 +96,36 @@ class StateManager implements StateManagerInterface
     /**
      * @inheritDoc
      */
-    public function markAsRefund(PaymentInterface $payment): void
+    public function markAsRefund(Payment $payment): void
     {
         $this->markAs($payment, PaymentStateType::REFUND);
     }
 
     /**
-     * @param PaymentInterface $payment
-     * @param string           $state
+     * @inheritDoc
+     */
+    public function isCompleted(Payment $payment): bool
+    {
+        return PaymentStateType::COMPLETED === $payment->getState();
+    }
+
+    /**
+     * @param Payment $payment
+     * @param string  $state
+     * @param bool    $invalidateActionToken
      *
      * @return void
      */
-    public function markAs(PaymentInterface $payment, string $state, bool $invalidateActionToken = false): void
+    public function markAs(Payment $payment, string $state, bool $invalidateActionToken = false): void
     {
-        $prevState = $payment->getState();
         $payment->setState($state);
-        $this->entityManager->flush($payment);
 
-        $this->eventDispatcher->dispatch(new ChangedEvent($payment, $prevState), StateEvents::CHANGED);
+        $this->entityManager->getRepository(Payment::class)->updateState($payment, $state);
+
+        $this->eventDispatcher->dispatch(new ChangedEvent($payment), StateEvents::CHANGED);
 
         if ($invalidateActionToken) {
             $this->tokenManager->invalidate($payment);
         }
-    }
-
-    public function isCompleted(PaymentInterface $payment): bool
-    {
-        return PaymentStateType::COMPLETED === $payment->getState();
     }
 }

@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\OmnipayTelr\TelrGateway;
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 
 /**
  * Telr gateway parameters bridge
@@ -29,7 +29,7 @@ class TelrBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function authorizationParameters(PaymentInterface $payment): array
+    public function authorizeParameters(Payment $payment): array
     {
         return $this->purchaseParameters($payment);
     }
@@ -37,7 +37,7 @@ class TelrBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function captureParameters(PaymentInterface $payment): array
+    public function captureParameters(Payment $payment): array
     {
         // TODO: Implement captureParameters() method.
     }
@@ -45,7 +45,7 @@ class TelrBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function purchaseParameters(PaymentInterface $payment): array
+    public function purchaseParameters(Payment $payment): array
     {
         return [
             'ivp_amount'   => $payment->getAmount(),
@@ -61,7 +61,7 @@ class TelrBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function completePurchaseParameters(PaymentInterface $payment): array
+    public function completePurchaseParameters(Payment $payment): array
     {
         return [
             'order_ref' => $payment->getTransactionRef()
@@ -71,7 +71,7 @@ class TelrBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function completeAuthorizationParameters(PaymentInterface $payment): array
+    public function completeAuthorizeParameters(Payment $payment): array
     {
         return $this->completePurchaseParameters($payment);
     }
@@ -80,7 +80,7 @@ class TelrBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function refundParameters(PaymentInterface $payment): array
+    public function refundParameters(Payment $payment): array
     {
         // TODO: Implement refundParameters() method.
     }
@@ -88,7 +88,7 @@ class TelrBridge extends AbstractBridge
     /**
      * @inheritDoc
      */
-    public function acceptNotificationParameters(PaymentInterface $payment): array
+    public function acceptNotificationParameters(Payment $payment): array
     {
         // TODO: Implement acceptNotificationParameters() method.
     }

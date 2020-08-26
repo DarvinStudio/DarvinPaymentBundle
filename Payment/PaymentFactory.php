@@ -8,13 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Payment\Manager;
+namespace Darvin\PaymentBundle\Payment;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-class PaymentManager implements PaymentManagerInterface
+/**
+ * Payment factory
+ */
+class PaymentFactory implements PaymentFactoryInterface
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -55,37 +58,18 @@ class PaymentManager implements PaymentManagerInterface
         int $orderId,
         string $orderEntityClass,
         string $amount,
-        string $currencyCode,
-        ?int $clientId,
-        ?string $clientEmail,
-        ?string $description,
-        ?array $options
-    ): PaymentInterface {
-        $class = $this->entityResolver->resolve(PaymentInterface::class);
+        string $currencyCode
+    ): Payment {
+        $class = $this->entityResolver->resolve(Payment::class);
 
         /** @var \Darvin\PaymentBundle\Entity\Payment $payment */
-        $payment = new $class();
-        $payment
-            ->setOrderId($orderId)
-            ->setOrderEntityClass($orderEntityClass)
-            ->setAmount($amount)
-            ->setCurrencyCode($currencyCode ?? $this->defaultCurrency)
-            ->setClientId($clientId)
-            ->setClientEmail($clientEmail)
-            ->setDescription($description);
-
-        $this->entityManager->persist($payment);
-        $this->entityManager->flush($payment);
+        $payment = new $class(
+            $orderId,
+            $orderEntityClass,
+            $amount,
+            $currencyCode ?? $this->defaultCurrency
+        );
 
         return $payment;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setTransactionReference(PaymentInterface $payment, string $reference): void
-    {
-        $payment->setTransactionRef($reference);
-        $this->entityManager->flush($payment);
     }
 }

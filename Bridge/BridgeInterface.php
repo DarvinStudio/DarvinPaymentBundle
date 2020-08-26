@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Bridge;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 
 /**
  * Interface Bridge
@@ -28,51 +28,51 @@ interface BridgeInterface
     public function initializationParameters(): array;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return array
      */
-    public function authorizationParameters(PaymentInterface $payment): array;
+    public function authorizeParameters(Payment $payment): array;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return array
      */
-    public function completeAuthorizationParameters(PaymentInterface $payment): array;
+    public function completeAuthorizeParameters(Payment $payment): array;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return array
      */
-    public function captureParameters(PaymentInterface $payment): array;
+    public function captureParameters(Payment $payment): array;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return array
      */
-    public function purchaseParameters(PaymentInterface $payment): array;
+    public function purchaseParameters(Payment $payment): array;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return array
      */
-    public function completePurchaseParameters(PaymentInterface $payment): array;
+    public function completePurchaseParameters(Payment $payment): array;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return array
      */
-    public function refundParameters(PaymentInterface $payment): array;
+    public function refundParameters(Payment $payment): array;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return array
      */
-    public function acceptNotificationParameters(PaymentInterface $payment): array;
+    public function acceptNotificationParameters(Payment $payment): array;
 }

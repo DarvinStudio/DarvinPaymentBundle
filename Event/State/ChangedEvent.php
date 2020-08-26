@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Event\State;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -49,15 +49,13 @@ class ChangedEvent extends Event
     private $clientEmail;
 
     /**
-     * @param PaymentInterface $payment   Payment object
-     * @param string           $prevState Prev payment state
+     * @param Payment $payment Payment object
      */
-    public function __construct(PaymentInterface $payment, string $prevState)
+    public function __construct(Payment $payment)
     {
         $this->paymentId = $payment->getId();
         $this->orderId = $payment->getOrderId();
         $this->orderClass = $payment->getOrderEntityClass();
-        $this->prevState = $prevState;
         $this->currentState = $payment->getState();
         $this->clientEmail = $payment->getClientEmail();
     }
@@ -89,15 +87,7 @@ class ChangedEvent extends Event
     /**
      * @return string
      */
-    public function getPrevState(): string
-    {
-        return $this->prevState;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrentState(): string
+    public function getState(): string
     {
         return $this->currentState;
     }

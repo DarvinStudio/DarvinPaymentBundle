@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Receipt;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 
 /**
  * Receipt factory interface
@@ -18,20 +18,20 @@ use Darvin\PaymentBundle\Entity\PaymentInterface;
 interface ReceiptFactoryInterface
 {
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return array
      *
      * @throws \Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException
      */
-    public function createReceipt(PaymentInterface $payment): array;
+    public function createReceipt(Payment $payment): array;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return bool
      */
-    public function support(PaymentInterface $payment): bool;
+    public function support(Payment $payment): bool;
 
     /**
      * @return string

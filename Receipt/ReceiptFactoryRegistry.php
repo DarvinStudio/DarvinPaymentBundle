@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 /**
- * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2019, Darvin Studio
+ * @author    Darvin Studio <info@darvin-studio.ru>
+ * @copyright Copyright (c) 2018-2020, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Receipt;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 
 /**
  * Registry of receipt factories
@@ -20,20 +20,10 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
     /**
      * @var \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface[]|null
      */
-    private $receiptFactories;
+    private $receiptFactories = [];
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->receiptFactories = [];
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface $receiptFactory Receipt Factory
-     *
-     * @throws \InvalidArgumentException
+     * @inheritDoc
      */
     public function addFactory(ReceiptFactoryInterface $receiptFactory): void
     {
@@ -49,7 +39,7 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
     /**
      * @inheritDoc
      */
-    public function getFactory(PaymentInterface $payment): ReceiptFactoryInterface
+    public function getFactory(Payment $payment): ReceiptFactoryInterface
     {
         foreach ($this->receiptFactories as $receiptFactory) {
             if ($receiptFactory->support($payment)) {
@@ -57,13 +47,13 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
             }
         }
 
-        throw new \Darvin\PaymentBundle\Receipt\Exception\FactoryNotExistException($payment);
+        throw new \InvalidArgumentException(sprintf('Can\'t get receipt factory for payment №"%s".', $payment->getId()));
     }
 
     /**
      * @inheritDoc
      */
-    public function hasFactory(PaymentInterface $payment): bool
+    public function hasFactory(Payment $payment): bool
     {
         foreach ($this->receiptFactories as $receiptFactory) {
             if ($receiptFactory->support($payment)) {

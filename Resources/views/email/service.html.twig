@@ -1,7 +1,5 @@
 {% extends '@DarvinMailer/email/layout.html.twig' %}
 
-{% block heading %}{{ ('email.payment.service.' ~ state.name ~ '.subject')|trans([], 'email') }}{% endblock %}
-
 {% block content %}
     {% if order != null %}
         {% set orderId = order.id %}
@@ -14,5 +12,5 @@
         </div>
     {% endif %}
 
-    <p>{{ ('email.payment.service.' ~ state.name ~ '.text')|trans(['orderId': orderId], 'email')  }}</p>
+    <p>{{ content|trans(['orderId': orderId], 'email')  }}</p>
 {% endblock %}

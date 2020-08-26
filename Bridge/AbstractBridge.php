@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Bridge;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 
 /**
@@ -61,7 +61,7 @@ abstract class AbstractBridge implements BridgeInterface
     /**
      * @inheritDoc
      */
-    public function completePurchaseParameters(PaymentInterface $payment): array
+    public function completePurchaseParameters(Payment $payment): array
     {
         return $this->purchaseParameters($payment);
     }

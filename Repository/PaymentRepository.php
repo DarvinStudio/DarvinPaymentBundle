@@ -10,18 +10,47 @@
 
 namespace Darvin\PaymentBundle\Repository;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * Payment Repository
+ */
 class PaymentRepository extends EntityRepository
 {
     /**
-     * @param string $token
+     * @param Payment $payment Payment object
+     * @param string  $state   State of payment
      *
-     * @return PaymentInterface|null
+     * @return void
      */
-    public function findByActionToken(string $token): ?PaymentInterface
+    public function updateState(Payment $payment, string $state): void
     {
-        return $this->findOneBy(['actionToken' => $token]);
+        $qb = $this->createQueryBuilder('payment');
+        $qb
+            ->update()
+            ->set('payment.state', ':state')
+            ->setParameter('state', $state)
+            ->where('payment', $payment)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * @param Payment     $payment Payment object
+     * @param string|null $token   State of payment
+     *
+     * @return void
+     */
+    public function updateActionToken(Payment $payment, ?string $token): void
+    {
+        $qb = $this->createQueryBuilder('payment');
+        $qb
+            ->update()
+            ->set('payment.actionToken', ':actionToken')
+            ->setParameter('actionToken', $token)
+            ->where('payment', $payment)
+            ->getQuery()
+            ->execute();
     }
 }

@@ -17,17 +17,17 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table
  * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\PaymentRepository")
- *
+ * @ORM\HasLifecycleCallbacks
  * @ORM\InheritanceType("SINGLE_TABLE")
  */
-class Payment implements PaymentInterface
+class Payment
 {
     /**
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @var int $id
+     * @var int
      */
     protected $id;
 
@@ -90,7 +90,7 @@ class Payment implements PaymentInterface
     /**
      * @var string
      *
-     * @ORM\Column(type="PaymentStateType", nullable=false)
+     * @ORM\Column(type="PaymentStateType")
      * @DoctrineAssert\Enum(entity="Darvin\PaymentBundle\DBAL\Type\PaymentStateType")
      */
     protected $state;
@@ -103,10 +103,22 @@ class Payment implements PaymentInterface
     protected $actionToken;
 
     /**
-     * Payment constructor.
+     * @param int    $orderId          Order ID
+     * @param string $orderEntityClass Class of order entity
+     * @param string $amount           Amount
+     * @param string $currencyCode     Currency Code
      */
-    public function __construct()
-    {
+    public function __construct(
+        int $orderId,
+        string $orderEntityClass,
+        string $amount,
+        string $currencyCode
+    ) {
+        $this->orderId = $orderId;
+        $this->orderEntityClass = $orderEntityClass;
+        $this->amount = $amount;
+        $this->currencyCode = $currencyCode;
+
         $this->state = PaymentStateType::NEW;
     }
 
@@ -119,7 +131,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return int
      */
     public function getId(): int
     {
@@ -127,9 +139,9 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return int
      */
-    public function getOrderId(): ?int
+    public function getOrderId(): int
     {
         return $this->orderId;
     }
@@ -147,9 +159,9 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
-    public function getOrderEntityClass(): ?string
+    public function getOrderEntityClass(): string
     {
         return $this->orderEntityClass;
     }
@@ -167,7 +179,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return string|null
      */
     public function getTransactionRef(): ?string
     {
@@ -187,7 +199,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
     public function getAmount(): string
     {
@@ -207,7 +219,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
     public function getCurrencyCode(): string
     {
@@ -227,7 +239,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return int|null
      */
     public function getClientId(): ?int
     {
@@ -247,7 +259,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return string|null
      */
     public function getClientEmail(): ?string
     {
@@ -267,7 +279,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return string|null
      */
     public function getDescription(): ?string
     {
@@ -287,7 +299,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
     public function getState(): string
     {
@@ -307,15 +319,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @return bool
-     */
-    public function isPaid(): bool
-    {
-        return PaymentStateType::PAID === $this->state;
-    }
-
-    /**
-     * @inheritDoc
+     * @return string|null
      */
     public function getActionToken(): ?string
     {

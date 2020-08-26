@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Receipt\Exception;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 
 /**
  * Exception for case can't create receipt
@@ -18,9 +18,9 @@ use Darvin\PaymentBundle\Entity\PaymentInterface;
 class CantCreateReceiptException extends \Exception
 {
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      */
-    public function __construct(PaymentInterface $payment)
+    public function __construct(Payment $payment)
     {
         parent::__construct(sprintf(
             'Can\'t create receipt for order №%s',

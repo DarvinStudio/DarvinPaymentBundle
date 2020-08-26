@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\UrlBuilder;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -35,15 +35,20 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getAuthorizationUrl(PaymentInterface $payment, string $gatewayName): string
+    public function getAuthorizeUrl(Payment $payment, string $gatewayName): string
     {
-        throw new ActionNotImplementedException('authorization');
+        return $this->router->generate('darvin_payment_authorize', [
+            'id'          => $payment->getId(),
+            'gatewayName' => $gatewayName,
+        ],
+            RouterInterface::ABSOLUTE_URL
+        );
     }
 
     /**
      * @inheritDoc
      */
-    public function getCaptureUrl(PaymentInterface $payment, string $gatewayName): string
+    public function getCaptureUrl(Payment $payment, string $gatewayName): string
     {
         throw new ActionNotImplementedException('capture');
     }
@@ -51,9 +56,9 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getPurchaseUrl(PaymentInterface $payment, string $gatewayName): string
+    public function getPurchaseUrl(Payment $payment, string $gatewayName): string
     {
-        return $this->router->generate('darvin_payment_payment_purchase', [
+        return $this->router->generate('darvin_payment_purchase', [
                 'id'          => $payment->getId(),
                 'gatewayName' => $gatewayName,
             ],
@@ -64,13 +69,13 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getSuccessUrl(PaymentInterface $payment, string $gatewayName): string
+    public function getSuccessUrl(Payment $payment, string $gatewayName): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
         }
 
-        return $this->router->generate('darvin_payment_payment_success', [
+        return $this->router->generate('darvin_payment_success', [
             'gatewayName' => $gatewayName,
             'token'       => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);
@@ -79,13 +84,13 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getCanceledUrl(PaymentInterface $payment, string $gatewayName): string
+    public function getCanceledUrl(Payment $payment, string $gatewayName): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
         }
 
-        return $this->router->generate('darvin_payment_payment_canceled', [
+        return $this->router->generate('darvin_payment_canceled', [
             'gatewayName' => $gatewayName,
             'token'       => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);
@@ -94,13 +99,13 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getFailedUrl(PaymentInterface $payment, string $gatewayName): string
+    public function getFailedUrl(Payment $payment, string $gatewayName): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
         }
 
-        return $this->router->generate('darvin_payment_payment_failed', [
+        return $this->router->generate('darvin_payment_failed', [
             'gatewayName' => $gatewayName,
             'token'       => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);
@@ -109,7 +114,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getRefundUrl(PaymentInterface $payment, string $gatewayName): string
+    public function getRefundUrl(Payment $payment, string $gatewayName): string
     {
         throw new ActionNotImplementedException('refund');
     }
@@ -117,7 +122,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getNotifyUrl(PaymentInterface $payment, string $gatewayName): string
+    public function getNotifyUrl(Payment $payment, string $gatewayName): string
     {
         throw new ActionNotImplementedException('notify');
     }

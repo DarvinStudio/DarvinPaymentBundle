@@ -33,7 +33,6 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('default_currency')->defaultValue('RUB')->end()
                 ->scalarNode('default_gateway')->defaultNull()->end()
-                ->scalarNode('payment_class')->defaultValue(Payment::class)->end()
                 ->arrayNode('bridges')->useAttributeAsKey('name')
                     ->prototype('array')->canBeDisabled()
                         ->children()

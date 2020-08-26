@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 /**
- * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2018, Darvin Studio
+ * @author    Darvin Studio <info@darvin-studio.ru>
+ * @copyright Copyright (c) 2018-2020, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Receipt;
 
-use Darvin\PaymentBundle\Entity\PaymentInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 
 /**
  * Interface for registry of receipt factories
@@ -25,18 +25,18 @@ interface ReceiptFactoryRegistryInterface
     public function addFactory(ReceiptFactoryInterface $receiptFactory): void;
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\PaymentInterface $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface
      *
-     * @throws \Darvin\PaymentBundle\Receipt\Exception\FactoryNotExistException
+     * @throws \InvalidArgumentException
      */
-    public function getFactory(PaymentInterface $payment): ReceiptFactoryInterface;
+    public function getFactory(Payment $payment): ReceiptFactoryInterface;
 
     /**
-     * @param PaymentInterface $payment
+     * @param Payment $payment
      *
      * @return bool
      */
-    public function hasFactory(PaymentInterface $payment): bool;
+    public function hasFactory(Payment $payment): bool;
 }
