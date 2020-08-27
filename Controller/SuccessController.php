@@ -10,6 +10,8 @@
 
 namespace Darvin\PaymentBundle\Controller;
 
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\State\Manager\StateManagerInterface;
 use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
@@ -122,5 +124,18 @@ class SuccessController
     protected function getEntityManager(): EntityManagerInterface
     {
         return $this->entityManager;
+    }
+
+    /**
+     * @param string $state
+     *
+     * @return bool
+     */
+    protected function supportsState($state): bool
+    {
+        return in_array($state, [
+            PaymentStateType::PENDING,
+            PaymentStateType::COMPLETED,
+        ], true);
     }
 }

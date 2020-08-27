@@ -14,7 +14,6 @@ use Darvin\MailerBundle\Factory\Exception\CantCreateEmailException;
 use Darvin\MailerBundle\Mailer\Exception\MailerException;
 use Darvin\MailerBundle\Mailer\MailerInterface;
 use Darvin\PaymentBundle\Event\State\ChangedEvent;
-use Darvin\PaymentBundle\Event\State\StateEvents;
 use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
 use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -83,7 +82,7 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            StateEvents::CHANGED => 'sendEmails',
+            ChangedEvent::class => 'sendEmails',
         ];
     }
 

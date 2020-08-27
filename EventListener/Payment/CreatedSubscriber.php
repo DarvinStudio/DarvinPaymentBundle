@@ -12,7 +12,6 @@ namespace Darvin\PaymentBundle\EventListener\Payment;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Event\State\ChangedEvent;
-use Darvin\PaymentBundle\Event\State\StateEvents;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -21,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Subscriber for create event for new payment
  */
-class CreateChangedEventSubscriber implements EventSubscriberInterface
+class CreatedSubscriber implements EventSubscriberInterface
 {
     /**
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
@@ -46,12 +45,15 @@ class CreateChangedEventSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     */
     private function createEvent(LifecycleEventArgs $args): void
     {
         $entity = $args->getObject();
 
         if ($entity instanceof Payment) {
-            $this->eventDispatcher->dispatch(new ChangedEvent($entity), StateEvents::CHANGED);
+            $this->eventDispatcher->dispatch(new ChangedEvent($entity));
         }
 
     }

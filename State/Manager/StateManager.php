@@ -13,7 +13,6 @@ namespace Darvin\PaymentBundle\State\Manager;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Event\State\ChangedEvent;
-use Darvin\PaymentBundle\Event\State\StateEvents;
 use Darvin\PaymentBundle\Token\Manager\PaymentTokenManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -122,7 +121,7 @@ class StateManager implements StateManagerInterface
 
         $this->entityManager->getRepository(Payment::class)->updateState($payment, $state);
 
-        $this->eventDispatcher->dispatch(new ChangedEvent($payment), StateEvents::CHANGED);
+        $this->eventDispatcher->dispatch(new ChangedEvent($payment));
 
         if ($invalidateActionToken) {
             $this->tokenManager->invalidate($payment);

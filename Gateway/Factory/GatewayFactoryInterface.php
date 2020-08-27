@@ -10,11 +10,13 @@
 
 namespace Darvin\PaymentBundle\Gateway\Factory;
 
-
 use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException;
 use Omnipay\Common\GatewayInterface;
 
+/**
+ * Interface of gateway factory
+ */
 interface GatewayFactoryInterface
 {
     /**

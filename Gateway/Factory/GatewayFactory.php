@@ -17,7 +17,7 @@ use Omnipay\Omnipay;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class gateway factory
+ * Gateway factory
  */
 class GatewayFactory implements GatewayFactoryInterface
 {
@@ -32,8 +32,6 @@ class GatewayFactory implements GatewayFactoryInterface
     protected $requestStack;
 
     /**
-     * GatewayFactory constructor.
-     *
      * @param RequestStack $requestStack
      */
     public function __construct(RequestStack $requestStack)

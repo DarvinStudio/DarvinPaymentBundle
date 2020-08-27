@@ -1,12 +1,21 @@
 parameters:
-    darvin_payment.payment.manager.class: Darvin\PaymentBundle\Payment\Manager\PaymentManager
+    darvin_payment.payment.factory.class: Darvin\PaymentBundle\Payment\PaymentFactory
+    darvin_payment.payment.created_subscriber.class: Darvin\PaymentBundle\EventListener\Payment
 
 services:
-    Darvin\PaymentBundle\Payment\Manager\PaymentManagerInterface: '@darvin_payment.payment.manager'
+    Darvin\PaymentBundle\Payment\PaymentFactoryInterface: '@darvin_payment.payment.factory'
 
-    darvin_payment.payment.manager:
-        class: '%darvin_payment.payment.manager.class%'
+    darvin_payment.payment.factory:
+        class: '%darvin_payment.payment.factory.class%'
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@Darvin\Utils\ORM\EntityResolverInterface'
             - '%darvin_payment.default_currency%'
+        public: true
+
+    darvin_payment.payment.created_subscriber:
+        class: '%darvin_payment.payment.created_subscriber.class%'
+        arguments:
+            - '@event_dispatcher'
+        tags:
+            - { name: kernel.event_subscriber }

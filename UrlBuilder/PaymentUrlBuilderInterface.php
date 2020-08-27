@@ -20,7 +20,7 @@ interface PaymentUrlBuilderInterface
 {
     /**
      * @param Payment $payment     Payment
-     * @param string           $gatewayName Gateway name
+     * @param string  $gatewayName Gateway name
      *
      * @return string
      */
@@ -28,7 +28,7 @@ interface PaymentUrlBuilderInterface
 
     /**
      * @param Payment $payment     Payment
-     * @param string           $gatewayName Gateway name
+     * @param string  $gatewayName Gateway name
      *
      * @return string
      *
@@ -38,7 +38,7 @@ interface PaymentUrlBuilderInterface
 
     /**
      * @param Payment $payment     Payment
-     * @param string           $gatewayName Gateway name
+     * @param string  $gatewayName Gateway name
      *
      * @return string
      */
@@ -46,7 +46,7 @@ interface PaymentUrlBuilderInterface
 
     /**
      * @param Payment $payment     Payment
-     * @param string           $gatewayName Gateway name
+     * @param string  $gatewayName Gateway name
      *
      * @return string
      */
@@ -54,7 +54,7 @@ interface PaymentUrlBuilderInterface
 
     /**
      * @param Payment $payment     Payment
-     * @param string           $gatewayName Gateway name
+     * @param string  $gatewayName Gateway name
      *
      * @return string
      */
@@ -62,7 +62,7 @@ interface PaymentUrlBuilderInterface
 
     /**
      * @param Payment $payment     Payment
-     * @param string           $gatewayName Gateway name
+     * @param string  $gatewayName Gateway name
      *
      * @return string
      */
@@ -70,7 +70,7 @@ interface PaymentUrlBuilderInterface
 
     /**
      * @param Payment $payment     Payment
-     * @param string           $gatewayName Gateway name
+     * @param string  $gatewayName Gateway name
      *
      * @return string
      *
@@ -80,7 +80,7 @@ interface PaymentUrlBuilderInterface
 
     /**
      * @param Payment $payment     Payment
-     * @param string           $gatewayName Gateway name
+     * @param string  $gatewayName Gateway name
      *
      * @return string
      *
