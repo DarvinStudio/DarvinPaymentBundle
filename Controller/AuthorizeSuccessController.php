@@ -10,17 +10,21 @@
 
 namespace Darvin\PaymentBundle\Controller;
 
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
+use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Darvin\PaymentBundle\Workflow\Transitions;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\WorkflowInterface;
 use Twig\Environment;
 
 /**
- * Controller for the canceling payment
+ * Authorize success controller
  */
-class CanceledController
+class AuthorizeSuccessController
 {
     use PaymentControllerTrait;
 
@@ -35,6 +39,11 @@ class CanceledController
     private $entityManager;
 
     /**
+     * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
+     */
+    private $paymentUrlBuilder;
+
+    /**
      * @var \Twig\Environment
      */
     private $twig;
@@ -47,11 +56,13 @@ class CanceledController
     public function __construct(
         GatewayFactoryInterface $gatewayFactory,
         EntityManagerInterface $entityManager,
+        PaymentUrlBuilderInterface $paymentUrlBuilder,
         Environment $twig,
         WorkflowInterface $workflow
     ) {
         $this->gatewayFactory = $gatewayFactory;
         $this->entityManager = $entityManager;
+        $this->paymentUrlBuilder = $paymentUrlBuilder;
         $this->twig = $twig;
         $this->workflow = $workflow;
     }
@@ -60,27 +71,46 @@ class CanceledController
      * @param string $gatewayName Gateway name
      * @param string $token       Payment token
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function __invoke(string $gatewayName, string $token): Response
     {
+        $bridge = $this->getBridge($gatewayName);
+        $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
 
-        $gateway = $this->getGateway($gatewayName);
-
-        if ($this->workflow->can($payment, Transitions::CANCEL)) {
-            $this->workflow->apply($payment, Transitions::CANCEL);
-            $this->entityManager->flush();
+        if ($payment->getState() === PaymentStateType::AUTHORIZED) {
+            return new Response(
+                $this->twig->render('@DarvinPayment/Payment/authorize_success.html.twig', [
+                    'payment' => $payment,
+                ])
+            );
         }
 
-        return new Response(
-            $this->twig->render('@DarvinPayment/Payment/canceled.html.twig', [
-                'payment' => $payment,
-                'gateway' => $gateway,
-            ])
-        );
+        if (!$this->workflow->can($payment, Transitions::AUTHORIZE)) {
+            throw new \LogicException('This operation is not available for your payment');
+        }
+
+        if (!$gateway->supportsCompleteAuthorize()) {
+            throw new NotFoundHttpException(sprintf('Gateway "%s" doesn\'t support "completePurchase" method', $gatewayName));
+        }
+
+        $response = $gateway->completeAuthorize($bridge->completeAuthorizeParameters($payment))->send();
+
+        if ($response->isSuccessful()) {
+            $this->workflow->apply($payment, Transitions::AUTHORIZE);
+            $this->entityManager->flush();
+
+            return new Response(
+                $this->twig->render('@DarvinPayment/Payment/authorize_success.html.twig', [
+                    'payment' => $payment,
+                ])
+            );
+        }
+
+        return new RedirectResponse($this->paymentUrlBuilder->getFailedUrl($payment, $gatewayName));
     }
 
     /**

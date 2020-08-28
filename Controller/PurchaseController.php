@@ -13,13 +13,14 @@ namespace Darvin\PaymentBundle\Controller;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
-use Darvin\PaymentBundle\State\Manager\StateManagerInterface;
-use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
+use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
+use Darvin\PaymentBundle\Workflow\Transitions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Workflow\WorkflowInterface;
 use Twig\Environment;
 
 /**
@@ -45,12 +46,7 @@ class PurchaseController
     private $formFactory;
 
     /**
-     * @var \Darvin\PaymentBundle\State\Manager\StateManagerInterface
-     */
-    private $stateManager;
-
-    /**
-     * @var \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface
+     * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
      */
     private $paymentUrlBuilder;
 
@@ -59,20 +55,25 @@ class PurchaseController
      */
     private $twig;
 
+    /**
+     * @var \Symfony\Component\Workflow\WorkflowInterface
+     */
+    private $workflow;
+
     public function __construct(
         GatewayFactoryInterface $gatewayFactory,
         EntityManagerInterface $entityManager,
         FormFactoryInterface $formFactory,
-        StateManagerInterface $stateManager,
         PaymentUrlBuilderInterface $paymentUrlBuilder,
-        Environment $twig
+        Environment $twig,
+        WorkflowInterface $workflow
     ) {
         $this->gatewayFactory = $gatewayFactory;
         $this->entityManager = $entityManager;
         $this->formFactory = $formFactory;
-        $this->stateManager = $stateManager;
         $this->paymentUrlBuilder = $paymentUrlBuilder;
         $this->twig = $twig;
+        $this->workflow = $workflow;
     }
 
     /**
@@ -92,7 +93,9 @@ class PurchaseController
             throw new NotFoundHttpException(sprintf("%s doesn't support purchase method", $gatewayName));
         }
 
-        $this->stateManager->markAsPending($payment);
+        if (!$this->workflow->can($payment, Transitions::PURCHASE)) {
+            throw new \LogicException('This operation is not available for your payment');
+        }
 
         $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
 
@@ -122,14 +125,10 @@ class PurchaseController
         }
 
         if ($response->isSuccessful()) {
-            $this->stateManager->markAsCompleted($payment);
-
-            return new RedirectResponse($this->paymentUrlBuilder->getSuccessUrl($payment, $gatewayName));
+            return new RedirectResponse($this->paymentUrlBuilder->getPurchaseSuccessUrl($payment, $gatewayName));
         }
 
         if ($response->isCancelled()) {
-            $this->stateManager->markAsCanceled($payment);
-
             return new RedirectResponse($this->paymentUrlBuilder->getCanceledUrl($payment, $gatewayName));
         }
 

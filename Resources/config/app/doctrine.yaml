@@ -2,6 +2,3 @@ doctrine:
     dbal:
         types:
             PaymentStateType: Darvin\PaymentBundle\DBAL\Type\PaymentStateType
-    orm:
-        resolve_target_entities:
-            Darvin\PaymentBundle\Entity\PaymentInterface: Darvin\PaymentBundle\Entity\Payment

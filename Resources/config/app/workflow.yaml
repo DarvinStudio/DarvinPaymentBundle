@@ -1,0 +1,40 @@
+framework:
+    workflows:
+        payment:
+            type: state_machine
+            audit_trail:
+                enabled: "%kernel.debug%"
+            marking_store:
+                type: 'method'
+                property: 'state'
+            supports:
+                - Darvin\PaymentBundle\Entity\Payment
+            initial_marking: pending
+            places:
+                - pending
+                - authorized
+                - completed
+                - canceled
+                - refunded
+            transitions:
+                authorize:
+                    from: pending
+                    to:   authorized
+
+                capture:
+                    from: authorized
+                    to:   completed
+                void:
+                    from: authorized
+                    to:   canceled
+
+                purchase:
+                    from: pending
+                    to:   completed
+                cancel:
+                    from: pending
+                    to:   canceled
+
+                refund:
+                    from: completed
+                    to:   refunded

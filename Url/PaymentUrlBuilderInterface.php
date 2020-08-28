@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\UrlBuilder;
+namespace Darvin\PaymentBundle\Url;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
+use Darvin\PaymentBundle\Url\Exception\ActionNotImplementedException;
 
 /**
  * Payment url builder interface
@@ -25,6 +25,14 @@ interface PaymentUrlBuilderInterface
      * @return string
      */
     public function getAuthorizeUrl(Payment $payment, string $gatewayName): string;
+
+    /**
+     * @param Payment $payment     Payment
+     * @param string  $gatewayName Gateway name
+     *
+     * @return string
+     */
+    public function getAuthorizeSuccessUrl(Payment $payment, string $gatewayName): string;
 
     /**
      * @param Payment $payment     Payment
@@ -50,7 +58,7 @@ interface PaymentUrlBuilderInterface
      *
      * @return string
      */
-    public function getSuccessUrl(Payment $payment, string $gatewayName): string;
+    public function getPurchaseSuccessUrl(Payment $payment, string $gatewayName): string;
 
     /**
      * @param Payment $payment     Payment

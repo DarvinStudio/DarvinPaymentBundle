@@ -1,9 +1,10 @@
 parameters:
-    darvin_payment.controller.authorize.class: Darvin\PaymentBundle\Controller\AuthorizationController
+    darvin_payment.controller.authorize.class: Darvin\PaymentBundle\Controller\AuthorizeController
+    darvin_payment.controller.authorize_success.class: Darvin\PaymentBundle\Controller\AuthorizeSuccessController
     darvin_payment.controller.canceled.class: Darvin\PaymentBundle\Controller\CanceledController
     darvin_payment.controller.failed.class: Darvin\PaymentBundle\Controller\FailedController
     darvin_payment.controller.purchase.class: Darvin\PaymentBundle\Controller\PurchaseController
-    darvin_payment.controller.success.class: Darvin\PaymentBundle\Controller\SuccessController
+    darvin_payment.controller.purchase_success.class: Darvin\PaymentBundle\Controller\PurchaseSuccessController
 
 services:
     darvin_payment.controller.autorize:
@@ -12,25 +13,34 @@ services:
             - '@darvin_payment.gateway.gateway_factory'
             - '@doctrine.orm.entity_manager'
             - '@form.factory'
-            - '@darvin_payment.state.manager'
-            - '@darvin_payment.url_builder.payment_url_builder'
+            - '@darvin_payment.url.payment_url_builder'
             - '@twig'
+            - '@workflow.payment'
+
+    darvin_payment.controller.authorize_success:
+        class: '%darvin_payment.controller.authorize_success.class%'
+        arguments:
+            - '@darvin_payment.gateway.gateway_factory'
+            - '@doctrine.orm.entity_manager'
+            - '@darvin_payment.url.payment_url_builder'
+            - '@twig'
+            - '@workflow.payment'
 
     darvin_payment.controller.canceled:
         class: '%darvin_payment.controller.canceled.class%'
         arguments:
             - '@darvin_payment.gateway.gateway_factory'
             - '@doctrine.orm.entity_manager'
-            - '@darvin_payment.state.manager'
             - '@twig'
+            - '@workflow.payment'
 
     darvin_payment.controller.failed:
         class: '%darvin_payment.controller.failed.class%'
         arguments:
             - '@darvin_payment.gateway.gateway_factory'
             - '@doctrine.orm.entity_manager'
-            - '@darvin_payment.state.manager'
             - '@twig'
+            - '@workflow.payment'
 
     darvin_payment.controller.purchase:
         class: '%darvin_payment.controller.purchase.class%'
@@ -38,15 +48,15 @@ services:
             - '@darvin_payment.gateway.gateway_factory'
             - '@doctrine.orm.entity_manager'
             - '@form.factory'
-            - '@darvin_payment.state.manager'
-            - '@darvin_payment.url_builder.payment_url_builder'
+            - '@darvin_payment.url.payment_url_builder'
             - '@twig'
+            - '@workflow.abstract'
 
-    darvin_payment.controller.success:
-        class: '%darvin_payment.controller.success.class%'
+    darvin_payment.controller.purchase_success:
+        class: '%darvin_payment.controller.purchase_success.class%'
         arguments:
             - '@darvin_payment.gateway.gateway_factory'
             - '@doctrine.orm.entity_manager'
-            - '@darvin_payment.state.manager'
-            - '@darvin_payment.url_builder.payment_url_builder'
+            - '@darvin_payment.url.payment_url_builder'
             - '@twig'
+            - '@workflow.payment'

@@ -3,6 +3,10 @@ darvin_payment_authorize:
     defaults: { _controller: DarvinPaymentBundle:Authorize }
     requirements: { id: \d+ }
 
+darvin_payment_authorize_success:
+    path: /{gatewayName}/complete/{token}
+    defaults: { _controller: DarvinPaymentBundle:AuthorizeSuccess }
+
 darvin_payment_canceled:
     path: /{gatewayName}/canceled/{token}
     defaults: { _controller: DarvinPaymentBundle:Canceled }
@@ -16,6 +20,6 @@ darvin_payment_purchase:
     defaults: { _controller: DarvinPaymentBundle:Purchase }
     requirements: { id: \d+ }
 
-darvin_payment_success:
+darvin_payment_purchase_success:
     path: /{gatewayName}/complete/{token}
-    defaults: { _controller: DarvinPaymentBundle:Success }
+    defaults: { _controller: DarvinPaymentBundle:PurchaseSuccess }

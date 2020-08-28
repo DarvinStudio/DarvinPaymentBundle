@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
+use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 
 /**
  * Abstract bridge
@@ -19,7 +19,7 @@ use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
 abstract class AbstractBridge implements BridgeInterface
 {
     /**
-     * @var \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface
+     * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
      */
     protected $urlBuilder;
 
@@ -29,7 +29,7 @@ abstract class AbstractBridge implements BridgeInterface
     private $gatewayConfig;
 
     /**
-     * @param \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface $urlBuilder URL Builder
+     * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder URL Builder
      */
     public function __construct(PaymentUrlBuilderInterface $urlBuilder)
     {

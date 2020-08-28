@@ -1,11 +1,11 @@
 parameters:
-    darvin_payment.url_builder.payment_url_builder.class: 'Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilder'
+    darvin_payment.url.payment_url_builder.class: 'Darvin\PaymentBundle\Url\PaymentUrlBuilder'
 
 services:
-    Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface: '@darvin_payment.url_builder.payment_url_builder'
+    Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface: '@darvin_payment.url.payment_url_builder'
 
-    darvin_payment.url_builder.payment_url_builder:
-        class: '%darvin_payment.url_builder.payment_url_builder.class%'
+    darvin_payment.url.payment_url_builder:
+        class: '%darvin_payment.url.payment_url_builder.class%'
         arguments:
             - '@router'
         public: true

@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table
  * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\PaymentRepository")
- * @ORM\HasLifecycleCallbacks
  * @ORM\InheritanceType("SINGLE_TABLE")
  */
 class Payment
@@ -119,7 +118,7 @@ class Payment
         $this->amount = $amount;
         $this->currencyCode = $currencyCode;
 
-        $this->state = PaymentStateType::NEW;
+//        $this->state = PaymentStateType::PENDING;
     }
 
     /**

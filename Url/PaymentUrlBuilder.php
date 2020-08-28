@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\UrlBuilder;
+namespace Darvin\PaymentBundle\Url;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\UrlBuilder\Exception\ActionNotImplementedException;
+use Darvin\PaymentBundle\Url\Exception\ActionNotImplementedException;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -48,6 +48,21 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
+    public function getAuthorizeSuccessUrl(Payment $payment, string $gatewayName): string
+    {
+        if (!$payment->getActionToken()) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        return $this->router->generate('darvin_payment_authorize_success', [
+            'gatewayName' => $gatewayName,
+            'token'       => $payment->getActionToken()
+        ], RouterInterface::ABSOLUTE_URL);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCaptureUrl(Payment $payment, string $gatewayName): string
     {
         throw new ActionNotImplementedException('capture');
@@ -69,13 +84,13 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getSuccessUrl(Payment $payment, string $gatewayName): string
+    public function getPurchaseSuccessUrl(Payment $payment, string $gatewayName): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
         }
 
-        return $this->router->generate('darvin_payment_success', [
+        return $this->router->generate('darvin_payment_purchase_success', [
             'gatewayName' => $gatewayName,
             'token'       => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);

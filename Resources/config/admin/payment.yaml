@@ -1,0 +1,34 @@
+menu:
+    group:    payment
+    position: 50
+
+route_blacklist:
+    - new
+
+view:
+    index:
+        fields:
+            orderId: ~
+            orderEntityClass: ~
+            transactionRef: ~
+            amount: ~
+            currencyCode: ~
+            clientId: ~
+            clientEmail: ~
+            description: ~
+            state: ~
+            actionToken: ~
+
+form:
+    edit:
+        fields:
+            orderId: ~
+            orderEntityClass: ~
+            transactionRef: ~
+            amount: ~
+            currencyCode: ~
+            clientId: ~
+            clientEmail: ~
+            description: ~
+            state: ~
+            actionToken: ~

@@ -12,7 +12,7 @@ namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface;
-use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
+use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 
 /**
  * Sberbank gateway parameters bridge
@@ -53,7 +53,7 @@ class SberbankBridge extends AbstractBridge
             'orderNumber'        => $payment->getOrderId(),
             'amount'             => $payment->getAmount(),
             'description'        => $payment->getDescription(),
-            'returnUrl'          => $this->urlBuilder->getSuccessUrl($payment, 'sberbank'),
+            'returnUrl'          => $this->urlBuilder->getAuthorizeSuccessUrl($payment, 'sberbank'),
             'failUrl'            => $this->urlBuilder->getFailedUrl($payment, 'sberbank'),
             'sessionTimeoutSecs' => $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 28800,
             'clientId'           => $payment->getClientId(),
@@ -79,7 +79,18 @@ class SberbankBridge extends AbstractBridge
      */
     public function purchaseParameters(Payment $payment): array
     {
-        return $this->authorizeParameters($payment);
+        return [
+            'orderNumber'        => $payment->getOrderId(),
+            'amount'             => $payment->getAmount(),
+            'description'        => $payment->getDescription(),
+            'returnUrl'          => $this->urlBuilder->getPurchaseSuccessUrl($payment, 'sberbank'),
+            'failUrl'            => $this->urlBuilder->getFailedUrl($payment, 'sberbank'),
+            'sessionTimeoutSecs' => $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 28800,
+            'clientId'           => $payment->getClientId(),
+            'email'              => $payment->getClientEmail(),
+            'taxSystem'          => $this->getGatewayConfig()['taxSystem'] ?? null,
+            'orderBundle'        => $this->getReceipt($payment),
+        ];
     }
 
     /**

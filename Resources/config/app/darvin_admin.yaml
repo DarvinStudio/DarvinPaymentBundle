@@ -1,0 +1,3 @@
+darvin_admin:
+    sections:
+        Darvin\PaymentBundle\Entity\Payment: '@DarvinPaymentBundle/Resources/config/admin/payment.yaml'

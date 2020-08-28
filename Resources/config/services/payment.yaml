@@ -1,6 +1,5 @@
 parameters:
     darvin_payment.payment.factory.class: Darvin\PaymentBundle\Payment\PaymentFactory
-    darvin_payment.payment.created_subscriber.class: Darvin\PaymentBundle\EventListener\Payment
 
 services:
     Darvin\PaymentBundle\Payment\PaymentFactoryInterface: '@darvin_payment.payment.factory'
@@ -12,10 +11,3 @@ services:
             - '@Darvin\Utils\ORM\EntityResolverInterface'
             - '%darvin_payment.default_currency%'
         public: true
-
-    darvin_payment.payment.created_subscriber:
-        class: '%darvin_payment.payment.created_subscriber.class%'
-        arguments:
-            - '@event_dispatcher'
-        tags:
-            - { name: kernel.event_subscriber }

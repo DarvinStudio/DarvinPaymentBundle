@@ -42,13 +42,12 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
             'configuration',
             'controller',
-            'gateway_factory',
+            'gateway',
             'mailer' => ['callback' => static function () use ($config): bool {
                 return $config['mailer']['enabled'];
             }],
             'payment',
             'state',
-            'token',
             'url_builder',
             'bridges/telr' => ['callback' => static function () use ($config): bool {
                 return $config['bridges']['telr']['enabled'] ?? false;
@@ -65,6 +64,9 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     public function prepend(ContainerBuilder $container): void
     {
         (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('doctrine');
+        (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('workflow');
+
+        (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('darvin_admin');
 
         $bundles = $container->getParameter('kernel.bundles');
 

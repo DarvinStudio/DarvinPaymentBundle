@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\UrlBuilder\Exception;
+namespace Darvin\PaymentBundle\Url\Exception;
 
 /**
  * Exception for action is not implemented

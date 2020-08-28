@@ -70,6 +70,8 @@ class PaymentFactory implements PaymentFactoryInterface
             $currencyCode ?? $this->defaultCurrency
         );
 
+        $payment->setActionToken(md5(sprintf("%d:%d", $orderId, time())));
+
         return $payment;
     }
 }

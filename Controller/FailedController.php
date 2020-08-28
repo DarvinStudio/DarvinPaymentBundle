@@ -11,7 +11,6 @@
 namespace Darvin\PaymentBundle\Controller;
 
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
-use Darvin\PaymentBundle\State\Manager\StateManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
@@ -34,11 +33,6 @@ class FailedController
     private $entityManager;
 
     /**
-     * @var \Darvin\PaymentBundle\State\Manager\StateManagerInterface
-     */
-    private $stateManager;
-
-    /**
      * @var \Twig\Environment
      */
     private $twig;
@@ -46,12 +40,10 @@ class FailedController
     public function __construct(
         GatewayFactoryInterface $gatewayFactory,
         EntityManagerInterface $entityManager,
-        StateManagerInterface $stateManager,
         Environment $twig
     ) {
         $this->gatewayFactory = $gatewayFactory;
         $this->entityManager = $entityManager;
-        $this->stateManager = $stateManager;
         $this->twig = $twig;
     }
 
@@ -68,8 +60,6 @@ class FailedController
         $payment = $this->getPaymentByToken($token);
 
         $gateway = $this->getGateway($gatewayName);
-
-        $this->stateManager->markAsFailed($payment);
 
         return new Response(
             $this->twig->render('@DarvinPayment/Payment/failed.html.twig', [

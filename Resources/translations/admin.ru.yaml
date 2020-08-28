@@ -7,9 +7,8 @@ configuration:
 
 payment:
     state:
-        canceled: Отменен
-        completed: Оплачен
-        failed:   Неисправность
-        new:      Новый
-        pending:  Ждет оплаты
-        refund:   Возврат
+        authorized: Авторизован
+        canceled:   Отменен
+        completed:  Оплачен
+        pending:    Ждет оплаты
+        refunded:   Возврат

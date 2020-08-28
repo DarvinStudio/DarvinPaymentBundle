@@ -17,19 +17,17 @@ use Fresh\DoctrineEnumBundle\DBAL\Types\AbstractEnumType;
  */
 final class PaymentStateType extends AbstractEnumType
 {
-    public const NEW       = 'new';
-    public const PENDING   = 'pending';
-    public const COMPLETED = 'completed';
-    public const CANCELED  = 'canceled';
-    public const FAILED    = 'failed';
-    public const REFUND    = 'refund';
+    public const PENDING    = 'pending';
+    public const AUTHORIZED = 'authorized';
+    public const COMPLETED  = 'completed';
+    public const CANCELED   = 'canceled';
+    public const REFUNDED   = 'refund';
 
     protected static $choices = [
-        self::NEW       => 'payment.state.'.self::NEW,
-        self::PENDING   => 'payment.state.'.self::PENDING,
-        self::COMPLETED => 'payment.state.'.self::COMPLETED,
-        self::CANCELED  => 'payment.state.'.self::CANCELED,
-        self::FAILED    => 'payment.state.'.self::FAILED,
-        self::REFUND    => 'payment.state.'.self::REFUND,
+        self::PENDING    => 'payment.state.pending',
+        self::AUTHORIZED => 'payment.state.authorized',
+        self::COMPLETED  => 'payment.state.completed',
+        self::CANCELED   => 'payment.state.canceled',
+        self::REFUNDED   => 'payment.state.refund',
     ];
 }

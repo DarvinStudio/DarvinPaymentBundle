@@ -7,9 +7,8 @@ configuration:
 
 payment:
     state:
-        canceled:  Canceled
-        completed: Completed
-        failed:    Failed
-        new:       New
-        pending:   Pending
-        refund:    Refund
+        authorized: Authorized
+        canceled:   Canceled
+        completed:  Completed
+        pending:    Pending
+        refunded:   Refund

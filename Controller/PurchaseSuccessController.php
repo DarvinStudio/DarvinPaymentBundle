@@ -11,20 +11,20 @@
 namespace Darvin\PaymentBundle\Controller;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
-use Darvin\PaymentBundle\State\Manager\StateManagerInterface;
-use Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface;
+use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
+use Darvin\PaymentBundle\Workflow\Transitions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Workflow\WorkflowInterface;
 use Twig\Environment;
 
 /**
- * Success controller
+ * Purchase success controller
  */
-class SuccessController
+class PurchaseSuccessController
 {
     use PaymentControllerTrait;
 
@@ -39,12 +39,7 @@ class SuccessController
     private $entityManager;
 
     /**
-     * @var \Darvin\PaymentBundle\State\Manager\StateManagerInterface
-     */
-    private $stateManager;
-
-    /**
-     * @var \Darvin\PaymentBundle\UrlBuilder\PaymentUrlBuilderInterface
+     * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
      */
     private $paymentUrlBuilder;
 
@@ -53,18 +48,23 @@ class SuccessController
      */
     private $twig;
 
+    /**
+     * @var \Symfony\Component\Workflow\WorkflowInterface
+     */
+    private $workflow;
+
     public function __construct(
         GatewayFactoryInterface $gatewayFactory,
         EntityManagerInterface $entityManager,
-        StateManagerInterface $stateManager,
         PaymentUrlBuilderInterface $paymentUrlBuilder,
-        Environment $twig
+        Environment $twig,
+        WorkflowInterface $workflow
     ) {
         $this->gatewayFactory = $gatewayFactory;
         $this->entityManager = $entityManager;
-        $this->stateManager = $stateManager;
         $this->paymentUrlBuilder = $paymentUrlBuilder;
         $this->twig = $twig;
+        $this->workflow = $workflow;
     }
 
     /**
@@ -81,12 +81,16 @@ class SuccessController
         $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
 
-        if ($this->stateManager->isCompleted($payment)) {
+        if ($payment->getState() === PaymentStateType::PENDING) {
             return new Response(
-                $this->twig->render('@DarvinPayment/Payment/success.html.twig', [
+                $this->twig->render('@DarvinPayment/payment/purchase_success.html.twig', [
                     'payment' => $payment,
                 ])
             );
+        }
+
+        if (!$this->workflow->can($payment, Transitions::PURCHASE)) {
+            throw new \LogicException('This operation is not available for your payment');
         }
 
         if (!$gateway->supportsCompletePurchase()) {
@@ -96,16 +100,15 @@ class SuccessController
         $response = $gateway->completePurchase($bridge->completePurchaseParameters($payment))->send();
 
         if ($response->isSuccessful()) {
-            $this->stateManager->markAsCompleted($payment);
+            $this->workflow->apply($payment, Transitions::PURCHASE);
+            $this->entityManager->flush();
 
             return new Response(
-                $this->twig->render('@DarvinPayment/Payment/success.html.twig', [
+                $this->twig->render('@DarvinPayment/Payment/purchase_success.html.twig', [
                     'payment' => $payment,
                 ])
             );
         }
-
-        $this->stateManager->markAsFailed($payment);
 
         return new RedirectResponse($this->paymentUrlBuilder->getFailedUrl($payment, $gatewayName));
     }
@@ -124,18 +127,5 @@ class SuccessController
     protected function getEntityManager(): EntityManagerInterface
     {
         return $this->entityManager;
-    }
-
-    /**
-     * @param string $state
-     *
-     * @return bool
-     */
-    protected function supportsState($state): bool
-    {
-        return in_array($state, [
-            PaymentStateType::PENDING,
-            PaymentStateType::COMPLETED,
-        ], true);
     }
 }
