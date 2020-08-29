@@ -24,7 +24,6 @@
     ],
     "require": {
         "php": ">=7.2",
-        "symfony/symfony": "^4.0",
         "symfony/workflow": "^4.3",
         "doctrine/orm": "^2.5",
         "fresh/doctrine-enum-bundle": "^6.6.*",
