@@ -26,7 +26,7 @@
         "php": ">=7.2",
         "symfony/workflow": "^4.3",
         "doctrine/orm": "^2.5",
-        "fresh/doctrine-enum-bundle": "^6.6.*",
+        "fresh/doctrine-enum-bundle": "^6.6",
         "league/omnipay": "^3",
         "twig/twig": "^2.0||^3.0"
     },
