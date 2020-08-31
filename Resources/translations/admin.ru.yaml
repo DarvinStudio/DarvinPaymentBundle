@@ -7,6 +7,7 @@ configuration:
 
 payment:
     state:
+        approval:   Утверждение
         authorized: Авторизован
         canceled:   Отменен
         completed:  Оплачен

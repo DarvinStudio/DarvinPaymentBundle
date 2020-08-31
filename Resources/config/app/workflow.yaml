@@ -11,16 +11,20 @@ framework:
                 - Darvin\PaymentBundle\Entity\Payment
             initial_marking: pending
             places:
+                - aproval
                 - pending
                 - authorized
                 - completed
                 - canceled
                 - refunded
             transitions:
+                approve:
+                    from: approval
+                    to:   pending
+
                 authorize:
                     from: pending
                     to:   authorized
-
                 capture:
                     from: authorized
                     to:   completed

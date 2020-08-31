@@ -32,6 +32,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('default_currency')->defaultValue('RUB')->end()
                 ->scalarNode('default_gateway')->defaultNull()->end()
+                ->booleanNode('auto_approval')->defaultTrue()->end()
                 ->arrayNode('bridges')->useAttributeAsKey('name')
                     ->prototype('array')->canBeDisabled()
                         ->children()

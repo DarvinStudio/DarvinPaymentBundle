@@ -1,25 +1,23 @@
 darvin_payment_authorize:
-    path: /{gatewayName}/authorize/{id}
-    defaults: { _controller: DarvinPaymentBundle:Authorize }
-    requirements: { id: \d+ }
+    path: /{gatewayName}/authorize/{token}
+    defaults: { _controller: darvin_payment.controller.payment.autorize }
 
 darvin_payment_authorize_success:
-    path: /{gatewayName}/complete/{token}
-    defaults: { _controller: DarvinPaymentBundle:AuthorizeSuccess }
+    path: /{gatewayName}/authorize_complete/{token}
+    defaults: { _controller: darvin_payment.controller.payment.authorize_success }
 
 darvin_payment_canceled:
     path: /{gatewayName}/canceled/{token}
-    defaults: { _controller: DarvinPaymentBundle:Canceled }
+    defaults: { _controller: darvin_payment.controller.payment.canceled }
 
 darvin_payment_failed:
     path: /{gatewayName}/failed/{token}
-    defaults: { _controller: DarvinPaymentBundle:Failed }
+    defaults: { _controller: darvin_payment.controller.payment.failed }
 
 darvin_payment_purchase:
-    path: /{gatewayName}/purchase/{id}
-    defaults: { _controller: DarvinPaymentBundle:Purchase }
-    requirements: { id: \d+ }
+    path: /{gatewayName}/purchase/{token}
+    defaults: { _controller: darvin_payment.controller.payment.purchase }
 
 darvin_payment_purchase_success:
-    path: /{gatewayName}/complete/{token}
-    defaults: { _controller: DarvinPaymentBundle:PurchaseSuccess }
+    path: /{gatewayName}/purchase_complete/{token}
+    defaults: { _controller: darvin_payment.controller.payment.purchase_success }

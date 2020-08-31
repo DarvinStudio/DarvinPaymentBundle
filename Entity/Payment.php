@@ -102,23 +102,11 @@ class Payment
     protected $actionToken;
 
     /**
-     * @param int    $orderId          Order ID
-     * @param string $orderEntityClass Class of order entity
-     * @param string $amount           Amount
-     * @param string $currencyCode     Currency Code
+     * Payment constructor.
      */
-    public function __construct(
-        int $orderId,
-        string $orderEntityClass,
-        string $amount,
-        string $currencyCode
-    ) {
-        $this->orderId = $orderId;
-        $this->orderEntityClass = $orderEntityClass;
-        $this->amount = $amount;
-        $this->currencyCode = $currencyCode;
-
-//        $this->state = PaymentStateType::PENDING;
+    public function __construct()
+    {
+        $this->state = PaymentStateType::APROVAL;
     }
 
     /**

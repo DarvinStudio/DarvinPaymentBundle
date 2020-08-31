@@ -13,6 +13,7 @@ namespace Darvin\PaymentBundle\Payment;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 /**
  * Payment factory
@@ -30,25 +31,41 @@ class PaymentFactory implements PaymentFactoryInterface
     protected $entityResolver;
 
     /**
+     * @var \Symfony\Component\Workflow\WorkflowInterface
+     */
+    protected $workflow;
+
+    /**
      * @var string
      */
     protected $defaultCurrency;
+
+    /**
+     * @var bool
+     */
+    protected $autoApproval;
 
     /**
      * PaymentManager constructor.
      *
      * @param \Doctrine\ORM\EntityManagerInterface      $entityManager   Entity manager
      * @param \Darvin\Utils\ORM\EntityResolverInterface $entityResolver  Entity resolver
+     * @param WorkflowInterface                         $workflow        Workflow for payment state
      * @param string                                    $defaultCurrency Currency by default
+     * @param bool                                      $autoApproval    Auto approval or need admin approval
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         EntityResolverInterface $entityResolver,
-        string $defaultCurrency
+        WorkflowInterface $workflow,
+        string $defaultCurrency,
+        bool $autoApproval
     ) {
         $this->entityManager = $entityManager;
         $this->entityResolver = $entityResolver;
+        $this->workflow = $workflow;
         $this->defaultCurrency = $defaultCurrency;
+        $this->autoApproval = $autoApproval;
     }
 
     /**
@@ -69,8 +86,16 @@ class PaymentFactory implements PaymentFactoryInterface
             $amount,
             $currencyCode ?? $this->defaultCurrency
         );
+        $payment
+            ->setOrderId($orderId)
+            ->setOrderEntityClass($orderEntityClass)
+            ->setAmount($amount)
+            ->setCurrencyCode($currencyCode ?? $this->defaultCurrency)
+            ->setActionToken(md5(sprintf("%d:%d", $orderId, time())));
 
-        $payment->setActionToken(md5(sprintf("%d:%d", $orderId, time())));
+        if ($this->autoApproval) {
+            $this->workflow->apply($payment, 'approve');
+        }
 
         return $payment;
     }

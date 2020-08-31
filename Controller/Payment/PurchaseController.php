@@ -8,14 +8,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Controller;
+namespace Darvin\PaymentBundle\Controller\Payment;
 
+use Darvin\PaymentBundle\Controller\AbstractController;
+use Darvin\PaymentBundle\Controller\PreCheckControllerInterface;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Darvin\PaymentBundle\Workflow\Transitions;
 use Doctrine\ORM\EntityManagerInterface;
+use Omnipay\Common\GatewayInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,78 +29,51 @@ use Twig\Environment;
 /**
  * Purchase controller
  */
-class AuthorizeController
+class PurchaseController extends AbstractController implements PreCheckControllerInterface
 {
-    use PaymentControllerTrait;
-
-    /**
-     * @var \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface
-     */
-    private $gatewayFactory;
-
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
-    private $entityManager;
-
     /**
      * @var \Symfony\Component\Form\FormFactoryInterface
      */
     private $formFactory;
 
     /**
-     * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
+     * @param GatewayFactoryInterface    $gatewayFactory    Gateway Factory
+     * @param EntityManagerInterface     $entityManager     Entity Manager
+     * @param Environment                $twig              Twig
+     * @param FormFactoryInterface       $formFactory       Form Factory
+     * @param PaymentUrlBuilderInterface $paymentUrlBuilder Url builder
+     * @param WorkflowInterface          $workflow          Workflow
      */
-    private $paymentUrlBuilder;
-
-    /**
-     * @var \Twig\Environment
-     */
-    private $twig;
-
-    /**
-     * @var \Symfony\Component\Workflow\WorkflowInterface
-     */
-    private $workflow;
-
     public function __construct(
         GatewayFactoryInterface $gatewayFactory,
         EntityManagerInterface $entityManager,
+        Environment $twig,
         FormFactoryInterface $formFactory,
         PaymentUrlBuilderInterface $paymentUrlBuilder,
-        Environment $twig,
         WorkflowInterface $workflow
     ) {
-        $this->gatewayFactory = $gatewayFactory;
-        $this->entityManager = $entityManager;
+        parent::__construct($gatewayFactory, $entityManager, $twig, $paymentUrlBuilder, $workflow);
+
         $this->formFactory = $formFactory;
-        $this->paymentUrlBuilder = $paymentUrlBuilder;
-        $this->twig = $twig;
-        $this->workflow = $workflow;
     }
 
     /**
-     * @param string                               $gatewayName Gateway name
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
+     * @param string $gatewayName Gateway name
+     * @param string $token       Payment token
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function __invoke(string $gatewayName, Payment $payment): Response
+    public function __invoke(string $gatewayName, string $token): Response
     {
         $bridge = $this->getBridge($gatewayName);
         $gateway = $this->getGateway($gatewayName);
+        $payment = $this->getPaymentByToken($token);
 
-        if (!$gateway->supportsAuthorize()) {
-            throw new NotFoundHttpException(sprintf("%s doesn't support authorize method", $gatewayName));
-        }
+        $this->preCheckPayment($gateway, $payment);
 
-        if (!$this->workflow->can($payment, Transitions::AUTHORIZE)) {
-            throw new \LogicException('This operation is not available for your payment');
-        }
-
-        $response = $gateway->authorize($bridge->authorizeParameters($payment))->send();
+        $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
 
         if ($response->getTransactionReference() !== null) {
             $payment->setTransactionRef($response->getTransactionReference());
@@ -115,7 +91,7 @@ class AuthorizeController
             ]);
 
             return new Response(
-                $this->twig->render('@DarvinPayment/Payment/purchase.html.twig', [
+                $this->getTwig()->render('@DarvinPayment/payment/purchase.html.twig', [
                     'form'     => $form->createView(),
                     'payment'  => $payment,
                     'response' => $response,
@@ -125,29 +101,46 @@ class AuthorizeController
         }
 
         if ($response->isSuccessful()) {
-            return new RedirectResponse($this->paymentUrlBuilder->getAuthorizeSuccessUrl($payment, $gatewayName));
+            return new RedirectResponse($this->getPaymentUrlBuilder()->getPurchaseSuccessUrl($payment, $gatewayName));
         }
 
         if ($response->isCancelled()) {
-            return new RedirectResponse($this->paymentUrlBuilder->getCanceledUrl($payment, $gatewayName));
+            return new RedirectResponse($this->getPaymentUrlBuilder()->getCanceledUrl($payment, $gatewayName));
         }
 
-        throw new \LogicException('Undefined response');
+        $errorMessage = sprintf('Can\'t handler response for payment id %s and gateway %s', $payment->getId(), $gatewayName);
+
+        if (null !== $this->getLogger()) {
+            $this->getLogger()->error($errorMessage);
+
+            return new RedirectResponse($this->getPaymentUrlBuilder()->getFailedUrl($payment, $gatewayName));
+        }
+
+        throw new \LogicException($errorMessage);
     }
 
     /**
      * @inheritDoc
      */
-    protected function getGatewayFactory(): GatewayFactoryInterface
+    public function preCheckPayment(GatewayInterface $gateway, Payment $payment): void
     {
-        return $this->gatewayFactory;
-    }
+        if (!$gateway->supportsPurchase()) {
+            $errorMessage = sprintf('Payment gateway %s doesn\'t support purchase method', $gateway->getName());
+            if (null !== $this->getLogger()) {
+                $this->getLogger()->error($errorMessage);
+            }
 
-    /**
-     * @inheritDoc
-     */
-    protected function getEntityManager(): EntityManagerInterface
-    {
-        return $this->entityManager;
+            throw new NotFoundHttpException($errorMessage);
+        }
+
+        if (!$this->getWorkflow()->can($payment, Transitions::PURCHASE)) {
+            $errorMessage = 'This operation is not available for your payment';
+
+            if (null !== $this->getLogger()) {
+                $this->getLogger()->error($errorMessage);
+            }
+
+            throw new \LogicException($errorMessage);
+        }
     }
 }

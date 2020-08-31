@@ -65,10 +65,13 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     {
         (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('doctrine');
         (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('workflow');
-
         (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('darvin_admin');
 
         $bundles = $container->getParameter('kernel.bundles');
+
+        if (isset($bundles['MonologBundle'])) {
+            (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('monolog');
+        }
 
         $container->prependExtensionConfig($this->getAlias(), [
             'mailer' => [
