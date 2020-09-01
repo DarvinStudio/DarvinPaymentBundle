@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Controller\Admin;
+namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\Workflow\Transitions;
@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Authorize success controller
  */
-class CaptureController extends AbstractController
+class CompleteAuthorizeController extends AbstractController
 {
     /**
      * @param string $gatewayName Gateway name
@@ -34,20 +34,22 @@ class CaptureController extends AbstractController
         $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
 
-        $this->validateGateway($gateway, 'capture');
-        $this->validatePayment($payment, Transitions::CAPTURE);
+        $this->validatePayment($payment, Transitions::AUTHORIZE);
+        $this->validateGateway($gateway, 'completeAuthorize');
 
-        $response = $gateway->capture($bridge->captureParameters($payment))->send();
+        try {
+            $response = $gateway->completeAuthorize($bridge->completeAuthorizeParameters($payment))->send();
+        } catch (\Exception $ex) {
+            $this->addErrorLog(sprintf('%s: %s', __METHOD__, $ex->getMessage()));
+
+            return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
+        }
 
         if ($response->isSuccessful()) {
-            $this->workflow->apply($payment, Transitions::CAPTURE);
+            $this->workflow->apply($payment, Transitions::AUTHORIZE);
             $this->entityManager->flush();
 
-            return new Response(
-                $this->twig->render('@DarvinPayment/admin/capture.html.twig', [
-                    'payment' => $payment,
-                ])
-            );
+            return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment, $gatewayName));
         }
 
         return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));

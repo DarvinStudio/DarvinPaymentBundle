@@ -11,16 +11,14 @@
 namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
-use Darvin\PaymentBundle\Controller\PreCheckControllerInterface;
-use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Workflow\Transitions;
-use Omnipay\Common\GatewayInterface;
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Controller for the canceling payment
+ * Success payment controller
  */
-class CanceledController extends AbstractController implements PreCheckControllerInterface
+class SuccessController extends AbstractController
 {
     /**
      * @param string $gatewayName Gateway name
@@ -35,32 +33,21 @@ class CanceledController extends AbstractController implements PreCheckControlle
         $payment = $this->getPaymentByToken($token);
         $gateway = $this->getGateway($gatewayName);
 
-        $this->preCheckPayment($gateway, $payment);
+        if (!in_array($payment->getState(),[
+            PaymentStateType::COMPLETED,
+            PaymentStateType::AUTHORIZED
+        ], true)) {
+            $errorMessage = sprintf('%s: Payment state is not completed yet. Payment id: %s', __METHOD__, $payment->getId());
+            $this->addErrorLog($errorMessage);
 
-        $this->getWorkflow()->apply($payment, Transitions::CANCEL);
-        $this->getEntityManager()->flush();
+            throw new NotFoundHttpException($errorMessage);
+        }
 
         return new Response(
-            $this->getTwig()->render('@DarvinPayment/payment/canceled.html.twig', [
+            $this->twig->render('@DarvinPayment/payment/success.html.twig', [
                 'payment' => $payment,
                 'gateway' => $gateway,
             ])
         );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function preCheckPayment(GatewayInterface $gateway, Payment $payment): void
-    {
-        if (!$this->getWorkflow()->can($payment, Transitions::CANCEL)) {
-            $errorMessage = 'This operation is not available for your payment';
-
-            if (null !== $this->getLogger()) {
-                $this->getLogger()->error($errorMessage);
-            }
-
-            throw new \LogicException($errorMessage);
-        }
     }
 }

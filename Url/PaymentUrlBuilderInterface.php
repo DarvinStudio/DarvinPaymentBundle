@@ -32,7 +32,7 @@ interface PaymentUrlBuilderInterface
      *
      * @return string
      */
-    public function getAuthorizeSuccessUrl(Payment $payment, string $gatewayName): string;
+    public function getCompleteAuthorizeUrl(Payment $payment, string $gatewayName): string;
 
     /**
      * @param Payment $payment     Payment
@@ -58,7 +58,7 @@ interface PaymentUrlBuilderInterface
      *
      * @return string
      */
-    public function getPurchaseSuccessUrl(Payment $payment, string $gatewayName): string;
+    public function getCompletePurchaseUrl(Payment $payment, string $gatewayName): string;
 
     /**
      * @param Payment $payment     Payment
@@ -66,15 +66,7 @@ interface PaymentUrlBuilderInterface
      *
      * @return string
      */
-    public function getCanceledUrl(Payment $payment, string $gatewayName): string;
-
-    /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
-     *
-     * @return string
-     */
-    public function getFailedUrl(Payment $payment, string $gatewayName): string;
+    public function getCancelUrl(Payment $payment, string $gatewayName): string;
 
     /**
      * @param Payment $payment     Payment
@@ -95,4 +87,20 @@ interface PaymentUrlBuilderInterface
      * @throws ActionNotImplementedException
      */
     public function getNotifyUrl(Payment $payment, string $gatewayName): string;
+
+    /**
+     * @param Payment $payment     Payment
+     * @param string  $gatewayName Gateway name
+     *
+     * @return string
+     */
+    public function getSuccessUrl(Payment $payment, string $gatewayName): string;
+
+    /**
+     * @param Payment $payment     Payment
+     * @param string  $gatewayName Gateway name
+     *
+     * @return string
+     */
+    public function getFailUrl(Payment $payment, string $gatewayName): string;
 }

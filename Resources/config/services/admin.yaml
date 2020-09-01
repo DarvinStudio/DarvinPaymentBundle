@@ -1,0 +1,7 @@
+parameters:
+    darvin_payment.controller.admin.capture.class: Darvin\PaymentBundle\Controller\Admin\CaptureController
+
+services:
+    darvin_payment.controller.admin.capture:
+        class: '%darvin_payment.controller.admin.capture.class%'
+        parent: 'darvin_payment.controller.payment.abstract'

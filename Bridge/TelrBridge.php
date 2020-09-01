@@ -64,7 +64,7 @@ class TelrBridge extends AbstractBridge
     public function completePurchaseParameters(Payment $payment): array
     {
         return [
-            'order_ref' => $payment->getTransactionRef()
+            'order_ref' => $payment->getTransactionReference()
         ];
     }
 

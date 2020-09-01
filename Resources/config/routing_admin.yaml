@@ -1,0 +1,3 @@
+darvin_payment_admin_capture:
+    path:     /{gatewayName}/capture/{token}
+    defaults: { _controller: darvin_payment.controller.admin.capture }

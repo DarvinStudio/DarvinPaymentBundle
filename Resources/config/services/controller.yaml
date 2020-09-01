@@ -1,23 +1,24 @@
 parameters:
     darvin_payment.controller.payment.abstract.class: Darvin\PaymentBundle\Controller\AbstractController
     darvin_payment.controller.payment.authorize.class: Darvin\PaymentBundle\Controller\Payment\AuthorizeController
-    darvin_payment.controller.payment.authorize_success.class: Darvin\PaymentBundle\Controller\Payment\AuthorizeSuccessController
-    darvin_payment.controller.payment.canceled.class: Darvin\PaymentBundle\Controller\Payment\CanceledController
-    darvin_payment.controller.payment.failed.class: Darvin\PaymentBundle\Controller\Payment\FailedController
+    darvin_payment.controller.payment.cancel.class: Darvin\PaymentBundle\Controller\Payment\CancelController
+    darvin_payment.controller.payment.complete_authorize.class: Darvin\PaymentBundle\Controller\Payment\CompleteAuthorizeController
+    darvin_payment.controller.payment.complete_purchase.class: Darvin\PaymentBundle\Controller\Payment\CompletePurchaseController
+    darvin_payment.controller.payment.fail.class: Darvin\PaymentBundle\Controller\Payment\FailController
     darvin_payment.controller.payment.purchase.class: Darvin\PaymentBundle\Controller\Payment\PurchaseController
-    darvin_payment.controller.payment.purchase_success.class: Darvin\PaymentBundle\Controller\Payment\PurchaseSuccessController
+    darvin_payment.controller.payment.success.class: Darvin\PaymentBundle\Controller\Payment\SuccessController
 
 services:
     darvin_payment.controller.payment.abstract:
+        abstract:  true
         class: '%darvin_payment.controller.payment.abstract.class%'
-        arguments:
-            - '@darvin_payment.gateway.gateway_factory'
-            - '@doctrine.orm.entity_manager'
-            - '@twig'
-            - '@darvin_payment.url.payment_url_builder'
-            - '@workflow.payment'
         calls:
-            - [ setLogger, ['@?monolog.logger.payment'] ]
+            - [ setGatewayFactory, ['@darvin_payment.gateway.gateway_factory'] ]
+            - [ setEntityManager,  ['@doctrine.orm.entity_manager'] ]
+            - [ setTwig,           ['@twig'] ]
+            - [ setLogger,         ['@?monolog.logger.payment'] ]
+            - [ setUrlBuilder,     ['@darvin_payment.url.payment_url_builder'] ]
+            - [ setWorkflow,       ['@state_machine.payment'] ]
 
     darvin_payment.controller.payment.autorize:
         class: '%darvin_payment.controller.payment.authorize.class%'
@@ -25,16 +26,20 @@ services:
         arguments:
             - '@form.factory'
 
-    darvin_payment.controller.payment.authorize_success:
-        class: '%darvin_payment.controller.payment.authorize_success.class%'
+    darvin_payment.controller.payment.complete_authorize:
+        class: '%darvin_payment.controller.payment.complete_authorize.class%'
         parent: 'darvin_payment.controller.payment.abstract'
 
-    darvin_payment.controller.payment.canceled:
-        class: '%darvin_payment.controller.payment.canceled.class%'
+    darvin_payment.controller.payment.complete_purchase:
+        class: '%darvin_payment.controller.payment.complete_purchase.class%'
         parent: 'darvin_payment.controller.payment.abstract'
 
-    darvin_payment.controller.payment.failed:
-        class: '%darvin_payment.controller.payment.failed.class%'
+    darvin_payment.controller.payment.cancel:
+        class: '%darvin_payment.controller.payment.cancel.class%'
+        parent: 'darvin_payment.controller.payment.abstract'
+
+    darvin_payment.controller.payment.fail:
+        class: '%darvin_payment.controller.payment.fail.class%'
         parent: 'darvin_payment.controller.payment.abstract'
 
     darvin_payment.controller.payment.purchase:
@@ -42,7 +47,3 @@ services:
         parent: 'darvin_payment.controller.payment.abstract'
         arguments:
             - '@form.factory'
-
-    darvin_payment.controller.payment.purchase_success:
-        class: '%darvin_payment.controller.payment.purchase_success.class%'
-        parent: 'darvin_payment.controller.payment.abstract'

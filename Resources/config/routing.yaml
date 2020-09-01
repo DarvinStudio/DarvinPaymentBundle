@@ -1,3 +1,7 @@
+admin:
+    resource: "routing/admin.yaml"
+    prefix: "/admin"
+
 payment:
     resource: "routing/payment.yaml"
     prefix: "/payment"

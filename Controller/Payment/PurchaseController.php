@@ -11,25 +11,16 @@
 namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
-use Darvin\PaymentBundle\Controller\PreCheckControllerInterface;
-use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
-use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
-use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Darvin\PaymentBundle\Workflow\Transitions;
-use Doctrine\ORM\EntityManagerInterface;
-use Omnipay\Common\GatewayInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Workflow\WorkflowInterface;
-use Twig\Environment;
 
 /**
  * Purchase controller
  */
-class PurchaseController extends AbstractController implements PreCheckControllerInterface
+class PurchaseController extends AbstractController
 {
     /**
      * @var \Symfony\Component\Form\FormFactoryInterface
@@ -37,23 +28,10 @@ class PurchaseController extends AbstractController implements PreCheckControlle
     private $formFactory;
 
     /**
-     * @param GatewayFactoryInterface    $gatewayFactory    Gateway Factory
-     * @param EntityManagerInterface     $entityManager     Entity Manager
-     * @param Environment                $twig              Twig
-     * @param FormFactoryInterface       $formFactory       Form Factory
-     * @param PaymentUrlBuilderInterface $paymentUrlBuilder Url builder
-     * @param WorkflowInterface          $workflow          Workflow
+     * @param FormFactoryInterface $formFactory Form Factory
      */
-    public function __construct(
-        GatewayFactoryInterface $gatewayFactory,
-        EntityManagerInterface $entityManager,
-        Environment $twig,
-        FormFactoryInterface $formFactory,
-        PaymentUrlBuilderInterface $paymentUrlBuilder,
-        WorkflowInterface $workflow
-    ) {
-        parent::__construct($gatewayFactory, $entityManager, $twig, $paymentUrlBuilder, $workflow);
-
+    public function __construct(FormFactoryInterface $formFactory)
+    {
         $this->formFactory = $formFactory;
     }
 
@@ -71,13 +49,20 @@ class PurchaseController extends AbstractController implements PreCheckControlle
         $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
 
-        $this->preCheckPayment($gateway, $payment);
+        $this->validateGateway($gateway, 'purchase');
+        $this->validatePayment($payment, Transitions::PURCHASE);
 
-        $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
+        try {
+            $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
+        } catch (\Exception $ex) {
+            $this->addErrorLog(sprintf('%s: %s', __METHOD__, $ex->getMessage()));
+
+            return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
+        }
 
         if ($response->getTransactionReference() !== null) {
-            $payment->setTransactionRef($response->getTransactionReference());
-            $this->getEntityManager()->flush();
+            $payment->setTransactionReference($response->getTransactionReference());
+            $this->entityManager->flush();
         }
 
         if ($response->isRedirect()) {
@@ -91,7 +76,7 @@ class PurchaseController extends AbstractController implements PreCheckControlle
             ]);
 
             return new Response(
-                $this->getTwig()->render('@DarvinPayment/payment/purchase.html.twig', [
+                $this->twig->render('@DarvinPayment/payment/purchase.html.twig', [
                     'form'     => $form->createView(),
                     'payment'  => $payment,
                     'response' => $response,
@@ -101,46 +86,26 @@ class PurchaseController extends AbstractController implements PreCheckControlle
         }
 
         if ($response->isSuccessful()) {
-            return new RedirectResponse($this->getPaymentUrlBuilder()->getPurchaseSuccessUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getCompletePurchaseUrl($payment, $gatewayName));
         }
 
         if ($response->isCancelled()) {
-            return new RedirectResponse($this->getPaymentUrlBuilder()->getCanceledUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getCancelUrl($payment, $gatewayName));
         }
 
-        $errorMessage = sprintf('Can\'t handler response for payment id %s and gateway %s', $payment->getId(), $gatewayName);
+        $errorMessage = sprintf(
+            '%s: Can\'t handler response for payment id %s and gateway %s. Response code: %s. Response message: %s',
+            __METHOD__,
+            $payment->getId(),
+            $gatewayName,
+            $response->getCode(),
+            $response->getMessage()
+        );
 
-        if (null !== $this->getLogger()) {
-            $this->getLogger()->error($errorMessage);
+        $this->addErrorLog($errorMessage);
 
-            return new RedirectResponse($this->getPaymentUrlBuilder()->getFailedUrl($payment, $gatewayName));
-        }
+        // TODO Думаю надо сохранять информацию об ошибке
 
-        throw new \LogicException($errorMessage);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function preCheckPayment(GatewayInterface $gateway, Payment $payment): void
-    {
-        if (!$gateway->supportsPurchase()) {
-            $errorMessage = sprintf('Payment gateway %s doesn\'t support purchase method', $gateway->getName());
-            if (null !== $this->getLogger()) {
-                $this->getLogger()->error($errorMessage);
-            }
-
-            throw new NotFoundHttpException($errorMessage);
-        }
-
-        if (!$this->getWorkflow()->can($payment, Transitions::PURCHASE)) {
-            $errorMessage = 'This operation is not available for your payment';
-
-            if (null !== $this->getLogger()) {
-                $this->getLogger()->error($errorMessage);
-            }
-
-            throw new \LogicException($errorMessage);
-        }
+        return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
     }
 }

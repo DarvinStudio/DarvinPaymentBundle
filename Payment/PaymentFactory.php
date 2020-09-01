@@ -46,8 +46,6 @@ class PaymentFactory implements PaymentFactoryInterface
     protected $autoApproval;
 
     /**
-     * PaymentManager constructor.
-     *
      * @param \Doctrine\ORM\EntityManagerInterface      $entityManager   Entity manager
      * @param \Darvin\Utils\ORM\EntityResolverInterface $entityResolver  Entity resolver
      * @param WorkflowInterface                         $workflow        Workflow for payment state
@@ -75,7 +73,7 @@ class PaymentFactory implements PaymentFactoryInterface
         int $orderId,
         string $orderEntityClass,
         string $amount,
-        string $currencyCode
+        ?string $currencyCode
     ): Payment {
         $class = $this->entityResolver->resolve(Payment::class);
 

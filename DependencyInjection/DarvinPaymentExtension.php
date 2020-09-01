@@ -37,9 +37,10 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
 
         $container->registerForAutoconfiguration(ReceiptFactoryInterface::class)->addTag(self::TAG_RECEIPT_FACTORY);
 
-        (new ConfigInjector($container))->inject($this->processConfiguration(new Configuration(), $configs), $this->getAlias());
+        (new ConfigInjector($container))->inject($config, $this->getAlias());
 
         (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
+            'admin' => ['bundle' => 'DarvinAdminBundle'],
             'configuration',
             'controller',
             'gateway',
@@ -63,9 +64,11 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
      */
     public function prepend(ContainerBuilder $container): void
     {
-        (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('doctrine');
-        (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('workflow');
-        (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('darvin_admin');
+        (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure([
+            'darvin_admin',
+            'doctrine',
+            'framework',
+        ]);
 
         $bundles = $container->getParameter('kernel.bundles');
 

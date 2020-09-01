@@ -20,7 +20,6 @@ use Omnipay\Common\GatewayInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\WorkflowInterface;
-use Twig\Environment;
 
 /**
  * Purchase controller
@@ -30,52 +29,47 @@ abstract class AbstractController
     /**
      * @var \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface
      */
-    private $gatewayFactory;
+    protected $gatewayFactory;
 
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
-    private $entityManager;
+    protected $entityManager;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface|null
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
      */
-    private $paymentUrlBuilder;
+    protected $urlBuilder;
 
     /**
      * @var \Twig\Environment
      */
-    private $twig;
+    protected $twig;
 
     /**
      * @var \Symfony\Component\Workflow\WorkflowInterface
      */
-    private $workflow;
+    protected $workflow;
 
     /**
-     * @param GatewayFactoryInterface    $gatewayFactory    Gateway factory
-     * @param EntityManagerInterface     $entityManager     Entity manager
-     * @param Environment                $twig              Twig
-     * @param PaymentUrlBuilderInterface $paymentUrlBuilder Url builder
-     * @param WorkflowInterface          $workflow          Workflow of payment state
+     * @param \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface $gatewayFactory
      */
-    public function __construct(
-        GatewayFactoryInterface $gatewayFactory,
-        EntityManagerInterface $entityManager,
-        Environment $twig,
-        PaymentUrlBuilderInterface $paymentUrlBuilder,
-        WorkflowInterface $workflow
-    ) {
+    public function setGatewayFactory(GatewayFactoryInterface $gatewayFactory): void
+    {
         $this->gatewayFactory = $gatewayFactory;
+    }
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     */
+    public function setEntityManager(EntityManagerInterface $entityManager): void
+    {
         $this->entityManager = $entityManager;
-        $this->paymentUrlBuilder = $paymentUrlBuilder;
-        $this->twig = $twig;
-        $this->workflow = $workflow;
     }
 
     /**
@@ -84,6 +78,30 @@ abstract class AbstractController
     public function setLogger(?LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder
+     */
+    public function setUrlBuilder(PaymentUrlBuilderInterface $urlBuilder): void
+    {
+        $this->urlBuilder = $urlBuilder;
+    }
+
+    /**
+     * @param \Twig\Environment $twig
+     */
+    public function setTwig(\Twig\Environment $twig): void
+    {
+        $this->twig = $twig;
+    }
+
+    /**
+     * @param \Symfony\Component\Workflow\WorkflowInterface $workflow
+     */
+    public function setWorkflow(WorkflowInterface $workflow): void
+    {
+        $this->workflow = $workflow;
     }
 
     /**
@@ -96,8 +114,10 @@ abstract class AbstractController
     protected function getBridge(string $gatewayName): BridgeInterface
     {
         try {
-            return $this->getGatewayFactory()->getBridge($gatewayName);
+            return $this->gatewayFactory->getBridge($gatewayName);
         } catch (BridgeNotExistsException $ex) {
+            $this->addErrorLog($ex->getMessage());
+
             throw new NotFoundHttpException($ex->getMessage());
         }
     }
@@ -112,8 +132,10 @@ abstract class AbstractController
     protected function getGateway(string $gatewayName): GatewayInterface
     {
         try {
-            return $this->getGatewayFactory()->createGateway($gatewayName);
+            return $this->gatewayFactory->createGateway($gatewayName);
         } catch (BridgeNotExistsException $ex) {
+            $this->addErrorLog($ex->getMessage());
+
             throw new NotFoundHttpException($ex->getMessage());
         }
     }
@@ -125,63 +147,58 @@ abstract class AbstractController
      */
     protected function getPaymentByToken(string $token): Payment
     {
-        $payment = $this
-            ->getEntityManager()
+        $payment = $this->entityManager
             ->getRepository(Payment::class)
             ->findOneBy(['actionToken' => $token]);
 
         if (null === $payment) {
-            throw new NotFoundHttpException(sprintf('Unable to find payment with token %s', $token));
+            $errorMessage = sprintf('Unable to find payment with token %s', $token);
+
+            $this->addErrorLog($errorMessage);
+
+            throw new NotFoundHttpException($errorMessage);
         }
 
         return $payment;
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface
+     * @param GatewayInterface $gateway Gateway
+     * @param string           $method  Name of gateway method
      */
-    protected function getGatewayFactory(): GatewayFactoryInterface
+    protected function validateGateway(GatewayInterface $gateway, string $method): void
     {
-        return $this->gatewayFactory;
+        if (!method_exists($gateway, $method)) {
+            $errorMessage = sprintf('Payment gateway "%s" doesn\'t support "%s" method', $gateway->getName(), $method);
+
+            $this->addErrorLog($errorMessage);
+
+            throw new NotFoundHttpException($errorMessage);
+        }
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @param Payment $payment    Payment
+     * @param string  $transition Workflow transition
      */
-    protected function getEntityManager(): EntityManagerInterface
+    protected function validatePayment(Payment $payment, string $transition): void
     {
-        return $this->entityManager;
+        if (!$this->workflow->can($payment, $transition)) {
+            $errorMessage = 'This operation is not available for your payment';
+
+            $this->addErrorLog($errorMessage);
+
+            throw new NotFoundHttpException($errorMessage);
+        }
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
+     * @param string $message Log message
      */
-    protected function getPaymentUrlBuilder(): PaymentUrlBuilderInterface
+    protected function addErrorLog(string $message): void
     {
-        return $this->paymentUrlBuilder;
-    }
-
-    /**
-     * @return \Twig\Environment
-     */
-    protected function getTwig(): Environment
-    {
-        return $this->twig;
-    }
-
-    /**
-     * @return \Symfony\Component\Workflow\WorkflowInterface
-     */
-    protected function getWorkflow(): WorkflowInterface
-    {
-        return $this->workflow;
-    }
-
-    /**
-     * @return \Psr\Log\LoggerInterface|null
-     */
-    public function getLogger(): ?LoggerInterface
-    {
-        return $this->logger;
+        if (null !== $this->logger) {
+            $this->logger->error($message);
+        }
     }
 }

@@ -48,13 +48,13 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getAuthorizeSuccessUrl(Payment $payment, string $gatewayName): string
+    public function getCompleteAuthorizeUrl(Payment $payment, string $gatewayName): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
         }
 
-        return $this->router->generate('darvin_payment_authorize_success', [
+        return $this->router->generate('darvin_payment_complete_authorize', [
             'gatewayName' => $gatewayName,
             'token'       => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);
@@ -65,7 +65,14 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
      */
     public function getCaptureUrl(Payment $payment, string $gatewayName): string
     {
-        throw new ActionNotImplementedException('capture');
+        if (!$payment->getActionToken()) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        return $this->router->generate('darvin_payment_capture', [
+            'gatewayName' => $gatewayName,
+            'token'       => $payment->getActionToken()
+        ], RouterInterface::ABSOLUTE_URL);
     }
 
     /**
@@ -84,13 +91,13 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getPurchaseSuccessUrl(Payment $payment, string $gatewayName): string
+    public function getCompletePurchaseUrl(Payment $payment, string $gatewayName): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
         }
 
-        return $this->router->generate('darvin_payment_purchase_success', [
+        return $this->router->generate('darvin_payment_complete_purchase', [
             'gatewayName' => $gatewayName,
             'token'       => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);
@@ -99,28 +106,13 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getCanceledUrl(Payment $payment, string $gatewayName): string
+    public function getCancelUrl(Payment $payment, string $gatewayName): string
     {
         if (!$payment->getActionToken()) {
             throw new \LogicException('Action token must be set for payment');
         }
 
-        return $this->router->generate('darvin_payment_canceled', [
-            'gatewayName' => $gatewayName,
-            'token'       => $payment->getActionToken()
-        ], RouterInterface::ABSOLUTE_URL);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getFailedUrl(Payment $payment, string $gatewayName): string
-    {
-        if (!$payment->getActionToken()) {
-            throw new \LogicException('Action token must be set for payment');
-        }
-
-        return $this->router->generate('darvin_payment_failed', [
+        return $this->router->generate('darvin_payment_cancel', [
             'gatewayName' => $gatewayName,
             'token'       => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);
@@ -140,5 +132,35 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     public function getNotifyUrl(Payment $payment, string $gatewayName): string
     {
         throw new ActionNotImplementedException('notify');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFailUrl(Payment $payment, string $gatewayName): string
+    {
+        if (!$payment->getActionToken()) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        return $this->router->generate('darvin_payment_failed', [
+            'gatewayName' => $gatewayName,
+            'token'       => $payment->getActionToken()
+        ], RouterInterface::ABSOLUTE_URL);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSuccessUrl(Payment $payment, string $gatewayName): string
+    {
+        if (!$payment->getActionToken()) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        return $this->router->generate('darvin_payment_success', [
+            'gatewayName' => $gatewayName,
+            'token'       => $payment->getActionToken()
+        ], RouterInterface::ABSOLUTE_URL);
     }
 }

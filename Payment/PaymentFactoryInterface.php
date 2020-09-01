@@ -21,7 +21,7 @@ interface PaymentFactoryInterface
      * @param int         $orderId          Order ID
      * @param string      $orderEntityClass Class of order entity
      * @param string      $amount           Amount
-     * @param string      $currencyCode     Currency code
+     * @param string|null $currencyCode     Currency code
      *
      * @return Payment
      */
@@ -29,6 +29,6 @@ interface PaymentFactoryInterface
         int $orderId,
         string $orderEntityClass,
         string $amount,
-        string $currencyCode
+        ?string $currencyCode
     ): Payment;
 }

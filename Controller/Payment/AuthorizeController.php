@@ -11,25 +11,16 @@
 namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
-use Darvin\PaymentBundle\Controller\PreCheckControllerInterface;
-use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
-use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
-use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Darvin\PaymentBundle\Workflow\Transitions;
-use Doctrine\ORM\EntityManagerInterface;
-use Omnipay\Common\GatewayInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Workflow\WorkflowInterface;
-use Twig\Environment;
 
 /**
  * Authorize controller
  */
-class AuthorizeController extends AbstractController implements PreCheckControllerInterface
+class AuthorizeController extends AbstractController
 {
     /**
      * @var \Symfony\Component\Form\FormFactoryInterface
@@ -37,23 +28,10 @@ class AuthorizeController extends AbstractController implements PreCheckControll
     private $formFactory;
 
     /**
-     * @param GatewayFactoryInterface    $gatewayFactory    Gateway Factory
-     * @param EntityManagerInterface     $entityManager     Entity Manager
-     * @param Environment                $twig              Twig
-     * @param FormFactoryInterface       $formFactory       Form Factory
-     * @param PaymentUrlBuilderInterface $paymentUrlBuilder Url builder
-     * @param WorkflowInterface          $workflow          Workflow
+     * @param FormFactoryInterface $formFactory Form Factory
      */
-    public function __construct(
-        GatewayFactoryInterface $gatewayFactory,
-        EntityManagerInterface $entityManager,
-        Environment $twig,
-        FormFactoryInterface $formFactory,
-        PaymentUrlBuilderInterface $paymentUrlBuilder,
-        WorkflowInterface $workflow
-    ) {
-        parent::__construct($gatewayFactory, $entityManager, $twig, $paymentUrlBuilder, $workflow);
-
+    public function __construct(FormFactoryInterface $formFactory)
+    {
         $this->formFactory = $formFactory;
     }
 
@@ -71,21 +49,20 @@ class AuthorizeController extends AbstractController implements PreCheckControll
         $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
 
-        $this->preCheckPayment($gateway, $payment);
+        $this->validateGateway($gateway, 'authorize');
+        $this->validatePayment($payment, Transitions::AUTHORIZE);
 
         try {
             $response = $gateway->authorize($bridge->authorizeParameters($payment))->send();
         } catch (\Exception $ex) {
-            if (null !== $this->getLogger()) {
-                $this->getLogger()->critical($ex->getMessage());
-            }
+            $this->addErrorLog(sprintf('%s: %s', __METHOD__, $ex->getMessage()));
 
-            return new RedirectResponse($this->getPaymentUrlBuilder()->getFailedUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
         }
 
         if ($response->getTransactionReference() !== null) {
-            $payment->setTransactionRef($response->getTransactionReference());
-            $this->getEntityManager()->flush();
+            $payment->setTransactionReference($response->getTransactionReference());
+            $this->entityManager->flush();
         }
 
         if ($response->isRedirect()) {
@@ -99,7 +76,7 @@ class AuthorizeController extends AbstractController implements PreCheckControll
             ]);
 
             return new Response(
-                $this->getTwig()->render('@DarvinPayment/payment/purchase.html.twig', [
+                $this->twig->render('@DarvinPayment/payment/purchase.html.twig', [
                     'form'     => $form->createView(),
                     'payment'  => $payment,
                     'response' => $response,
@@ -109,47 +86,26 @@ class AuthorizeController extends AbstractController implements PreCheckControll
         }
 
         if ($response->isSuccessful()) {
-            return new RedirectResponse($this->getPaymentUrlBuilder()->getAuthorizeSuccessUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getCompleteAuthorizeUrl($payment, $gatewayName));
         }
 
         if ($response->isCancelled()) {
-            return new RedirectResponse($this->getPaymentUrlBuilder()->getCanceledUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getCancelUrl($payment, $gatewayName));
         }
 
-        $errorMessage = sprintf('Can\'t handler response for payment id %s and gateway %s', $payment->getId(), $gatewayName);
+        $errorMessage = sprintf(
+            '%s: Can\'t handler response for payment id %s and gateway %s. Response code: %s. Response message: %s',
+            __METHOD__,
+            $payment->getId(),
+            $gatewayName,
+            $response->getCode(),
+            $response->getMessage()
+        );
 
-        if (null !== $this->getLogger()) {
-            $this->getLogger()->error($errorMessage);
+        $this->addErrorLog($errorMessage);
 
-            return new RedirectResponse($this->getPaymentUrlBuilder()->getFailedUrl($payment, $gatewayName));
-        }
+        // TODO Думаю надо сохранять информацию об ошибке
 
-        throw new \LogicException($errorMessage);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function preCheckPayment(GatewayInterface $gateway, Payment $payment): void
-    {
-        if (!$gateway->supportsAuthorize()) {
-            $errorMessage = sprintf('Payment gateway %s doesn\'t support authorize method', $gateway->getName());
-
-            if (null !== $this->getLogger()) {
-                $this->getLogger()->error($errorMessage);
-            }
-
-            throw new NotFoundHttpException($errorMessage);
-        }
-
-        if (!$this->getWorkflow()->can($payment, Transitions::AUTHORIZE)) {
-            $errorMessage = 'This operation is not available for your payment';
-
-            if (null !== $this->getLogger()) {
-                $this->getLogger()->error($errorMessage);
-            }
-
-            throw new \LogicException($errorMessage);
-        }
+        return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
     }
 }

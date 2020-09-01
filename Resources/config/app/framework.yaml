@@ -11,7 +11,7 @@ framework:
                 - Darvin\PaymentBundle\Entity\Payment
             initial_marking: pending
             places:
-                - aproval
+                - approval
                 - pending
                 - authorized
                 - completed

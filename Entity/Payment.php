@@ -49,7 +49,7 @@ class Payment
      *
      * @ORM\Column(nullable=true)
      */
-    protected $transactionRef;
+    protected $transactionReference;
 
     /**
      * @var string
@@ -106,7 +106,7 @@ class Payment
      */
     public function __construct()
     {
-        $this->state = PaymentStateType::APROVAL;
+        $this->state = PaymentStateType::APPROVAL;
     }
 
     /**
@@ -168,19 +168,19 @@ class Payment
     /**
      * @return string|null
      */
-    public function getTransactionRef(): ?string
+    public function getTransactionReference(): ?string
     {
-        return $this->transactionRef;
+        return $this->transactionReference;
     }
 
     /**
-     * @param string|null $transactionRef
+     * @param string|null $transactionReference
      *
      * @return self
      */
-    public function setTransactionRef(?string $transactionRef): self
+    public function setTransactionReference(?string $transactionReference): self
     {
-        $this->transactionRef = $transactionRef;
+        $this->transactionReference = $transactionReference;
 
         return $this;
     }

@@ -11,12 +11,13 @@
 namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
+use Darvin\PaymentBundle\Workflow\Transitions;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Failed controller
+ * Controller for the canceling payment
  */
-class FailedController extends AbstractController
+class CancelController extends AbstractController
 {
     /**
      * @param string $gatewayName Gateway name
@@ -29,11 +30,14 @@ class FailedController extends AbstractController
     public function __invoke(string $gatewayName, string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
-
         $gateway = $this->getGateway($gatewayName);
 
+        $this->validatePayment($payment, Transitions::CANCEL);
+
+        $this->entityManager->flush();
+
         return new Response(
-            $this->getTwig()->render('@DarvinPayment/payment/failed.html.twig', [
+            $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
                 'payment' => $payment,
                 'gateway' => $gateway,
             ])
