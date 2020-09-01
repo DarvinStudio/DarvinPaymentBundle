@@ -52,6 +52,16 @@ class CompletePurchaseController extends AbstractController
             return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment, $gatewayName));
         }
 
+        $errorMessage = sprintf(
+            '%s: Can\'t handler response for payment id %s and gateway %s. Response code: %s. Response message: %s',
+            __METHOD__,
+            $payment->getId(),
+            $gatewayName,
+            $response->getCode(),
+            $response->getMessage()
+        );
+
+        $this->addErrorLog($errorMessage);
         return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
     }
 }

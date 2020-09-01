@@ -48,6 +48,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                 return $config['mailer']['enabled'];
             }],
             'payment',
+            'receipt',
             'state',
             'url_builder',
             'bridges/telr' => ['callback' => static function () use ($config): bool {

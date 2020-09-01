@@ -25,25 +25,31 @@ services:
         parent: 'darvin_payment.controller.payment.abstract'
         arguments:
             - '@form.factory'
+        public: true
 
     darvin_payment.controller.payment.complete_authorize:
         class: '%darvin_payment.controller.payment.complete_authorize.class%'
         parent: 'darvin_payment.controller.payment.abstract'
+        public: true
 
     darvin_payment.controller.payment.complete_purchase:
         class: '%darvin_payment.controller.payment.complete_purchase.class%'
         parent: 'darvin_payment.controller.payment.abstract'
+        public: true
 
     darvin_payment.controller.payment.cancel:
         class: '%darvin_payment.controller.payment.cancel.class%'
         parent: 'darvin_payment.controller.payment.abstract'
+        public: true
 
     darvin_payment.controller.payment.fail:
         class: '%darvin_payment.controller.payment.fail.class%'
         parent: 'darvin_payment.controller.payment.abstract'
+        public: true
 
     darvin_payment.controller.payment.purchase:
         class: '%darvin_payment.controller.payment.purchase.class%'
         parent: 'darvin_payment.controller.payment.abstract'
         arguments:
             - '@form.factory'
+        public: true

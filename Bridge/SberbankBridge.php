@@ -41,7 +41,7 @@ class SberbankBridge extends AbstractBridge
      */
     public function getGatewayClassName(): string
     {
-        return \Darvin\Omnipay\Sberbank\SberbankGateway::class;
+        return \Omnipay\Sberbank\SberbankGateway::class;
     }
 
     /**
@@ -53,8 +53,8 @@ class SberbankBridge extends AbstractBridge
             'orderNumber'        => $payment->getOrderId(),
             'amount'             => $payment->getAmount(),
             'description'        => $payment->getDescription(),
-            'returnUrl'          => $this->urlBuilder->getAuthorizeSuccessUrl($payment, 'sberbank'),
-            'failUrl'            => $this->urlBuilder->getFailedUrl($payment, 'sberbank'),
+            'returnUrl'          => $this->urlBuilder->getCompleteAuthorizeUrl($payment, 'sberbank'),
+            'failUrl'            => $this->urlBuilder->getFailUrl($payment, 'sberbank'),
             'sessionTimeoutSecs' => $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 28800,
             'clientId'           => $payment->getClientId(),
             'email'              => $payment->getClientEmail(),
@@ -70,6 +70,7 @@ class SberbankBridge extends AbstractBridge
     {
         return [
             'orderId' => $payment->getTransactionReference(),
+            'orderNumber' => $payment->getOrderId(),
             'amount'  => $payment->getAmount(),
         ];
     }
@@ -83,8 +84,8 @@ class SberbankBridge extends AbstractBridge
             'orderNumber'        => $payment->getOrderId(),
             'amount'             => $payment->getAmount(),
             'description'        => $payment->getDescription(),
-            'returnUrl'          => $this->urlBuilder->getPurchaseSuccessUrl($payment, 'sberbank'),
-            'failUrl'            => $this->urlBuilder->getFailedUrl($payment, 'sberbank'),
+            'returnUrl'          => $this->urlBuilder->getCompletePurchaseUrl($payment, 'sberbank'),
+            'failUrl'            => $this->urlBuilder->getFailUrl($payment, 'sberbank'),
             'sessionTimeoutSecs' => $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 28800,
             'clientId'           => $payment->getClientId(),
             'email'              => $payment->getClientEmail(),
@@ -98,7 +99,11 @@ class SberbankBridge extends AbstractBridge
      */
     public function completePurchaseParameters(Payment $payment): array
     {
-        return $this->completeAuthorizeParameters($payment);
+        return [
+            'orderId' => $payment->getTransactionReference(),
+            'orderNumber' => $payment->getOrderId(),
+            'amount'  => $payment->getAmount(),
+        ];
     }
 
     /**

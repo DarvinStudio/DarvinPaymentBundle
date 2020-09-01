@@ -33,7 +33,7 @@ class CancelController extends AbstractController
         $gateway = $this->getGateway($gatewayName);
 
         $this->validatePayment($payment, Transitions::CANCEL);
-
+        $this->workflow->apply($payment, Transitions::CANCEL);
         $this->entityManager->flush();
 
         return new Response(
