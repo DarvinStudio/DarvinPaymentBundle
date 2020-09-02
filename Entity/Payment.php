@@ -114,7 +114,7 @@ class Payment
      */
     public function __toString(): string
     {
-        return (string) $this->state;
+        return (string) $this->getId();
     }
 
     /**
@@ -291,6 +291,14 @@ class Payment
     public function getState(): string
     {
         return $this->state;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStateName(): string
+    {
+        return PaymentStateType::getReadableValue($this->state);
     }
 
     /**

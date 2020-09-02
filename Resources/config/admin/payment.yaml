@@ -1,6 +1,5 @@
 menu:
-    group:    payment
-    position: 50
+    position: 30
 
 route_blacklist:
     - new
@@ -8,23 +7,45 @@ route_blacklist:
 view:
     index:
         fields:
+            id: ~
             orderId: ~
             orderEntityClass: ~
-            transactionRef: ~
+            transactionReference: ~
             amount: ~
             currencyCode: ~
             clientId: ~
-            clientEmail: ~
-            description: ~
-            state: ~
-            actionToken: ~
+            clientEmail:
+                size:   md
+                type:   email
+                widget: email_link
+            description:
+                size: sm
+                widget:
+                    text:
+                        length: 24
+                        rows: 1
+                        trans: true
+            state:
+                size: sm
+                widget:
+                    text:
+                        property: stateName
+                        length: 20
+                        rows: 1
+                        trans: true
+
+            actionToken:
+                size: free
 
 form:
+    filter:
+        fields:
+            orderId: ~
     edit:
         fields:
             orderId: ~
             orderEntityClass: ~
-            transactionRef: ~
+            transactionReference: ~
             amount: ~
             currencyCode: ~
             clientId: ~

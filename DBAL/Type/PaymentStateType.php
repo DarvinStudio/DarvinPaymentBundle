@@ -22,7 +22,7 @@ final class PaymentStateType extends AbstractEnumType
     public const AUTHORIZED = 'authorized';
     public const COMPLETED  = 'completed';
     public const CANCELED   = 'canceled';
-    public const REFUNDED   = 'refund';
+    public const REFUNDED   = 'refunded';
 
     protected static $choices = [
         self::APPROVAL   => 'payment.state.approval',
@@ -30,6 +30,6 @@ final class PaymentStateType extends AbstractEnumType
         self::AUTHORIZED => 'payment.state.authorized',
         self::COMPLETED  => 'payment.state.completed',
         self::CANCELED   => 'payment.state.canceled',
-        self::REFUNDED   => 'payment.state.refund',
+        self::REFUNDED   => 'payment.state.refunded',
     ];
 }

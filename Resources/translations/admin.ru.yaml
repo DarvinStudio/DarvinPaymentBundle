@@ -6,6 +6,38 @@ configuration:
         title: Онлайн оплата
 
 payment:
+    action:
+        delete:
+            confirm: Подтвердите удаление платёжа
+            submit:  Удалить платёж
+            success: Каталог успешно удален
+        edit:
+            link:    Изменить платёж
+            success: Платёж успешно изменён
+            title:   Изменить платёж №«%entity%»
+        index:
+            link:  Платежи
+            title: Платежи
+        new:
+            link:    Добавить платёж
+            success: Платёж успешно добавлен
+            title:   Новый платёж
+        show:
+            link:  Просмотреть платёж
+            title: Платёж №«%entity%»
+    entity:
+        id: ID
+        order_id: ID  Заказа
+        order_entity_class: Класс заказа
+        transaction_reference: ID заказа в платежной системе
+        amount: Сумма
+        currency_code: Валюта
+        client_id: ID клиента
+        client_email: Email клиента
+        description: Описание
+        state: Статус
+        action_token: Токен
+
     state:
         approval:   Утверждение
         authorized: Авторизован
