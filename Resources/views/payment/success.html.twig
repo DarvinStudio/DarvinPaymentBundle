@@ -1,1 +1,7 @@
-<p>Payment is completed</p>
+{% extends 'layout.html.twig' %}
+
+{% block heading %}{% trans with {'%orderId%': payment.orderId} %}payment.success.title{% endtrans %}{% endblock %}
+
+{% block content %}
+    <p class="h2">{% trans with {'%orderId%': payment.orderId} %}payment.success.title{% endtrans %}</p>
+{% endblock %}

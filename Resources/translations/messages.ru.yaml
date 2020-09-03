@@ -4,39 +4,52 @@ email:
         public:
             canceled:
                 subject: 'Оплата отменена'
-                text:    'Онлайн оплата заказ №{orderId} была отменена.'
+                text:    'Онлайн оплата заказ №%orderId% была отменена.'
             completed:
-                subject: 'Оплата успешна! Заказ №{orderId}'
+                subject: 'Оплата успешна! Заказ №%orderId%'
                 text:    'Спасибо! Онлайн оплата успешно произведена!'
             failed:
                 subject: 'Упс, что-то пошло не так..'
                 text:    'Во время онлайн оплаты произошла ошибка. Наш менеджер скоро свяжется с вами.'
             pending:
-                subject: 'Заказ №{orderId} готов к оплате'
-                text:    'Ваш заказ №{orderId} готов к оплате. <a href="{url}"></a>'
+                subject: 'Заказ №%orderId% готов к оплате'
+                text:    'Ваш заказ №%orderId% готов к оплате. <a href="{url}"></a>'
             refund:
-                subject: 'Успешно! Заказ №{orderId}'
+                subject: 'Успешно! Заказ №%orderId%'
                 text:    'Спасибо! Онлайн оплата успешно произведена!'
 
         service:
             authorized:
-                subject: 'Заказ №{orderId}: Авторизация оплаты успешна'
-                text:    'Заказ №{orderId} успешно авторизован. Для списания денег воспользуютесь capture_link'
+                subject: 'Заказ №%orderId%: Авторизация оплаты успешна'
+                text:    'Заказ №%orderId% успешно авторизован. Для списания денег воспользуютесь capture_link'
             canceled:
-                subject: 'Заказ №{orderId}: Оплата отменена'
-                text:    'Оплата заказа №{orderId} была отменена'
+                subject: 'Заказ №%orderId%: Оплата отменена'
+                text:    'Оплата заказа №%orderId% была отменена'
             completed:
-                subject: 'Заказ №{orderId}: Оплата произведена'
-                text:    'Заказ №{orderId} успешно оплачен.'
+                subject: 'Заказ №%orderId%: Оплата произведена'
+                text:    'Заказ №%orderId% успешно оплачен.'
             failed:
-                subject: 'Заказ №{orderId}: Ошибка при оплате'
-                text:    'При оплате заказа №{orderId} произошла ошибка: {message}'
+                subject: 'Заказ №%orderId%: Ошибка при оплате'
+                text:    'При оплате заказа №%orderId% произошла ошибка: {message}'
             new:
-                subject: 'Заказ №{orderId}: Создана заявка на оплату'
-                text:    'Необходимо утвердить новую заявку на онлайн оплату заказа №{orderId}.'
+                subject: 'Заказ №%orderId%: Создана заявка на оплату'
+                text:    'Необходимо утвердить новую заявку на онлайн оплату заказа №%orderId%.'
             pending:
-                subject: 'Заказ №{orderId}: Создана заявка на оплату'
-                text:    'По заказу №{orderId} клиент приступил к онлайн оплате.'
+                subject: 'Заказ №%orderId%: Создана заявка на оплату'
+                text:    'По заказу №%orderId% клиент приступил к онлайн оплате.'
             refund:
-                subject: 'Заказ №{orderId}: Возврат денег'
-                text:    'По заказу №{orderId} произведен возврат денег.'
+                subject: 'Заказ №%orderId%: Возврат денег'
+                text:    'По заказу №%orderId% произведен возврат денег.'
+
+payment:
+    canceled:
+        title: Онлайн оплата отменена.
+    fail:
+        title: Во время оплаты произошла ошибка. Повторите операцию позже.
+    purchase:
+        title: Онлайн оплата
+        form:
+            submit: Оплатить
+
+    success:
+        title: Заказ №%orderId% успешно оплачен.

@@ -9,8 +9,6 @@ view:
         fields:
             id: ~
             orderId: ~
-            orderEntityClass: ~
-            transactionReference: ~
             amount: ~
             currencyCode: ~
             clientId: ~
@@ -28,12 +26,16 @@ view:
             state:
                 size: sm
                 widget:
-                    text:
-                        property: stateName
-                        length: 20
-                        rows: 1
-                        trans: true
+                    payment_state:
+                        property: state
 
+            operation:
+                size: md
+                widget:
+                    payment_capture:
+                        property: state
+            transactionReference:
+                size: free
             actionToken:
                 size: free
 

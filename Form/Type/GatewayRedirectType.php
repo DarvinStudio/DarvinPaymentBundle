@@ -42,7 +42,7 @@ class GatewayRedirectType extends AbstractType
             }
 
             $form->add('__payment_submit', SubmitType::class, [
-                'label' => 'payment.form.gateway_redirect.payment_submit.label'
+                'label' => 'payment.purchase.form.submit'
             ]);
         });
     }

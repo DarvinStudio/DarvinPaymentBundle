@@ -7,6 +7,10 @@ configuration:
 
 payment:
     action:
+        capture:
+            confirm: Подтвердите завершение платёжа
+            submit:  Завершить платеж
+            success: Платеж успешно завершен!
         delete:
             confirm: Подтвердите удаление платёжа
             submit:  Удалить платёж
@@ -37,6 +41,7 @@ payment:
         description: Описание
         state: Статус
         action_token: Токен
+        operation: Операции
 
     state:
         approval:   Утверждение

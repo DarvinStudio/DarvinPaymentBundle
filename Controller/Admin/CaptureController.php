@@ -10,16 +10,52 @@
 
 namespace Darvin\PaymentBundle\Controller\Admin;
 
+use Darvin\AdminBundle\Route\AdminRouterInterface;
+use Darvin\AdminBundle\Security\Permissions\Permission;
+use Darvin\AdminBundle\View\Widget\ViewWidgetPoolInterface;
+use Darvin\PaymentBundle\Admin\View\Widget\PaymentCaptureWidget;
 use Darvin\PaymentBundle\Controller\AbstractController;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\Utils\Flash\FlashNotifierInterface;
+use Darvin\Utils\HttpFoundation\AjaxResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * Authorize success controller
+ * Capture controller
  */
 class CaptureController extends AbstractController
 {
+    /**
+     * @var \Darvin\AdminBundle\Route\AdminRouterInterface
+     */
+    private $adminRouter;
+
+    /**
+     * @var \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
+    /**
+     * @var \Darvin\Utils\Flash\FlashNotifierInterface
+     */
+    private $flashNotifier;
+
+    /**
+     * @var \Symfony\Component\HttpFoundation\RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * @var \Darvin\AdminBundle\View\Widget\ViewWidgetPoolInterface
+     */
+    private $viewWidgetPool;
+
     /**
      * @param string $gatewayName Gateway name
      * @param string $token       Payment token
@@ -27,15 +63,29 @@ class CaptureController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
     public function __invoke(string $gatewayName, string $token): Response
     {
         $bridge = $this->getBridge($gatewayName);
         $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
+        $request = $this->requestStack->getCurrentRequest();
 
         $this->validateGateway($gateway, 'capture');
         $this->validatePayment($payment, Transitions::CAPTURE);
+
+        if (!$this->authorizationChecker->isGranted(Permission::EDIT, $payment)) {
+            throw new AccessDeniedException(
+                sprintf('You do not have "%s" permission on "%s" class objects.', Permission::EDIT, get_class($payment))
+            );
+        }
+
+        $redirectUrl = $this->adminRouter->exists(Payment::class, AdminRouterInterface::TYPE_INDEX)
+            ? $this->adminRouter->generate($payment, Payment::class, AdminRouterInterface::TYPE_INDEX, [], UrlGeneratorInterface::ABSOLUTE_URL)
+            : '/';
+
+        $referer = $request->headers->get('referer', $redirectUrl);
 
         $response = $gateway->capture($bridge->captureParameters($payment))->send();
 
@@ -43,13 +93,69 @@ class CaptureController extends AbstractController
             $this->workflow->apply($payment, Transitions::CAPTURE);
             $this->entityManager->flush();
 
-            return new Response(
-                $this->twig->render('@DarvinPayment/admin/capture.html.twig', [
-                    'payment' => $payment,
-                ])
-            );
+            if (parse_url($referer, PHP_URL_PATH) === parse_url($redirectUrl, PHP_URL_PATH)) {
+                $redirectUrl = $referer;
+            }
+            
+            $successMessage = 'payment.action.capture.success';
+
+            if ($request->isXmlHttpRequest()) {
+                return new AjaxResponse(null, true, $successMessage, [], $redirectUrl);
+            }
+
+            $this->flashNotifier->success($successMessage);
+
+            return new RedirectResponse($redirectUrl);
+        }
+        
+        $errorMessage = sprintf('Payment server response: %s', $response->getMessage());
+
+        $this->flashNotifier->error($errorMessage);
+
+        if ($request->isXmlHttpRequest()) {
+            return new AjaxResponse($this->viewWidgetPool->getWidget(PaymentCaptureWidget::ALIAS)->getContent($payment), false, $errorMessage);
         }
 
-        return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
+        return new RedirectResponse($referer);
+    }
+
+    /**
+     * @param \Darvin\AdminBundle\Route\AdminRouterInterface $adminRouter Admin router
+     */
+    public function setAdminRouter(AdminRouterInterface $adminRouter): void
+    {
+        $this->adminRouter = $adminRouter;
+    }
+
+    /**
+     * @param \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface $authorizationChecker Authorization checker
+     */
+    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker): void
+    {
+        $this->authorizationChecker = $authorizationChecker;
+    }
+
+    /**
+     * @param \Darvin\Utils\Flash\FlashNotifierInterface $flashNotifier Flash notifier
+     */
+    public function setFlashNotifier(FlashNotifierInterface $flashNotifier): void
+    {
+        $this->flashNotifier = $flashNotifier;
+    }
+
+    /**
+     * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack Request stack
+     */
+    public function setRequestStack(RequestStack $requestStack): void
+    {
+        $this->requestStack = $requestStack;
+    }
+
+    /**
+     * @param \Darvin\AdminBundle\View\Widget\ViewWidgetPoolInterface $viewWidgetPool View widget pool
+     */
+    public function setViewWidgetPool(ViewWidgetPoolInterface $viewWidgetPool): void
+    {
+        $this->viewWidgetPool = $viewWidgetPool;
     }
 }

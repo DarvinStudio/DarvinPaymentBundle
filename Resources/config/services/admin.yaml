@@ -1,7 +1,31 @@
 parameters:
     darvin_payment.controller.admin.capture.class: Darvin\PaymentBundle\Controller\Admin\CaptureController
-
+    darvin_payment.admin.view.widget.payment_state.class: Darvin\PaymentBundle\Admin\View\Widget\PaymentStateWidget
+    darvin_payment.admin.view.widget.payment_capture.class: Darvin\PaymentBundle\Admin\View\Widget\PaymentCaptureWidget
 services:
     darvin_payment.controller.admin.capture:
         class: '%darvin_payment.controller.admin.capture.class%'
-        parent: 'darvin_payment.controller.payment.abstract'
+        parent: darvin_payment.controller.payment.abstract
+        calls:
+            - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
+            - [ setAuthorizationChecker, [ '@security.authorization_checker' ] ]
+            - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
+            - [ setRequestStack,         [ '@request_stack' ] ]
+            - [ setViewWidgetPool,       [ '@darvin_admin.view.widget.pool' ] ]
+        public: true
+
+    darvin_payment.admin.view.widget.payment_state:
+        class:  '%darvin_payment.admin.view.widget.payment_state.class%'
+        parent: darvin_admin.view.widget.abstract
+        arguments:
+            - "@translator"
+        tags:
+            - { name: darvin_admin.view_widget }
+
+    darvin_payment.admin.view.widget.payment_capture:
+        class:  '%darvin_payment.admin.view.widget.payment_capture.class%'
+        parent: darvin_admin.view.widget.abstract
+        arguments:
+            - "@darvin_payment.url.payment_url_builder"
+        tags:
+            - { name: darvin_admin.view_widget }

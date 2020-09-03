@@ -57,12 +57,4 @@ abstract class AbstractBridge implements BridgeInterface
     {
         return $this->getGatewayConfig();
     }
-
-    /**
-     * @inheritDoc
-     */
-    public function completePurchaseParameters(Payment $payment): array
-    {
-        return $this->purchaseParameters($payment);
-    }
 }

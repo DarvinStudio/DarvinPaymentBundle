@@ -31,6 +31,7 @@
         "twig/twig": "^2.0||^3.0"
     },
     "suggest": {
+        "darvinstudio/darvin-admin-bundle": "Allow admin CRUD operations",
         "monolog/monolog": "Allows more advanced logging of the application flow",
         "darvinstudio/omnipay-telr": "Needed to support Telr payment",
         "darvinstudio/omnipay-sberbank": "Needed to support Sberbank payment"

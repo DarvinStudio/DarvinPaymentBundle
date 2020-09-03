@@ -10,8 +10,8 @@ parameters:
 
 services:
     darvin_payment.controller.payment.abstract:
-        abstract:  true
         class: '%darvin_payment.controller.payment.abstract.class%'
+        abstract:  true
         calls:
             - [ setGatewayFactory, ['@darvin_payment.gateway.gateway_factory'] ]
             - [ setEntityManager,  ['@doctrine.orm.entity_manager'] ]
@@ -22,34 +22,39 @@ services:
 
     darvin_payment.controller.payment.autorize:
         class: '%darvin_payment.controller.payment.authorize.class%'
-        parent: 'darvin_payment.controller.payment.abstract'
+        parent: darvin_payment.controller.payment.abstract
         arguments:
             - '@form.factory'
         public: true
 
     darvin_payment.controller.payment.complete_authorize:
         class: '%darvin_payment.controller.payment.complete_authorize.class%'
-        parent: 'darvin_payment.controller.payment.abstract'
+        parent: darvin_payment.controller.payment.abstract
         public: true
 
     darvin_payment.controller.payment.complete_purchase:
         class: '%darvin_payment.controller.payment.complete_purchase.class%'
-        parent: 'darvin_payment.controller.payment.abstract'
+        parent: darvin_payment.controller.payment.abstract
         public: true
 
     darvin_payment.controller.payment.cancel:
         class: '%darvin_payment.controller.payment.cancel.class%'
-        parent: 'darvin_payment.controller.payment.abstract'
+        parent: darvin_payment.controller.payment.abstract
         public: true
 
     darvin_payment.controller.payment.fail:
         class: '%darvin_payment.controller.payment.fail.class%'
-        parent: 'darvin_payment.controller.payment.abstract'
+        parent: darvin_payment.controller.payment.abstract
+        public: true
+
+    darvin_payment.controller.payment.success:
+        class: '%darvin_payment.controller.payment.success.class%'
+        parent: darvin_payment.controller.payment.abstract
         public: true
 
     darvin_payment.controller.payment.purchase:
         class: '%darvin_payment.controller.payment.purchase.class%'
-        parent: 'darvin_payment.controller.payment.abstract'
+        parent: darvin_payment.controller.payment.abstract
         arguments:
             - '@form.factory'
         public: true

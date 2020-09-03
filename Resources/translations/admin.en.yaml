@@ -6,6 +6,9 @@ configuration:
         title: Online Payment
 
 payment:
+    action:
+        capture: Capture money
+
     state:
         approval:   Approval
         authorized: Authorized

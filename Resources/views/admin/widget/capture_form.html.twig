@@ -1,0 +1,25 @@
+{% trans_default_domain 'admin' %}
+
+{% set style = app.request.request.get('style') %}
+{% set title = 'payment.action.capture.submit'|trans %}
+{% set name  = 'capture_' ~ id %}
+{% set classes = {
+    'default': 'table-row__btn-capture',
+    'footer':  'page-footer__btn-capture',
+    'header':  'page-header__btn-capture',
+    'show':    'modal-actions__btn-capture',
+} %}
+
+<form name="{{ name }}" action="{{ url }}" method="post" class="js-form" data-reload-page="1">
+    {% for input_name, input_value in {
+        (name ~ '[id]'): id,
+        'style':         style,
+    } %}
+        <input name="{{ input_name }}" type="hidden" value="{{ input_value }}">
+    {% endfor %}
+    <button type="submit"
+            title="{{ title|e('html_attr') }}"
+            onclick="return confirm('{{ 'payment.action.capture.confirm'|trans|e('js') }}');">
+        {{ title }}
+    </button>
+</form>

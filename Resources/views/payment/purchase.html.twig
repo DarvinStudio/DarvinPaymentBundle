@@ -1,1 +1,11 @@
-{{ form(form) }}
+{% extends 'layout.html.twig' %}
+
+{% block heading %}{% trans %}payment.purchase.title{% endtrans %}{% endblock %}
+
+{% block content %}
+    <p class="h2">{% trans %}payment.purchase.title{% endtrans %}</p>
+    {{ form(form) }}
+    <script>
+
+    </script>
+{% endblock %}

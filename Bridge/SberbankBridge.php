@@ -52,6 +52,7 @@ class SberbankBridge extends AbstractBridge
         return [
             'orderNumber'        => $payment->getOrderId(),
             'amount'             => $payment->getAmount(),
+            'currency'           => $payment->getCurrencyCode(),
             'description'        => $payment->getDescription(),
             'returnUrl'          => $this->urlBuilder->getCompleteAuthorizeUrl($payment, 'sberbank'),
             'failUrl'            => $this->urlBuilder->getFailUrl($payment, 'sberbank'),
@@ -69,9 +70,9 @@ class SberbankBridge extends AbstractBridge
     public function completeAuthorizeParameters(Payment $payment): array
     {
         return [
-            'orderId' => $payment->getTransactionReference(),
+            'orderId'     => $payment->getTransactionReference(),
             'orderNumber' => $payment->getOrderId(),
-            'amount'  => $payment->getAmount(),
+            'amount'      => $payment->getAmount(),
         ];
     }
 
@@ -83,6 +84,7 @@ class SberbankBridge extends AbstractBridge
         return [
             'orderNumber'        => $payment->getOrderId(),
             'amount'             => $payment->getAmount(),
+            'currency'           => $payment->getCurrencyCode(),
             'description'        => $payment->getDescription(),
             'returnUrl'          => $this->urlBuilder->getCompletePurchaseUrl($payment, 'sberbank'),
             'failUrl'            => $this->urlBuilder->getFailUrl($payment, 'sberbank'),
@@ -100,9 +102,9 @@ class SberbankBridge extends AbstractBridge
     public function completePurchaseParameters(Payment $payment): array
     {
         return [
-            'orderId' => $payment->getTransactionReference(),
+            'orderId'     => $payment->getTransactionReference(),
             'orderNumber' => $payment->getOrderId(),
-            'amount'  => $payment->getAmount(),
+            'amount'      => $payment->getAmount(),
         ];
     }
 

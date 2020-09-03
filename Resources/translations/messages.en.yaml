@@ -13,11 +13,19 @@ email:
                 text:    'Thank you! Payment successfully completed.'
         service:
             canceled:
-                subject: 'Payment has been canceled. Order №{orderId}'
-                text:    'Online payment of order №{orderId} has been canceled'
+                subject: 'Payment has been canceled. Order №%orderId%'
+                text:    'Online payment of order №%orderId% has been canceled'
             failed:
-                subject: 'Error while payment of order №{orderId}'
+                subject: 'Error while payment of order №%orderId%'
                 text:    'An error occurred while payment: {message}'
             completed:
                 subject: 'Payment is done'
                 text:    'Payment successfully completed!'
+
+payment:
+    canceled:
+        title: Payment has been canceled
+    fail:
+        title: An error occurred while online payment. Repeat operation later.
+    success:
+        title: Thank you! Payment successfully completed.

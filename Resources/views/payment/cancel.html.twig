@@ -1,1 +1,7 @@
-Payment is canceled
+{% extends 'layout.html.twig' %}
+
+{% block heading %}{% trans %}payment.canceled.title{% endtrans %}{% endblock %}
+
+{% block content %}
+    <p class="h2">{% trans %}payment.canceled.title{% endtrans %}</p>
+{% endblock %}
