@@ -61,6 +61,7 @@ class AuthorizeController extends AbstractController
         }
 
         if ($response->getTransactionReference() !== null) {
+            $payment->setGatewayName($gatewayName);
             $payment->setTransactionReference($response->getTransactionReference());
             $this->entityManager->flush();
         }

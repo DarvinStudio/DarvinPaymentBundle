@@ -46,7 +46,7 @@ class PaymentStateWidget extends AbstractWidget
 
         $text = $this->translator->trans(PaymentStateType::getReadableValue($state), [], 'admin');
 
-        return sprintf('<div class="payment-state -%s">%s</div>', $state, $text);
+        return sprintf('<div class="payment-status -%s">%s</div>', $state, $text);
     }
 
     /**

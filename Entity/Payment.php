@@ -13,6 +13,7 @@ namespace Darvin\PaymentBundle\Entity;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table
@@ -34,6 +35,8 @@ class Payment
      * @var int
      *
      * @ORM\Column(type="integer")
+     *
+     * @Assert\NotBlank
      */
     protected $orderId;
 
@@ -41,6 +44,8 @@ class Payment
      * @var string
      *
      * @ORM\Column
+     *
+     * @Assert\NotBlank
      */
     protected $orderEntityClass;
 
@@ -55,6 +60,8 @@ class Payment
      * @var string
      *
      * @ORM\Column(type="decimal", scale=2)
+     *
+     * @Assert\GreaterThanOrEqual(0)
      */
     protected $amount;
 
@@ -75,7 +82,10 @@ class Payment
     /**
      * @var string|null
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(length=50, nullable=true)
+     *
+     * @Assert\Email
+     * @Assert\Length(max=50)
      */
     protected $clientEmail;
 
@@ -100,6 +110,15 @@ class Payment
      * @ORM\Column(nullable=true)
      */
     protected $actionToken;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(length=20, nullable=true)
+     *
+     * @Assert\Length(max=20)
+     */
+    protected $gatewayName;
 
     /**
      * Payment constructor.
@@ -329,6 +348,26 @@ class Payment
     public function setActionToken(?string $actionToken): self
     {
         $this->actionToken = $actionToken;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getGatewayName(): ?string
+    {
+        return $this->gatewayName;
+    }
+
+    /**
+     * @param string|null $gatewayName
+     *
+     * @return $this
+     */
+    public function setGatewayName(?string $gatewayName): self
+    {
+        $this->gatewayName = $gatewayName;
 
         return $this;
     }

@@ -49,14 +49,15 @@ class PaymentCaptureWidget extends AbstractWidget
      */
     protected function createContent($entity, array $options): ?string
     {
-        $state = $this->getPropertyValue($entity, $options['property']);
-
-        if (PaymentStateType::AUTHORIZED !== $state) {
+        if ($entity instanceof \Darvin\PaymentBundle\Entity\Payment
+            || PaymentStateType::AUTHORIZED !== $entity->getState()
+            || null === $entity->getGatewayName()
+        ) {
             return null;
         }
 
         try {
-            $url = $this->urlBuilder->getCaptureUrl($entity, 'sberbank');
+            $url = $this->urlBuilder->getCaptureUrl($entity, $entity->getGatewayName());
         } catch (ActionNotImplementedException $ex) {
             return sprintf('<p>%s</p>', $ex->getMessage());
         }
