@@ -12,10 +12,9 @@ namespace Darvin\PaymentBundle\Controller\Admin;
 
 use Darvin\AdminBundle\Route\AdminRouterInterface;
 use Darvin\AdminBundle\Security\Permissions\Permission;
-use Darvin\AdminBundle\View\Widget\ViewWidgetPoolInterface;
-use Darvin\PaymentBundle\Admin\View\Widget\PaymentCaptureWidget;
 use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer;
 use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\Flash\FlashNotifierInterface;
 use Darvin\Utils\HttpFoundation\AjaxResponse;
@@ -42,6 +41,11 @@ class CaptureController extends AbstractController
     private $authorizationChecker;
 
     /**
+     * @var \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer
+     */
+    private $captureFormRenderer;
+
+    /**
      * @var \Darvin\Utils\Flash\FlashNotifierInterface
      */
     private $flashNotifier;
@@ -52,24 +56,18 @@ class CaptureController extends AbstractController
     private $requestStack;
 
     /**
-     * @var \Darvin\AdminBundle\View\Widget\ViewWidgetPoolInterface
-     */
-    private $viewWidgetPool;
-
-    /**
-     * @param string $gatewayName Gateway name
-     * @param string $token       Payment token
+     * @param string $token Payment token
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
-    public function __invoke(string $gatewayName, string $token): Response
+    public function __invoke(string $token): Response
     {
-        $bridge = $this->getBridge($gatewayName);
-        $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
+        $bridge = $this->getBridge($payment->getGatewayName());
+        $gateway = $this->getGateway($payment->getGatewayName());
         $request = $this->requestStack->getCurrentRequest();
 
         $this->validateGateway($gateway, 'capture');
@@ -81,9 +79,7 @@ class CaptureController extends AbstractController
             );
         }
 
-        $redirectUrl = $this->adminRouter->exists(Payment::class, AdminRouterInterface::TYPE_INDEX)
-            ? $this->adminRouter->generate($payment, Payment::class, AdminRouterInterface::TYPE_INDEX, [], UrlGeneratorInterface::ABSOLUTE_URL)
-            : '/';
+        $redirectUrl = $this->adminRouter->generate($payment, Payment::class, AdminRouterInterface::TYPE_INDEX, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $referer = $request->headers->get('referer', $redirectUrl);
 
@@ -91,12 +87,12 @@ class CaptureController extends AbstractController
 
         if ($response->isSuccessful()) {
             $this->workflow->apply($payment, Transitions::CAPTURE);
-            $this->entityManager->flush();
+            $this->em->flush();
 
             if (parse_url($referer, PHP_URL_PATH) === parse_url($redirectUrl, PHP_URL_PATH)) {
                 $redirectUrl = $referer;
             }
-            
+
             $successMessage = 'payment.action.capture.success';
 
             if ($request->isXmlHttpRequest()) {
@@ -107,13 +103,13 @@ class CaptureController extends AbstractController
 
             return new RedirectResponse($redirectUrl);
         }
-        
+
         $errorMessage = sprintf('Payment server response: %s', $response->getMessage());
 
         $this->flashNotifier->error($errorMessage);
 
         if ($request->isXmlHttpRequest()) {
-            return new AjaxResponse($this->viewWidgetPool->getWidget(PaymentCaptureWidget::ALIAS)->getContent($payment), false, $errorMessage);
+            return new AjaxResponse($this->captureFormRenderer->renderForm($payment), false, $errorMessage);
         }
 
         return new RedirectResponse($referer);
@@ -136,6 +132,14 @@ class CaptureController extends AbstractController
     }
 
     /**
+     * @param \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer $captureFormRenderer View widget pool
+     */
+    public function setCaptureFormRenderer(CaptureFormRenderer $captureFormRenderer): void
+    {
+        $this->captureFormRenderer = $captureFormRenderer;
+    }
+
+    /**
      * @param \Darvin\Utils\Flash\FlashNotifierInterface $flashNotifier Flash notifier
      */
     public function setFlashNotifier(FlashNotifierInterface $flashNotifier): void
@@ -149,13 +153,5 @@ class CaptureController extends AbstractController
     public function setRequestStack(RequestStack $requestStack): void
     {
         $this->requestStack = $requestStack;
-    }
-
-    /**
-     * @param \Darvin\AdminBundle\View\Widget\ViewWidgetPoolInterface $viewWidgetPool View widget pool
-     */
-    public function setViewWidgetPool(ViewWidgetPoolInterface $viewWidgetPool): void
-    {
-        $this->viewWidgetPool = $viewWidgetPool;
     }
 }

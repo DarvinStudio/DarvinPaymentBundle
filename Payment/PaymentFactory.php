@@ -78,12 +78,8 @@ class PaymentFactory implements PaymentFactoryInterface
         $class = $this->entityResolver->resolve(Payment::class);
 
         /** @var \Darvin\PaymentBundle\Entity\Payment $payment */
-        $payment = new $class(
-            $orderId,
-            $orderEntityClass,
-            $amount,
-            $currencyCode ?? $this->defaultCurrency
-        );
+        $payment = new $class;
+
         $payment
             ->setOrderId($orderId)
             ->setOrderEntityClass($orderEntityClass)

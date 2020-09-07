@@ -20,26 +20,23 @@ use Symfony\Component\HttpFoundation\Response;
 class CancelController extends AbstractController
 {
     /**
-     * @param string $gatewayName Gateway name
-     * @param string $token       Payment token
+     * @param string $token Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function __invoke(string $gatewayName, string $token): Response
+    public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
-        $gateway = $this->getGateway($gatewayName);
 
         $this->validatePayment($payment, Transitions::CANCEL);
         $this->workflow->apply($payment, Transitions::CANCEL);
-        $this->entityManager->flush();
+        $this->em->flush();
 
         return new Response(
             $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
                 'payment' => $payment,
-                'gateway' => $gateway,
             ])
         );
     }

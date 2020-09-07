@@ -28,6 +28,11 @@ interface BridgeInterface
     public function initializationParameters(): array;
 
     /**
+     * @return int
+     */
+    public function getSessionTimeout(): int;
+
+    /**
      * @param Payment $payment
      *
      * @return array

@@ -27,6 +27,14 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
+     * @return int
+     */
+    public function getSessionTimeout(): int
+    {
+        return 86400;
+    }
+
+    /**
      * @inheritDoc
      */
     public function authorizeParameters(Payment $payment): array
@@ -52,9 +60,9 @@ class TelrBridge extends AbstractBridge
             'ivp_currency' => $payment->getCurrencyCode(),
             'ivp_cart'     => $payment->getOrderId(),
             'ivp_desc'     => $payment->getDescription(),
-            'return_auth'  => $this->urlBuilder->getPurchaseSuccessUrl($payment, 'telr'),
-            'return_decl'  => $this->urlBuilder->getFailedUrl($payment, 'telr'),
-            'return_can'   => $this->urlBuilder->getCanceledUrl($payment, 'telr')
+            'return_auth'  => $this->urlBuilder->getCompletePurchaseUrl($payment),
+            'return_decl'  => $this->urlBuilder->getFailUrl($payment),
+            'return_can'   => $this->urlBuilder->getCancelUrl($payment)
         ];
     }
 

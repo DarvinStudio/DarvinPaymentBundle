@@ -12,10 +12,11 @@ framework:
             initial_marking: pending
             places:
                 - approval
-                - pending
                 - authorized
-                - completed
                 - canceled
+                - completed
+                - expired
+                - pending
                 - refunded
             transitions:
                 approve:
@@ -38,6 +39,10 @@ framework:
                 cancel:
                     from: pending
                     to:   canceled
+
+                expire:
+                    from: pending
+                    to:   expired
 
                 refund:
                     from: completed

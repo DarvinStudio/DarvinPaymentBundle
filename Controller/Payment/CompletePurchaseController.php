@@ -21,18 +21,17 @@ use Symfony\Component\HttpFoundation\Response;
 class CompletePurchaseController extends AbstractController
 {
     /**
-     * @param string $gatewayName Gateway name
-     * @param string $token       Payment token
+     * @param string $token Payment token
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function __invoke(string $gatewayName, string $token): Response
+    public function __invoke(string $token): Response
     {
-        $bridge = $this->getBridge($gatewayName);
-        $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
+        $gateway = $this->getGateway($payment->getGatewayName());
+        $bridge = $this->getBridge($payment->getGatewayName());
 
         $this->validatePayment($payment, Transitions::PURCHASE);
         $this->validateGateway($gateway, 'completePurchase');
@@ -40,28 +39,27 @@ class CompletePurchaseController extends AbstractController
         try {
             $response = $gateway->completePurchase($bridge->completePurchaseParameters($payment))->send();
         } catch (\Exception $ex) {
-            $this->addErrorLog(sprintf('%s: %s', __METHOD__, $ex->getMessage()));
+            $this->logger->saveErrorLog($payment, $ex->getCode(), sprintf('%s: %s', __METHOD__, $ex->getMessage()));
 
-            return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
         }
 
         if ($response->isSuccessful()) {
             $this->workflow->apply($payment, Transitions::PURCHASE);
-            $this->entityManager->flush();
+            $this->em->flush();
 
-            return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment));
         }
 
-        $errorMessage = sprintf(
+        $this->logger->saveErrorLog($payment, $response->getCode(), sprintf(
             '%s: Can\'t handler response for payment id %s and gateway %s. Response code: %s. Response message: %s',
             __METHOD__,
             $payment->getId(),
-            $gatewayName,
+            $payment->getGatewayName(),
             $response->getCode(),
             $response->getMessage()
-        );
+        ));
 
-        $this->addErrorLog($errorMessage);
-        return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
+        return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
     }
 }

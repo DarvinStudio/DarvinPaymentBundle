@@ -10,7 +10,6 @@
 
 namespace Darvin\PaymentBundle\Bridge;
 
-use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 
 /**

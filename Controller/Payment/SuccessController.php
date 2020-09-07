@@ -21,24 +21,22 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class SuccessController extends AbstractController
 {
     /**
-     * @param string $gatewayName Gateway name
-     * @param string $token       Payment token
+     * @param string $token Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function __invoke(string $gatewayName, string $token): Response
+    public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
-        $gateway = $this->getGateway($gatewayName);
 
         if (!in_array($payment->getState(),[
             PaymentStateType::COMPLETED,
             PaymentStateType::AUTHORIZED
         ], true)) {
             $errorMessage = sprintf('%s: Payment state is not completed yet. Payment id: %s', __METHOD__, $payment->getId());
-            $this->addErrorLog($errorMessage);
+            $this->logger->saveErrorLog($payment, null, $errorMessage);
 
             throw new NotFoundHttpException($errorMessage);
         }
@@ -46,7 +44,6 @@ class SuccessController extends AbstractController
         return new Response(
             $this->twig->render('@DarvinPayment/payment/success.html.twig', [
                 'payment' => $payment,
-                'gateway' => $gateway,
             ])
         );
     }

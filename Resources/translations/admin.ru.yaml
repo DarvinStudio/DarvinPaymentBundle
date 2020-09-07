@@ -7,14 +7,18 @@ configuration:
 
 payment:
     action:
+        approve:
+            confirm: Подтвердите операцию
+            submit:  Одобрить платёж
+            success: Платёж одобрен!
         capture:
             confirm: Подтвердите завершение платёжа
-            submit:  Завершить платеж
-            success: Платеж успешно завершен!
+            submit:  Завершить платёж
+            success: Платёж успешно завершён!
         delete:
             confirm: Подтвердите удаление платёжа
             submit:  Удалить платёж
-            success: Каталог успешно удален
+            success: Каталог успешно удалён
         edit:
             link:    Изменить платёж
             success: Платёж успешно изменён
@@ -30,6 +34,9 @@ payment:
             link:  Просмотреть платёж
             title: Платёж №«%entity%»
     entity:
+        created_at:      Создана
+        created_at_from: Создана (с)
+        created_at_to:   Создана (по)
         id: ID
         order_id: ID  Заказа
         order_entity_class: Класс заказа
@@ -48,5 +55,6 @@ payment:
         authorized: Авторизован
         canceled:   Отменен
         completed:  Оплачен
+        expired:    Просрочен
         pending:    Ждет оплаты
         refunded:   Возврат

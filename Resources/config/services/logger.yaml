@@ -1,0 +1,10 @@
+parameters:
+    darvin_payment.logger.class: Darvin\PaymentBundle\Logger\PaymentLogger
+
+services:
+    darvin_payment.logger:
+        class: '%darvin_payment.logger.class%'
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        calls:
+            - [ setLogger, ['@?monolog.logger.payment'] ]

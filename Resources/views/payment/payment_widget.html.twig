@@ -1,0 +1,7 @@
+{% for paymentId, links in urls %}
+    {% for link in links %}
+        <p>
+            <a href="{{ link }}">Online payment</a>
+        </p>
+    {% endfor %}
+{% endfor %}

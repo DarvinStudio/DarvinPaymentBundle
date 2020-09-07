@@ -11,9 +11,7 @@
 namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
-use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Workflow\Transitions;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,18 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AuthorizeController extends AbstractController
 {
-    /**
-     * @var \Symfony\Component\Form\FormFactoryInterface
-     */
-    private $formFactory;
-
-    /**
-     * @param FormFactoryInterface $formFactory Form Factory
-     */
-    public function __construct(FormFactoryInterface $formFactory)
-    {
-        $this->formFactory = $formFactory;
-    }
+    use ResponseRedirectTrait;
 
     /**
      * @param string $gatewayName Gateway name
@@ -45,68 +32,51 @@ class AuthorizeController extends AbstractController
      */
     public function __invoke(string $gatewayName, string $token): Response
     {
-        $bridge = $this->getBridge($gatewayName);
-        $gateway = $this->getGateway($gatewayName);
         $payment = $this->getPaymentByToken($token);
+        $gateway = $this->getGateway($gatewayName);
+        $bridge = $this->getBridge($gatewayName);
 
-        $this->validateGateway($gateway, 'authorize');
         $this->validatePayment($payment, Transitions::AUTHORIZE);
+        $this->validateGateway($gateway, 'authorize');
+
+        if ($payment->hasRedirect()) {
+            return $this->createPaymentResponse($payment);
+        }
 
         try {
-            $response = $gateway->authorize($bridge->authorizeParameters($payment))->send();
+            $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
         } catch (\Exception $ex) {
-            $this->addErrorLog(sprintf('%s: %s', __METHOD__, $ex->getMessage()));
+            $this->logger->saveErrorLog($payment, $ex->getCode(), sprintf('%s: %s', __METHOD__, $ex->getMessage()));
 
-            return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
         }
 
-        if ($response->getTransactionReference() !== null) {
-            $payment->setGatewayName($gatewayName);
-            $payment->setTransactionReference($response->getTransactionReference());
-            $this->entityManager->flush();
-        }
+        $payment
+            ->setTransactionReference($response->getTransactionReference())
+            ->setGatewayName($gatewayName);
 
-        if ($response->isRedirect()) {
-            if ($response->getRedirectMethod() === 'GET') {
-                return new RedirectResponse($response->getRedirectUrl());
-            }
+        $this->em->flush();
 
-            $form = $this->formFactory->create(GatewayRedirectType::class, $response->getRedirectData(), [
-                'action' => $response->getRedirectUrl(),
-                'method' => $response->getRedirectMethod(),
-            ]);
+        if ($response->isSuccessful() && $response->isRedirect()) {
+            $payment->setRedirect($this->redirectFactory->createRedirect($response, $bridge->getSessionTimeout()));
+            $this->em->flush();
 
-            return new Response(
-                $this->twig->render('@DarvinPayment/payment/purchase.html.twig', [
-                    'form'     => $form->createView(),
-                    'payment'  => $payment,
-                    'response' => $response,
-                    'gateway'  => $gateway,
-                ])
-            );
-        }
-
-        if ($response->isSuccessful()) {
-            return new RedirectResponse($this->urlBuilder->getCompleteAuthorizeUrl($payment, $gatewayName));
+            return $this->createPaymentResponse($payment);
         }
 
         if ($response->isCancelled()) {
-            return new RedirectResponse($this->urlBuilder->getCancelUrl($payment, $gatewayName));
+            return new RedirectResponse($this->urlBuilder->getCancelUrl($payment));
         }
 
-        $errorMessage = sprintf(
+        $this->logger->saveErrorLog($payment, $response->getCode(), sprintf(
             '%s: Can\'t handler response for payment id %s and gateway %s. Response code: %s. Response message: %s',
             __METHOD__,
             $payment->getId(),
             $gatewayName,
             $response->getCode(),
             $response->getMessage()
-        );
+        ));
 
-        $this->addErrorLog($errorMessage);
-
-        // TODO Думаю надо сохранять информацию об ошибке
-
-        return new RedirectResponse($this->urlBuilder->getFailUrl($payment, $gatewayName));
+        return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
     }
 }

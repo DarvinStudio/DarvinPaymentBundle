@@ -24,31 +24,13 @@ class PaymentRepository extends EntityRepository
      *
      * @return void
      */
-    public function updateState(Payment $payment, string $state): void
+    public function getPayment(Payment $payment, string $state): void
     {
         $qb = $this->createQueryBuilder('payment');
         $qb
             ->update()
             ->set('payment.state', ':state')
             ->setParameter('state', $state)
-            ->where('payment', $payment)
-            ->getQuery()
-            ->execute();
-    }
-
-    /**
-     * @param Payment     $payment Payment object
-     * @param string|null $token   State of payment
-     *
-     * @return void
-     */
-    public function updateActionToken(Payment $payment, ?string $token): void
-    {
-        $qb = $this->createQueryBuilder('payment');
-        $qb
-            ->update()
-            ->set('payment.actionToken', ':actionToken')
-            ->setParameter('actionToken', $token)
             ->where('payment', $payment)
             ->getQuery()
             ->execute();

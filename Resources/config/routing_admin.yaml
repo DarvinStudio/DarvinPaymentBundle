@@ -1,3 +1,7 @@
+darvin_payment_admin_approve:
+    path:     /approve/{token}
+    defaults: { _controller: darvin_payment.controller.admin.approve }
+
 darvin_payment_admin_capture:
-    path:     /{gatewayName}/capture/{token}
+    path:     /capture/{token}
     defaults: { _controller: darvin_payment.controller.admin.capture }

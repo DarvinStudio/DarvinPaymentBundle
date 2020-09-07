@@ -14,15 +14,15 @@ use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
+use Darvin\PaymentBundle\Logger\PaymentLoggerInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Omnipay\Common\GatewayInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 /**
- * Purchase controller
+ * Common functional for all payment controllers
  */
 abstract class AbstractController
 {
@@ -34,17 +34,17 @@ abstract class AbstractController
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
-    protected $entityManager;
-
-    /**
-     * @var \Psr\Log\LoggerInterface|null
-     */
-    protected $logger;
+    protected $em;
 
     /**
      * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
      */
     protected $urlBuilder;
+
+    /**
+     * @var \Darvin\PaymentBundle\Logger\PaymentLoggerInterface
+     */
+    protected $logger;
 
     /**
      * @var \Twig\Environment
@@ -65,17 +65,17 @@ abstract class AbstractController
     }
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     * @param \Doctrine\ORM\EntityManagerInterface $em
      */
-    public function setEntityManager(EntityManagerInterface $entityManager): void
+    public function setEntityManager(EntityManagerInterface $em): void
     {
-        $this->entityManager = $entityManager;
+        $this->em = $em;
     }
 
     /**
-     * @param \Psr\Log\LoggerInterface|null $logger
+     * @param \Darvin\PaymentBundle\Logger\PaymentLoggerInterface $logger
      */
-    public function setLogger(?LoggerInterface $logger): void
+    public function setLogger(PaymentLoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
@@ -116,8 +116,6 @@ abstract class AbstractController
         try {
             return $this->gatewayFactory->getBridge($gatewayName);
         } catch (BridgeNotExistsException $ex) {
-            $this->addErrorLog($ex->getMessage());
-
             throw new NotFoundHttpException($ex->getMessage());
         }
     }
@@ -134,8 +132,6 @@ abstract class AbstractController
         try {
             return $this->gatewayFactory->createGateway($gatewayName);
         } catch (BridgeNotExistsException $ex) {
-            $this->addErrorLog($ex->getMessage());
-
             throw new NotFoundHttpException($ex->getMessage());
         }
     }
@@ -147,16 +143,12 @@ abstract class AbstractController
      */
     protected function getPaymentByToken(string $token): Payment
     {
-        $payment = $this->entityManager
+        $payment = $this->em
             ->getRepository(Payment::class)
             ->findOneBy(['actionToken' => $token]);
 
         if (null === $payment) {
-            $errorMessage = sprintf('Unable to find payment with token %s', $token);
-
-            $this->addErrorLog($errorMessage);
-
-            throw new NotFoundHttpException($errorMessage);
+            throw new NotFoundHttpException(sprintf('Unable to find payment with token %s', $token));
         }
 
         return $payment;
@@ -169,11 +161,9 @@ abstract class AbstractController
     protected function validateGateway(GatewayInterface $gateway, string $method): void
     {
         if (!method_exists($gateway, $method)) {
-            $errorMessage = sprintf('Payment gateway "%s" doesn\'t support "%s" method', $gateway->getName(), $method);
-
-            $this->addErrorLog($errorMessage);
-
-            throw new NotFoundHttpException($errorMessage);
+            throw new NotFoundHttpException(
+                sprintf('Payment gateway "%s" doesn\'t support "%s" method', $gateway->getName(), $method)
+            );
         }
     }
 
@@ -184,21 +174,11 @@ abstract class AbstractController
     protected function validatePayment(Payment $payment, string $transition): void
     {
         if (!$this->workflow->can($payment, $transition)) {
-            $errorMessage = 'This operation is not available for your payment';
+            $errorMessage = sprintf('Operation "%s" is not available for payment №%s', $transition, $payment->getOrderId());
 
-            $this->addErrorLog($errorMessage);
+            $this->logger->saveErrorLog($payment, null, $errorMessage);
 
             throw new NotFoundHttpException($errorMessage);
-        }
-    }
-
-    /**
-     * @param string $message Log message
-     */
-    protected function addErrorLog(string $message): void
-    {
-        if (null !== $this->logger) {
-            $this->logger->error($message);
         }
     }
 }

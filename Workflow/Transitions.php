@@ -18,13 +18,19 @@ use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 class Transitions
 {
     public const AUTHORIZE = 'authorize';
+    public const APPROVE   = 'approve';
     public const CAPTURE   = 'capture';
+    public const EXPIRE    = 'expire';
     public const VOID      = 'void';
     public const PURCHASE  = 'purchase';
     public const CANCEL    = 'cancel';
     public const REFUND    = 'refund';
 
     public const TRANSITIONS = [
+        self::APPROVE => [
+            PaymentStateType::APPROVAL,
+            PaymentStateType::PENDING,
+        ],
         self::AUTHORIZE => [
             PaymentStateType::PENDING,
             PaymentStateType::AUTHORIZED,
@@ -40,6 +46,10 @@ class Transitions
         self::PURCHASE => [
             PaymentStateType::PENDING,
             PaymentStateType::COMPLETED,
+        ],
+        self::EXPIRE => [
+            PaymentStateType::PENDING,
+            PaymentStateType::EXPIRED,
         ],
         self::CANCEL => [
             PaymentStateType::PENDING,

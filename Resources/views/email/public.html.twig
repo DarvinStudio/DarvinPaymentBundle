@@ -1,6 +1,6 @@
 {% extends '@DarvinMailer/email/layout.html.twig' %}
 
 {% block content %}
-    {% set orderId = order != null ? orderId.id : null %}
-    {{ content|trans(['orderId': orderId], 'email')  }}
+    {% set orderId = order != null ? order.id : null %}
+    {{ content|trans({'orderId': orderId}, 'email')  }}
 {% endblock %}

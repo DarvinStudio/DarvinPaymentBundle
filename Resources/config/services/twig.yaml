@@ -1,0 +1,10 @@
+parameters:
+    darvin_payment.twig_extension.payment.class: Darvin\PaymentBundle\Twig\Extension\PaymentExtension
+
+services:
+    darvin_payment.twig_extension.payment:
+        class: '%darvin_payment.twig_extension.payment.class%'
+        arguments:
+            - '@darvin_payment.url.payment_url_manager'
+        tags:
+            - { name: twig.extension }

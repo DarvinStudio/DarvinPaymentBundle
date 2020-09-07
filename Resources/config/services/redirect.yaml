@@ -1,0 +1,8 @@
+parameters:
+    darvin_payment.redirect.redirect_factory.class: Darvin\PaymentBundle\Redirect\RedirectFactory
+
+services:
+    darvin_payment.redirect.redirect_factory:
+        class: '%darvin_payment.redirect.redirect_factory.class%'
+        arguments:
+            - '@Darvin\Utils\ORM\EntityResolverInterface'

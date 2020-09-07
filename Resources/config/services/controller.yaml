@@ -16,15 +16,16 @@ services:
             - [ setGatewayFactory, ['@darvin_payment.gateway.gateway_factory'] ]
             - [ setEntityManager,  ['@doctrine.orm.entity_manager'] ]
             - [ setTwig,           ['@twig'] ]
-            - [ setLogger,         ['@?monolog.logger.payment'] ]
+            - [ setLogger,         ['@darvin_payment.logger'] ]
             - [ setUrlBuilder,     ['@darvin_payment.url.payment_url_builder'] ]
             - [ setWorkflow,       ['@state_machine.payment'] ]
 
     darvin_payment.controller.payment.autorize:
         class: '%darvin_payment.controller.payment.authorize.class%'
         parent: darvin_payment.controller.payment.abstract
-        arguments:
-            - '@form.factory'
+        calls:
+            - [ setFormFactory, ['@form.factory'] ]
+            - [ setRedirectFactory, ['@darvin_payment.redirect.redirect_factory'] ]
         public: true
 
     darvin_payment.controller.payment.complete_authorize:
@@ -55,6 +56,7 @@ services:
     darvin_payment.controller.payment.purchase:
         class: '%darvin_payment.controller.payment.purchase.class%'
         parent: darvin_payment.controller.payment.abstract
-        arguments:
-            - '@form.factory'
+        calls:
+            - [ setFormFactory, ['@form.factory'] ]
+            - [ setRedirectFactory, ['@darvin_payment.redirect.redirect_factory'] ]
         public: true

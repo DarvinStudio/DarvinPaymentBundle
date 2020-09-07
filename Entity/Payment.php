@@ -121,11 +121,30 @@ class Payment
     protected $gatewayName;
 
     /**
+     * @var Redirect|null
+     *
+     * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\Redirect")
+     */
+    protected $redirect;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
+     *
+     * @Assert\NotBlank
+     * @Assert\LessThanOrEqual("now")
+     */
+    protected $createdAt;
+
+    /**
      * Payment constructor.
      */
     public function __construct()
     {
+        $this->redirect = new Redirect(null, null, null, null);
         $this->state = PaymentStateType::APPROVAL;
+        $this->createdAt = new \DateTime();
     }
 
     /**
@@ -313,14 +332,6 @@ class Payment
     }
 
     /**
-     * @return string
-     */
-    public function getStateName(): string
-    {
-        return PaymentStateType::getReadableValue($this->state);
-    }
-
-    /**
      * @param $state
      *
      * @return self
@@ -343,7 +354,7 @@ class Payment
     /**
      * @param string|null $actionToken
      *
-     * @return $this
+     * @return self
      */
     public function setActionToken(?string $actionToken): self
     {
@@ -363,11 +374,59 @@ class Payment
     /**
      * @param string|null $gatewayName
      *
-     * @return $this
+     * @return self
      */
     public function setGatewayName(?string $gatewayName): self
     {
         $this->gatewayName = $gatewayName;
+
+        return $this;
+    }
+
+    /**
+     * @return Redirect|null
+     */
+    public function getRedirect(): ?Redirect
+    {
+        return $this->redirect;
+    }
+
+    /**
+     * @param Redirect|null $redirect
+     *
+     * @return self
+     */
+    public function setRedirect(?Redirect $redirect): self
+    {
+        $this->redirect = $redirect;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRedirect(): bool
+    {
+        return !$this->redirect->isEmpty();
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt createdAt
+     *
+     * @return self
+     */
+    public function setCreatedAt(?\DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

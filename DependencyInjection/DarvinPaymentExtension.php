@@ -44,13 +44,16 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'configuration',
             'controller',
             'gateway',
+            'logger',
             'mailer' => ['callback' => static function () use ($config): bool {
                 return $config['mailer']['enabled'];
             }],
             'payment',
             'receipt',
+            'redirect',
             'state',
-            'url_builder',
+            'url',
+            'twig',
             'bridges/telr' => ['callback' => static function () use ($config): bool {
                 return $config['bridges']['telr']['enabled'] ?? false;
             }],

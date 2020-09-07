@@ -32,41 +32,30 @@ interface PaymentUrlBuilderInterface
      *
      * @return string
      */
-    public function getCompleteAuthorizeUrl(Payment $payment, string $gatewayName): string;
+    public function getPurchaseUrl(Payment $payment, string $gatewayName): string;
 
     /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
+     * @param Payment $payment Payment
+     *
+     * @return string
+     */
+    public function getCompleteAuthorizeUrl(Payment $payment): string;
+
+    /**
+     * @param Payment $payment Payment
+     *
+     * @return string
+     */
+    public function getCompletePurchaseUrl(Payment $payment): string;
+
+    /**
+     * @param Payment $payment Payment
      *
      * @return string
      *
      * @throws ActionNotImplementedException
      */
-    public function getCaptureUrl(Payment $payment, string $gatewayName): string;
-
-    /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
-     *
-     * @return string
-     */
-    public function getPurchaseUrl(Payment $payment, string $gatewayName): string;
-
-    /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
-     *
-     * @return string
-     */
-    public function getCompletePurchaseUrl(Payment $payment, string $gatewayName): string;
-
-    /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
-     *
-     * @return string
-     */
-    public function getCancelUrl(Payment $payment, string $gatewayName): string;
+    public function getCaptureUrl(Payment $payment): string;
 
     /**
      * @param Payment $payment     Payment
@@ -89,18 +78,30 @@ interface PaymentUrlBuilderInterface
     public function getNotifyUrl(Payment $payment, string $gatewayName): string;
 
     /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
+     * @param Payment $payment Payment
      *
      * @return string
      */
-    public function getSuccessUrl(Payment $payment, string $gatewayName): string;
+    public function getApproveUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
+     * @param Payment $payment Payment
      *
      * @return string
      */
-    public function getFailUrl(Payment $payment, string $gatewayName): string;
+    public function getCancelUrl(Payment $payment): string;
+
+    /**
+     * @param Payment $payment Payment
+     *
+     * @return string
+     */
+    public function getSuccessUrl(Payment $payment): string;
+
+    /**
+     * @param Payment $payment Payment
+     *
+     * @return string
+     */
+    public function getFailUrl(Payment $payment): string;
 }

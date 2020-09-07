@@ -11,6 +11,7 @@
 namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Logger\PaymentLoggerInterface;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 
@@ -25,15 +26,23 @@ class SberbankBridge extends AbstractBridge
     private $receiptFactoryRegistry;
 
     /**
-     * @param ReceiptFactoryRegistryInterface $receiptFactoryRegistry Registry of receipt factories
-     * @param PaymentUrlBuilderInterface      $urlBuilder             URL Builder
+     * @var \Darvin\PaymentBundle\Logger\PaymentLoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @param \Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface $receiptFactoryRegistry Registry of receipt factories
+     * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface          $urlBuilder             URL Builder
+     * @param \Darvin\PaymentBundle\Logger\PaymentLoggerInterface           $logger                 Payment logger
      */
     public function __construct(
         ReceiptFactoryRegistryInterface $receiptFactoryRegistry,
-        PaymentUrlBuilderInterface $urlBuilder
+        PaymentUrlBuilderInterface $urlBuilder,
+        PaymentLoggerInterface $logger
     ) {
         parent::__construct($urlBuilder);
         $this->receiptFactoryRegistry = $receiptFactoryRegistry;
+        $this->logger = $logger;
     }
 
     /**
@@ -45,18 +54,27 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
+     * @return int
+     */
+    public function getSessionTimeout(): int
+    {
+        return $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 86400;
+    }
+
+    /**
      * @inheritDoc
      */
     public function authorizeParameters(Payment $payment): array
     {
         return [
-            'orderNumber'        => $payment->getOrderId(),
+            'orderNumber'        => $payment->getId(),
             'amount'             => $payment->getAmount(),
             'currency'           => $payment->getCurrencyCode(),
             'description'        => $payment->getDescription(),
-            'returnUrl'          => $this->urlBuilder->getCompleteAuthorizeUrl($payment, 'sberbank'),
-            'failUrl'            => $this->urlBuilder->getFailUrl($payment, 'sberbank'),
-            'sessionTimeoutSecs' => $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 28800,
+            'returnUrl'          => $this->urlBuilder->getCompleteAuthorizeUrl($payment),
+            'failUrl'            => $this->urlBuilder->getFailUrl($payment),
+            'jsonParams'         => json_encode(['Order ID' => $payment->getId()]),
+            'sessionTimeoutSecs' => $this->getSessionTimeout(),
             'clientId'           => $payment->getClientId(),
             'email'              => $payment->getClientEmail(),
             'taxSystem'          => $this->getGatewayConfig()['taxSystem'] ?? null,
@@ -82,13 +100,14 @@ class SberbankBridge extends AbstractBridge
     public function purchaseParameters(Payment $payment): array
     {
         return [
-            'orderNumber'        => $payment->getOrderId(),
+            'orderNumber'        => $payment->getId(),
             'amount'             => $payment->getAmount(),
             'currency'           => $payment->getCurrencyCode(),
             'description'        => $payment->getDescription(),
-            'returnUrl'          => $this->urlBuilder->getCompletePurchaseUrl($payment, 'sberbank'),
-            'failUrl'            => $this->urlBuilder->getFailUrl($payment, 'sberbank'),
-            'sessionTimeoutSecs' => $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 28800,
+            'returnUrl'          => $this->urlBuilder->getCompletePurchaseUrl($payment),
+            'failUrl'            => $this->urlBuilder->getFailUrl($payment),
+            'jsonParams'         => json_encode(['Order ID' => $payment->getId()]),
+            'sessionTimeoutSecs' => $this->getSessionTimeout(),
             'clientId'           => $payment->getClientId(),
             'email'              => $payment->getClientEmail(),
             'taxSystem'          => $this->getGatewayConfig()['taxSystem'] ?? null,
@@ -151,7 +170,9 @@ class SberbankBridge extends AbstractBridge
             try {
                 return json_encode($factory->createReceipt($payment));
             } catch (\Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException $ex) {
-                // TODO Need add logger
+
+                $this->logger->saveErrorLog($payment, null, $ex->getMessage());
+
                 return null;
             }
         }
