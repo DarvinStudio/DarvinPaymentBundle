@@ -59,11 +59,12 @@ class EmailFactory implements EmailFactoryInterface
     public function createPublicEmail(?object $order, State $state, string $clientEmail): Email
     {
         $emailData = $state->getEmail()->getPublicEmail();
+        $orderId = $order !== null ? $order->getId() : null;
 
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
             $clientEmail,
-            $this->translator->trans($emailData->getSubject(), [], 'messages'),
+            $this->translator->trans($emailData->getSubject(), ['orderId' => $orderId], 'messages'),
             $emailData->getTemplate(),
             [
                 'order'   => $order,
@@ -79,6 +80,7 @@ class EmailFactory implements EmailFactoryInterface
     public function createServiceEmail(?object $order, State $state): Email
     {
         $emailData = $state->getEmail()->getServiceEmail();
+        $orderId = $order !== null ? $order->getId() : null;
         $serviceEmails = $this->paymentConfig->getEmailsByStateName($state->getName());
 
         if (empty($serviceEmails)) {
@@ -88,7 +90,7 @@ class EmailFactory implements EmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans($emailData->getSubject(), [], 'messages'),
+            $this->translator->trans($emailData->getSubject(), ['orderId' => $orderId], 'messages'),
             $emailData->getTemplate(),
             [
                 'order'   => $order,
