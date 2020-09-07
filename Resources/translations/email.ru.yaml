@@ -1,0 +1,41 @@
+payment:
+    order: Заказ
+    public:
+        canceled:
+            subject: 'Оплата отменена'
+            content: 'Онлайн оплата заказ №%orderId% была отменена.'
+        completed:
+            subject: 'Оплата успешна! Заказ №%orderId%'
+            content: 'Спасибо! Онлайн оплата успешно произведена!'
+        failed:
+            subject: 'Упс, что-то пошло не так..'
+            content: 'Во время онлайн оплаты произошла ошибка. Наш менеджер скоро свяжется с вами.'
+        pending:
+            subject: 'Заказ №%orderId% готов к оплате'
+            content: 'Ваш заказ №%orderId% готов к оплате.'
+        refunded:
+            subject: 'Успешно! Заказ №%orderId%'
+            content: 'Спасибо! Онлайн оплата успешно произведена!'
+
+    service:
+        authorized:
+            subject: 'Заказ №%orderId%: Авторизация оплаты успешна'
+            content: 'Заказ №%orderId% успешно авторизован. Для списания денег воспользуютесь capture_link'
+        canceled:
+            subject: 'Заказ №%orderId%: Оплата отменена'
+            content: 'Оплата заказа №%orderId% была отменена'
+        completed:
+            subject: 'Заказ №%orderId%: Оплата произведена'
+            content: 'Заказ №%orderId% успешно оплачен.'
+        failed:
+            subject: 'Заказ №%orderId%: Ошибка при оплате'
+            content: 'При оплате заказа №%orderId% произошла ошибка: {message}'
+        new:
+            subject: 'Заказ №%orderId%: Создана заявка на оплату'
+            content: 'Необходимо утвердить новую заявку на онлайн оплату заказа №%orderId%.'
+        pending:
+            subject: 'Заказ №%orderId%: Создана заявка на оплату'
+            content: 'По заказу №%orderId% клиент приступил к онлайн оплате.'
+        refund:
+            subject: 'Заказ №%orderId%: Возврат денег'
+            content: 'По заказу №%orderId% произведен возврат денег.'

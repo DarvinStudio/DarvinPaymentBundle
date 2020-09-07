@@ -44,8 +44,8 @@ class PublicEmail
     {
         $this->enabled = $enabled;
         $this->template = $template;
-        $this->subject = sprintf('email.payment.public.%s.subject', $stateName);
-        $this->content = sprintf('email.payment.public.%s.content', $stateName);
+        $this->subject = sprintf('payment.public.%s.subject', $stateName);
+        $this->content = sprintf('payment.public.%s.content', $stateName);
     }
 
     /**

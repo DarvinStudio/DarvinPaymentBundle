@@ -1,27 +1,3 @@
-email:
-    payment:
-        order: Order
-        public:
-            canceled:
-                subject: 'Payment has been canceled'
-                content: 'Online payment has been canceled successfully.'
-            failed:
-                subject: 'Oops, something wrong'
-                content: 'An error occurred while online payment. Our manager will contact you soon.'
-            completed:
-                subject: 'Success!'
-                content: 'Thank you! Payment successfully completed.'
-        service:
-            canceled:
-                subject: 'Payment has been canceled. Order №%orderId%'
-                content: 'Online payment of order №%orderId% has been canceled'
-            failed:
-                subject: 'Error while payment of order №%orderId%'
-                content: 'An error occurred while payment: {message}'
-            completed:
-                subject: 'Payment is done'
-                content: 'Payment successfully completed!'
-
 payment:
     canceled:
         title: Payment has been canceled
