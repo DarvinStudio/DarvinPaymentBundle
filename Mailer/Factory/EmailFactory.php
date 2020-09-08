@@ -15,7 +15,9 @@ use Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface;
 use Darvin\MailerBundle\Model\Email;
 use Darvin\MailerBundle\Model\EmailType;
 use Darvin\PaymentBundle\Config\PaymentConfigInterface;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\State\Model\State;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -29,6 +31,11 @@ class EmailFactory implements EmailFactoryInterface
     protected $genericFactory;
 
     /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * @var \Darvin\PaymentBundle\Config\PaymentConfigInterface
      */
     protected $paymentConfig;
@@ -40,15 +47,18 @@ class EmailFactory implements EmailFactoryInterface
 
     /**
      * @param \Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface $genericFactory Generic template email factory
+     * @param \Doctrine\ORM\EntityManagerInterface                       $em             EntityManagerInterface
      * @param \Darvin\PaymentBundle\Config\PaymentConfigInterface        $paymentConfig  Payment configuration
      * @param \Symfony\Contracts\Translation\TranslatorInterface         $translator     Translator
      */
     public function __construct(
         TemplateEmailFactoryInterface $genericFactory,
+        EntityManagerInterface $em,
         PaymentConfigInterface $paymentConfig,
         TranslatorInterface $translator
     ) {
         $this->genericFactory = $genericFactory;
+        $this->em = $em;
         $this->paymentConfig = $paymentConfig;
         $this->translator = $translator;
     }
@@ -56,19 +66,17 @@ class EmailFactory implements EmailFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createPublicEmail(?object $order, State $state, string $clientEmail): Email
+    public function createPublicEmail(Payment $payment, State $state): Email
     {
         $emailData = $state->getEmail()->getPublicEmail();
-        $orderId = $order !== null ? $order->getId() : null;
 
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
-            $clientEmail,
-            $this->translator->trans($emailData->getSubject(), ['%orderId%' => $orderId], 'email'),
+            $payment->getClientEmail(),
+            $this->translator->trans($emailData->getSubject(), ['%orderId%' => $payment->getOrderNumber()], 'email'),
             $emailData->getTemplate(),
             [
-                'order'   => $order,
-                'state'   => $state->getName(),
+                'payment' => $payment,
                 'content' => $emailData->getContent(),
             ]
         );
@@ -77,26 +85,35 @@ class EmailFactory implements EmailFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createServiceEmail(?object $order, State $state): Email
+    public function createServiceEmail(Payment $payment, State $state): Email
     {
-        $emailData = $state->getEmail()->getServiceEmail();
-        $orderId = $order !== null ? $order->getId() : null;
         $serviceEmails = $this->paymentConfig->getEmailsByStateName($state->getName());
 
         if (empty($serviceEmails)) {
             throw new CantCreateEmailException(sprintf('Service email for state "%s" is not specified', $state->getName()));
         }
 
+        $emailData = $state->getEmail()->getServiceEmail();
+        $order = $this->getOrder($payment);
+
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans($emailData->getSubject(), ['%orderId%' => $orderId], 'email'),
+            $this->translator->trans($emailData->getSubject(), ['%orderId%' => $payment->getOrderNumber()], 'email'),
             $emailData->getTemplate(),
             [
                 'order'   => $order,
-                'state'   => $state->getName(),
+                'payment' => $payment,
                 'content' => $emailData->getContent()
             ]
         );
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     */
+    private function getOrder(Payment $payment): ?object
+    {
+        return $this->em->find($payment->getOrderEntityClass(), $payment->getOrderId());
     }
 }

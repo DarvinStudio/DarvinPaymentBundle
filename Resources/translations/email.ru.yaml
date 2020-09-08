@@ -1,4 +1,6 @@
 payment:
+    button:
+        default: Оплатить
     order: Заказ
     public:
         canceled:

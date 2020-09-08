@@ -3,7 +3,6 @@
 {% trans_default_domain 'email' %}
 
 {% block content %}
-    {% set orderId = order != null ? order.id : null %}
     {% if order != null %}
         <div class="details-list__title"
              style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
@@ -14,5 +13,5 @@
         </div>
     {% endif %}
 
-    <p>{{ content|trans({'%orderId%': orderId}, 'email')  }}</p>
+    <p>{{ content|trans({'%orderId%': payment.orderNumber}, 'email')  }}</p>
 {% endblock %}

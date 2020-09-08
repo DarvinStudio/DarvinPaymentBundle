@@ -72,6 +72,7 @@ class PaymentFactory implements PaymentFactoryInterface
     public function createPayment(
         string $orderId,
         string $orderEntityClass,
+        string $orderNumber,
         string $amount,
         ?string $currencyCode,
         ?string $clientId,
@@ -85,6 +86,7 @@ class PaymentFactory implements PaymentFactoryInterface
         $payment
             ->setOrderId($orderId)
             ->setOrderEntityClass($orderEntityClass)
+            ->setOrderNumber($orderNumber)
             ->setAmount($amount)
             ->setClientId($clientId)
             ->setClientEmail($clientEmail)

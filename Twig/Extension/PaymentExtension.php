@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle\Twig\Extension;
 
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Url\PaymentUrlManagerInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
@@ -43,6 +44,9 @@ class PaymentExtension extends AbstractExtension
                 'needs_environment' => true,
                 'is_safe'           => ['html'],
             ]),
+            new TwigFunction('darvin_payment_url', [$this, 'getPaymentUrl'], [
+                'is_safe'           => ['html'],
+            ]),
         ];
     }
 
@@ -68,10 +72,20 @@ class PaymentExtension extends AbstractExtension
             throw new \LogicException('Missing order entity class');
         }
 
-        $urls = $this->urlManager->getApprovalPaymentUrls($orderId, $orderEntityClass);
+        $urls = $this->urlManager->getUrlsForOrder($orderId, $orderEntityClass);
 
         return $twig->render('@DarvinPayment/payment/payment_widget.html.twig', [
             'urls' => $urls,
         ]);
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
+     *
+     * @return array
+     */
+    public function getPaymentUrl(Payment $payment): array
+    {
+        return $this->urlManager->getUrlsForPayment($payment);
     }
 }

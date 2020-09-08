@@ -50,6 +50,15 @@ class Payment
     protected $orderEntityClass;
 
     /**
+     * @var string
+     *
+     * @ORM\Column
+     *
+     * @Assert\NotBlank
+     */
+    protected $orderNumber;
+
+    /**
      * @var string|null
      *
      * @ORM\Column(nullable=true)
@@ -199,6 +208,26 @@ class Payment
     public function setOrderEntityClass(string $orderEntityClass): self
     {
         $this->orderEntityClass = $orderEntityClass;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrderNumber(): string
+    {
+        return $this->orderNumber;
+    }
+
+    /**
+     * @param string $orderNumber
+     *
+     * @return self
+     */
+    public function setOrderNumber(string $orderNumber): self
+    {
+        $this->orderNumber = $orderNumber;
 
         return $this;
     }

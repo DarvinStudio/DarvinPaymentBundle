@@ -10,6 +10,8 @@
 
 namespace Darvin\PaymentBundle\Url;
 
+use Darvin\PaymentBundle\Entity\Payment;
+
 /**
  * Payment factory interface
  */
@@ -21,5 +23,12 @@ interface PaymentUrlManagerInterface
      *
      * @return array
      */
-    public function getApprovalPaymentUrls(int $orderId, string $orderEntityClass): array;
+    public function getUrlsForOrder(int $orderId, string $orderEntityClass): array;
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     *
+     * @return array
+     */
+    public function getUrlsForPayment(Payment $payment): array;
 }

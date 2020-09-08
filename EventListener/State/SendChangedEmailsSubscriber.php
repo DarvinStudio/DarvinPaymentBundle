@@ -18,7 +18,6 @@ use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Logger\PaymentLoggerInterface;
 use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
 use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 
@@ -31,11 +30,6 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
      * @var \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface
      */
     private $emailFactory;
-
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
-    private $em;
 
     /**
      * @var \Darvin\MailerBundle\Mailer\MailerInterface
@@ -54,20 +48,17 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
 
     /**
      * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface  $emailFactory  Payment email factory
-     * @param \Doctrine\ORM\EntityManagerInterface                        $em            EntityManagerInterface
      * @param \Darvin\MailerBundle\Mailer\MailerInterface                 $mailer        Mailer
      * @param \Darvin\PaymentBundle\Logger\PaymentLoggerInterface         $logger        Payment logger
      * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Provider
      */
     public function __construct(
         EmailFactoryInterface $emailFactory,
-        EntityManagerInterface $em,
         MailerInterface $mailer,
         PaymentLoggerInterface $logger,
         StateProviderInterface $stateProvider
     ) {
         $this->emailFactory = $emailFactory;
-        $this->em = $em;
         $this->mailer = $mailer;
         $this->logger = $logger;
         $this->stateProvider = $stateProvider;
@@ -97,29 +88,32 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
         }
 
         $state = $this->stateProvider->getState($payment->getState());
-        $order = $this->em->find($payment->getOrderEntityClass(), $payment->getOrderId());
 
         if ($payment->getClientEmail() !== null && $state->getEmail()->getPublicEmail()->isEnabled()) {
+            $publicEmail = null;
+
             try {
-                $email = $this->emailFactory->createPublicEmail($order, $state, $payment->getClientEmail());
+                $publicEmail = $this->emailFactory->createPublicEmail($payment, $state);
             } catch (CantCreateEmailException $ex) {
                 $this->logger->saveErrorLog($payment,(string) $ex->getCode(), $ex->getMessage());
             }
 
-            if (null !== $email) {
-                $this->mustSend($email, $payment);
+            if (null !== $publicEmail) {
+                $this->mustSend($publicEmail, $payment);
             }
         }
 
         if ($state->getEmail()->getServiceEmail()->isEnabled()) {
+            $serviceEmail = null;
+
             try {
-                $email = $this->emailFactory->createServiceEmail($order, $state);
+                $serviceEmail = $this->emailFactory->createServiceEmail($payment, $state);
             } catch (CantCreateEmailException $ex) {
                 $this->logger->saveErrorLog($payment, (string) $ex->getCode(), $ex->getMessage());
             }
 
-            if (null !== $email) {
-                $this->mustSend($email, $payment);
+            if (null !== $serviceEmail) {
+                $this->mustSend($serviceEmail, $payment);
             }
         }
     }
@@ -131,7 +125,7 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
     private function mustSend(Email $email, Payment $payment): void
     {
         try {
-            $this->mailer->mustSend($email);   
+            $this->mailer->mustSend($email);
         } catch (MailerException $ex) {
             $this->logger->saveErrorLog($payment, (string) $ex->getCode(), $ex->getMessage());
         }

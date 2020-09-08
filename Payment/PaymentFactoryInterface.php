@@ -20,6 +20,7 @@ interface PaymentFactoryInterface
     /**
      * @param string      $orderId          Order ID
      * @param string      $orderEntityClass Class of order entity
+     * @param string      $orderNumber      Public order ID
      * @param string      $amount           Amount
      * @param string|null $currencyCode     Currency code
      * @param string|null $clientId         Client ID
@@ -30,6 +31,7 @@ interface PaymentFactoryInterface
     public function createPayment(
         string $orderId,
         string $orderEntityClass,
+        string $orderNumber,
         string $amount,
         ?string $currencyCode,
         ?string $clientId,

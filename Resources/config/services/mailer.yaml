@@ -7,6 +7,7 @@ services:
         class: '%darvin_payment.mailer.factory.class%'
         arguments:
             - '@darvin_mailer.factory.template'
+            - '@doctrine.orm.entity_manager'
             - '@darvin_payment.configuration'
             - '@translator'
 
@@ -14,7 +15,6 @@ services:
         class: '%darvin_payment.subscriber.send_changed_emails.class%'
         arguments:
             - '@darvin_payment.mailer.factory'
-            - '@doctrine.orm.entity_manager'
             - '@darvin_mailer.mailer'
             - '@darvin_payment.logger'
             - '@darvin_payment.state.provider'

@@ -1,9 +1,18 @@
 {% extends '@DarvinMailer/email/layout.html.twig' %}
 
+{% trans_default_domain 'email' %}
+
 {% block content %}
-    {% set orderId = order != null ? order.id : null %}
-    {{ content|trans({'%orderId%': orderId}, 'email')  }}
-    {% if state == constant('Darvin\\PaymentBundle\\DBAL\\Type\\PaymentStateType::PENDING') %}
-        {{ darvin_payment_widget(order) }}
+    {{ content|trans({'%orderId%': payment.orderNumber}, 'email')  }}
+    {% if payment.state == constant('Darvin\\PaymentBundle\\DBAL\\Type\\PaymentStateType::PENDING') %}
+        {% set urls = darvin_payment_url(payment) %}
+
+        {% if urls|length == 1 %}
+            <p><a href="{{ urls|first }}">{% trans %}payment.button.default{% endtrans %}</a></p>
+        {% elseif urls|length > 1 %}
+            {% for gatewayName, url in urls %}
+                <p><a href="{{ url }}">{{ ('payment.gateway.' ~ gatewayName)|trans({}, 'email') }}</a></p>
+            {% endfor %}
+        {% endif %}
     {% endif %}
 {% endblock %}

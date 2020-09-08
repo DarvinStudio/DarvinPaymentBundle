@@ -66,7 +66,7 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
     /**
      * @inheritdoc
      */
-    public function getApprovalPaymentUrls(int $orderId, string $orderEntityClass): array
+    public function getUrlsForOrder(int $orderId, string $orderEntityClass): array
     {
         $payments = $this->getPaymentRepository()->findBy([
             'orderId' => $orderId,
@@ -78,12 +78,22 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
 
         /** @var $payment \Darvin\PaymentBundle\Entity\Payment */
         foreach ($payments as $payment) {
-            foreach ($this->gatewayNames as $gatewayName) {
-                $urls[$payment->getId()][$gatewayName] = $this->preAuth
-                    ? $this->urlBuilder->getAuthorizeUrl($payment, $gatewayName)
-                    : $this->urlBuilder->getPurchaseUrl($payment, $gatewayName)
-                ;
-            }
+            $urls[$payment->getId()] = $this->getUrlsForPayment($payment);
+        }
+
+        return $urls;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUrlsForPayment(Payment $payment): array
+    {
+        foreach ($this->gatewayNames as $gatewayName) {
+            $urls[$gatewayName] = $this->preAuth
+                ? $this->urlBuilder->getAuthorizeUrl($payment, $gatewayName)
+                : $this->urlBuilder->getPurchaseUrl($payment, $gatewayName)
+            ;
         }
 
         return $urls;
