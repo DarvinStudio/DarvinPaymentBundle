@@ -11,14 +11,12 @@
 namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
-use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\Workflow\Transitions;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Controller for the canceling payment
+ * Error payment controller
  */
-class CancelController extends AbstractController
+class ErrorController extends AbstractController
 {
     /**
      * @param string $token Payment token
@@ -30,21 +28,9 @@ class CancelController extends AbstractController
     public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
-        
-        if (PaymentStateType::CANCELED === $payment->getState()) {
-            return new Response(
-                $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
-                    'payment' => $payment,
-                ])
-            );
-        }
-
-        $this->validatePayment($payment, Transitions::CANCEL);
-        $this->workflow->apply($payment, Transitions::CANCEL);
-        $this->em->flush();
 
         return new Response(
-            $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
+            $this->twig->render('@DarvinPayment/payment/error.html.twig', [
                 'payment' => $payment,
             ])
         );

@@ -20,8 +20,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PurchaseController extends AbstractController
 {
-    use ResponseRedirectTrait;
-
     /**
      * @param string $gatewayName Gateway name
      * @param string $token       Payment token
@@ -46,9 +44,9 @@ class PurchaseController extends AbstractController
         try {
             $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
         } catch (\Exception $ex) {
-            $this->logger->saveErrorLog($payment, $ex->getCode(), sprintf('%s: %s', __METHOD__, $ex->getMessage()));
+            $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 
-            return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
+            return $this->createErrorResponse($payment);
         }
 
         $payment
@@ -68,15 +66,13 @@ class PurchaseController extends AbstractController
             return new RedirectResponse($this->urlBuilder->getCancelUrl($payment));
         }
 
-        $this->logger->saveErrorLog($payment, $response->getCode(), sprintf(
-            '%s: Can\'t handler response for payment id %s and gateway %s. Response code: %s. Response message: %s',
+        $this->logger->error(sprintf(
+            '%s: Can\'t handler response. Response code: %s. Response message: %s',
             __METHOD__,
-            $payment->getId(),
-            $gatewayName,
             $response->getCode(),
             $response->getMessage()
-        ));
+        ), ['payment' => $payment]);
 
-        return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
+        return $this->createErrorResponse($payment);
     }
 }

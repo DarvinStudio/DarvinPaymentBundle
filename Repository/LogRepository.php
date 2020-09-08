@@ -13,9 +13,8 @@ namespace Darvin\PaymentBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Payment Repository
+ * Log Repository
  */
-class PaymentRepository extends EntityRepository
+class LogRepository extends EntityRepository
 {
-
 }

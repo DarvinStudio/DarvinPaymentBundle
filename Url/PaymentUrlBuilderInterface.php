@@ -104,4 +104,11 @@ interface PaymentUrlBuilderInterface
      * @return string
      */
     public function getFailUrl(Payment $payment): string;
+
+    /**
+     * @param Payment $payment Payment
+     *
+     * @return string
+     */
+    public function getErrorUrl(Payment $payment): string;
 }

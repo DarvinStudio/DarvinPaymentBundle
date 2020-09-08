@@ -16,6 +16,7 @@ framework:
                 - canceled
                 - completed
                 - expired
+                - failed
                 - pending
                 - refunded
             transitions:
@@ -32,6 +33,10 @@ framework:
                 void:
                     from: authorized
                     to:   canceled
+
+                fail:
+                    from: pending
+                    to:   failed
 
                 purchase:
                     from: pending

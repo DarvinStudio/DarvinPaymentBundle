@@ -43,6 +43,12 @@ view:
                 size: md
                 widget:
                     payment_operation: ~
+            logs:
+                type: link-with-add
+                widget:
+                    child_links:
+                        child:      Darvin\PaymentBundle\Entity\Log
+                        show_count: true
             transactionReference:
                 size: free
             actionToken:

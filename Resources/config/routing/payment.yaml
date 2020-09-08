@@ -18,6 +18,10 @@ darvin_payment_cancel:
     path:     /cancel/{token}
     defaults: { _controller: darvin_payment.controller.payment.cancel }
 
+darvin_payment_error:
+    path:     /error/{token}
+    defaults: { _controller: darvin_payment.controller.payment.error }
+
 darvin_payment_fail:
     path:     /fail/{token}
     defaults: { _controller: darvin_payment.controller.payment.fail }

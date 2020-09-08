@@ -15,9 +15,9 @@ use Darvin\MailerBundle\Mailer\Exception\MailerException;
 use Darvin\MailerBundle\Mailer\MailerInterface;
 use Darvin\MailerBundle\Model\Email;
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Logger\PaymentLoggerInterface;
 use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
 use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 
@@ -37,7 +37,7 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
     private $mailer;
 
     /**
-     * @var \Darvin\PaymentBundle\Logger\PaymentLoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
@@ -49,13 +49,13 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
     /**
      * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface  $emailFactory  Payment email factory
      * @param \Darvin\MailerBundle\Mailer\MailerInterface                 $mailer        Mailer
-     * @param \Darvin\PaymentBundle\Logger\PaymentLoggerInterface         $logger        Payment logger
+     * @param \Psr\Log\LoggerInterface                                    $logger        Payment logger
      * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Provider
      */
     public function __construct(
         EmailFactoryInterface $emailFactory,
         MailerInterface $mailer,
-        PaymentLoggerInterface $logger,
+        LoggerInterface $logger,
         StateProviderInterface $stateProvider
     ) {
         $this->emailFactory = $emailFactory;
@@ -95,7 +95,7 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
             try {
                 $publicEmail = $this->emailFactory->createPublicEmail($payment, $state);
             } catch (CantCreateEmailException $ex) {
-                $this->logger->saveErrorLog($payment,(string) $ex->getCode(), $ex->getMessage());
+                $this->logger->warning($ex->getMessage(), ['payment' => $payment]);
             }
 
             if (null !== $publicEmail) {
@@ -109,7 +109,7 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
             try {
                 $serviceEmail = $this->emailFactory->createServiceEmail($payment, $state);
             } catch (CantCreateEmailException $ex) {
-                $this->logger->saveErrorLog($payment, (string) $ex->getCode(), $ex->getMessage());
+                $this->logger->warning($ex->getMessage(), ['payment' => $payment]);
             }
 
             if (null !== $serviceEmail) {
@@ -127,7 +127,7 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
         try {
             $this->mailer->mustSend($email);
         } catch (MailerException $ex) {
-            $this->logger->saveErrorLog($payment, (string) $ex->getCode(), $ex->getMessage());
+            $this->logger->warning($ex->getMessage(), ['payment' => $payment]);
         }
     }
 }

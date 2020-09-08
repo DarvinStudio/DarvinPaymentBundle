@@ -11,9 +11,9 @@
 namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Logger\PaymentLoggerInterface;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Sberbank gateway parameters bridge
@@ -26,19 +26,19 @@ class SberbankBridge extends AbstractBridge
     private $receiptFactoryRegistry;
 
     /**
-     * @var \Darvin\PaymentBundle\Logger\PaymentLoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     private $logger;
 
     /**
      * @param \Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface $receiptFactoryRegistry Registry of receipt factories
      * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface          $urlBuilder             URL Builder
-     * @param \Darvin\PaymentBundle\Logger\PaymentLoggerInterface           $logger                 Payment logger
+     * @param \Psr\Log\LoggerInterface                                      $logger                 Payment logger
      */
     public function __construct(
         ReceiptFactoryRegistryInterface $receiptFactoryRegistry,
         PaymentUrlBuilderInterface $urlBuilder,
-        PaymentLoggerInterface $logger
+        LoggerInterface $logger
     ) {
         parent::__construct($urlBuilder);
         $this->receiptFactoryRegistry = $receiptFactoryRegistry;
@@ -171,7 +171,7 @@ class SberbankBridge extends AbstractBridge
                 return json_encode($factory->createReceipt($payment));
             } catch (\Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException $ex) {
 
-                $this->logger->saveErrorLog($payment, null, $ex->getMessage());
+                $this->logger->warning($ex->getMessage(), ['payment' => $payment]);
 
                 return null;
             }

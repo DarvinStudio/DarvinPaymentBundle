@@ -1,0 +1,31 @@
+#menu:
+#    position: 31
+menu:
+    skip: true
+
+order_by:
+    createdAt: desc
+
+route_blacklist:
+    - new
+    - edit
+
+sortable_fields:
+    createdAt: ~
+
+view:
+    index:
+        fields:
+            createdAt:
+                type:   date
+                widget: datetime
+            level:
+                size:
+                    ss
+            message:
+                size: free
+                widget:
+                    text:
+                        property: message
+                        length: 1000
+                        rows: 3

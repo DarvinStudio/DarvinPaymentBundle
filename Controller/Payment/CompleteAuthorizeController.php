@@ -39,9 +39,9 @@ class CompleteAuthorizeController extends AbstractController
         try {
             $response = $gateway->completeAuthorize($bridge->completeAuthorizeParameters($payment))->send();
         } catch (\Exception $ex) {
-            $this->logger->saveErrorLog($payment, $ex->getCode(), sprintf('%s: %s', __METHOD__, $ex->getMessage()));
+            $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 
-            return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
+            return $this->createErrorResponse($payment);
         }
 
         if ($response->isSuccessful()) {
@@ -51,15 +51,13 @@ class CompleteAuthorizeController extends AbstractController
             return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment));
         }
 
-        $this->logger->saveErrorLog($payment, $response->getCode(), sprintf(
-            '%s: Can\'t handler response for payment id %s and gateway %s. Response code: %s. Response message: %s',
+        $this->logger->error(sprintf(
+            '%s: Can\'t handler response. Response code: %s. Response message: %s',
             __METHOD__,
-            $payment->getId(),
-            $payment->getGatewayName(),
             $response->getCode(),
             $response->getMessage()
-        ));
+        ), ['payment' => $payment]);
 
-        return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
+        return $this->createErrorResponse($payment);
     }
 }

@@ -13,11 +13,17 @@ namespace Darvin\PaymentBundle\Controller;
 use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
-use Darvin\PaymentBundle\Logger\PaymentLoggerInterface;
+use Darvin\PaymentBundle\Redirect\RedirectFactoryInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
+use Darvin\PaymentBundle\Workflow\Transitions;
 use Doctrine\ORM\EntityManagerInterface;
 use Omnipay\Common\GatewayInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -37,14 +43,24 @@ abstract class AbstractController
     protected $em;
 
     /**
+     * @var \Symfony\Component\Form\FormFactoryInterface
+     */
+    protected $formFactory;
+
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * @var \Darvin\PaymentBundle\Redirect\RedirectFactoryInterface
+     */
+    protected $redirectFactory;
+
+    /**
      * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
      */
     protected $urlBuilder;
-
-    /**
-     * @var \Darvin\PaymentBundle\Logger\PaymentLoggerInterface
-     */
-    protected $logger;
 
     /**
      * @var \Twig\Environment
@@ -73,11 +89,27 @@ abstract class AbstractController
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Logger\PaymentLoggerInterface $logger
+     * @param \Symfony\Component\Form\FormFactoryInterface $formFactory From factory
      */
-    public function setLogger(PaymentLoggerInterface $logger): void
+    public function setFormFactory(FormFactoryInterface $formFactory): void
+    {
+        $this->formFactory = $formFactory;
+    }
+
+    /**
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Redirect\RedirectFactoryInterface $redirectFactory Redirect factory
+     */
+    public function setRedirectFactory(RedirectFactoryInterface $redirectFactory): void
+    {
+        $this->redirectFactory = $redirectFactory;
     }
 
     /**
@@ -176,9 +208,59 @@ abstract class AbstractController
         if (!$this->workflow->can($payment, $transition)) {
             $errorMessage = sprintf('Operation "%s" is not available for payment №%s', $transition, $payment->getOrderId());
 
-            $this->logger->saveErrorLog($payment, null, $errorMessage);
+            $this->logger->warning($errorMessage, ['payment' => $payment]);
 
             throw new NotFoundHttpException($errorMessage);
         }
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    protected function createErrorResponse(Payment $payment): RedirectResponse
+    {
+        return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @throws \LogicException
+     */
+    protected function createPaymentResponse(Payment $payment): Response
+    {
+        if (!$payment->hasRedirect()) {
+            throw new \LogicException('Redirect could not be empty');
+        }
+
+        $redirect = $payment->getRedirect();
+
+        if ($payment->getRedirect()->isExpired()) {
+            $this->workflow->apply($payment, Transitions::EXPIRE);
+            $this->em->flush();
+
+            $this->logger->warning('Payment session expired', ['payment' => $payment]);
+
+            return $this->createErrorResponse($payment);
+        }
+
+        if ($redirect->getMethod() !== 'POST') {
+            return new RedirectResponse($redirect->getUrl());
+        }
+
+        $form = $this->formFactory->create(GatewayRedirectType::class, $redirect->getData(), [
+            'action' => $redirect->getUrl(),
+            'method' => $redirect->getMethod(),
+        ]);
+
+        return new Response(
+            $this->twig->render('@DarvinPayment/payment/purchase.html.twig', [
+                'form' => $form->createView(),
+            ])
+        );
     }
 }

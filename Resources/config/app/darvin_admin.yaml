@@ -1,3 +1,6 @@
 darvin_admin:
     sections:
         Darvin\PaymentBundle\Entity\Payment: '@DarvinPaymentBundle/Resources/config/admin/payment.yaml'
+        Darvin\PaymentBundle\Entity\Log:
+            alias:  payment_log
+            config: '@DarvinPaymentBundle/Resources/config/admin/log.yaml'

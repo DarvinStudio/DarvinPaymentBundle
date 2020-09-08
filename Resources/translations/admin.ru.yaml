@@ -34,22 +34,23 @@ payment:
             link:  Просмотреть платёж
             title: Платёж №«%entity%»
     entity:
+        action_token: Токен
+        amount: Сумма
         created_at:      Создана
         created_at_from: Создана (с)
         created_at_to:   Создана (по)
-        id: ID
-        order_id: ID Заказа (системный)
-        order_entity_class: Класс заказа
-        order_number: Номер заказа
-        transaction_reference: ID заказа в платежной системе
-        amount: Сумма
         currency_code: Валюта
         client_id: ID клиента
         client_email: Email клиента
         description: Описание
-        state: Статус
-        action_token: Токен
+        id: ID
+        order_id: ID Заказа (системный)
+        order_entity_class: Класс заказа
+        order_number: Номер заказа
         operation: Операции
+        logs: Логи
+        transaction_reference: ID заказа в платежной системе
+        state: Статус
 
     state:
         approval:   Утверждение
@@ -57,5 +58,44 @@ payment:
         canceled:   Отменен
         completed:  Оплачен
         expired:    Просрочен
+        failed:     Отклонен
+        pending:    Ждет оплаты
+        refunded:   Возврат
+
+payment_log:
+    action:
+        delete:
+            confirm: Подтвердите удаление лога
+            submit:  Удалить лог
+            success: Лог успешно удалён
+        edit:
+            link:    Изменить лог
+            success: Лог успешно изменён
+            title:   Изменить лог «%entity%»
+        index:
+            link:  Логи
+            title: Логи
+        new:
+            link:    Добавить лог
+            success: Лог успешно добавлен
+            title:   Новый лог
+        show:
+            link:  Просмотреть логи
+            title: Лог «%entity%»
+    entity:
+        created_at:      Создана
+        created_at_from: Создана (с)
+        created_at_to:   Создана (по)
+        level:           Уровень
+        message:         Сообщение
+        payment:         Платёж
+
+    state:
+        approval:   Утверждение
+        authorized: Авторизован
+        canceled:   Отменен
+        completed:  Оплачен
+        expired:    Просрочен
+        failed:     Отклонен
         pending:    Ждет оплаты
         refunded:   Возврат

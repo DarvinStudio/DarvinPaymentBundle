@@ -11,6 +11,8 @@
 namespace Darvin\PaymentBundle\Entity;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -147,6 +149,13 @@ class Payment
     protected $createdAt;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection|Log[]
+     *
+     * @ORM\OneToMany(targetEntity="Log", mappedBy="payment", cascade={"remove"})
+     */
+    protected $logs;
+
+    /**
      * Payment constructor.
      */
     public function __construct()
@@ -154,6 +163,7 @@ class Payment
         $this->redirect = new Redirect;
         $this->state = PaymentStateType::APPROVAL;
         $this->createdAt = new \DateTime;
+        $this->logs = new ArrayCollection();
     }
 
     /**
@@ -413,19 +423,19 @@ class Payment
     }
 
     /**
-     * @return Redirect|null
+     * @return Redirect
      */
-    public function getRedirect(): ?Redirect
+    public function getRedirect(): Redirect
     {
         return $this->redirect;
     }
 
     /**
-     * @param Redirect|null $redirect
+     * @param Redirect $redirect
      *
      * @return self
      */
-    public function setRedirect(?Redirect $redirect): self
+    public function setRedirect(Redirect $redirect): self
     {
         $this->redirect = $redirect;
 
@@ -443,7 +453,7 @@ class Payment
     /**
      * @return \DateTime
      */
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): \DateTime
     {
         return $this->createdAt;
     }
@@ -453,9 +463,44 @@ class Payment
      *
      * @return self
      */
-    public function setCreatedAt(?\DateTime $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\Entity\Log[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getLogs(): Collection
+    {
+        return $this->logs;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Log[]|\Doctrine\Common\Collections\Collection $logs logs
+     *
+     * @return self
+     */
+    public function setLogs(Collection $logs): self
+    {
+        $this->logs = $logs;
+
+        return $this;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Log Log
+     *
+     * @return self
+     */
+    public function addLog(Log $log): self
+    {
+        if (!$this->logs->contains($log)) {
+            $this->logs->add($log);
+            $log->setPayment($this);
+        }
 
         return $this;
     }

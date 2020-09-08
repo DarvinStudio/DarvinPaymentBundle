@@ -24,7 +24,7 @@ class CantCreateReceiptException extends \Exception
     {
         parent::__construct(sprintf(
             'Can\'t create receipt for order №%s',
-            $payment->getOrderId()
+            $payment->getOrderNumber()
         ));
     }
 }

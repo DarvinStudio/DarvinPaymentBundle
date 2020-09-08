@@ -22,16 +22,18 @@ final class PaymentStateType extends AbstractEnumType
     public const COMPLETED  = 'completed';
     public const CANCELED   = 'canceled';
     public const EXPIRED    = 'expired';
+    public const FAILED     = 'failed';
     public const REFUNDED   = 'refunded';
     public const PENDING    = 'pending';
 
     protected static $choices = [
         self::APPROVAL   => 'payment.state.approval',
-        self::PENDING    => 'payment.state.pending',
         self::AUTHORIZED => 'payment.state.authorized',
         self::COMPLETED  => 'payment.state.completed',
         self::CANCELED   => 'payment.state.canceled',
-        self::REFUNDED   => 'payment.state.refunded',
         self::EXPIRED    => 'payment.state.expired',
+        self::FAILED     => 'payment.state.failed',
+        self::REFUNDED   => 'payment.state.refunded',
+        self::PENDING    => 'payment.state.pending',
     ];
 }

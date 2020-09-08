@@ -10,15 +10,15 @@
 
 namespace Darvin\PaymentBundle\Logger;
 
-use Darvin\PaymentBundle\Entity\Error;
-use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Entity\Log;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 /**
- * Logger
+ * Payment Logger
  */
-class PaymentLogger implements PaymentLoggerInterface
+class PaymentLogger implements LoggerInterface
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -49,17 +49,84 @@ class PaymentLogger implements PaymentLoggerInterface
     /**
      * @inheritDoc
      */
-    public function saveErrorLog(?Payment $payment, ?string $code, ?string $message): void
+    public function emergency($message, array $context = []): void
     {
-        if (null !== $this->logger) {
-            $this->logger->error($message);
+        $this->log(LogLevel::EMERGENCY, $message, $context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function alert($message, array $context = []): void
+    {
+        $this->log(LogLevel::ALERT, $message, $context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function critical($message, array $context = []): void
+    {
+        $this->log(LogLevel::CRITICAL, $message, $context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function error($message, array $context = []): void
+    {
+        $this->log(LogLevel::ERROR, $message, $context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function warning($message, array $context = []): void
+    {
+        $this->log(LogLevel::WARNING, $message, $context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function notice($message, array $context = []): void
+    {
+        $this->log(LogLevel::NOTICE, $message, $context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function info($message, array $context = []): void
+    {
+        $this->log(LogLevel::INFO, $message, $context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function debug($message, array $context = []): void
+    {
+        $this->log(LogLevel::DEBUG, $message, $context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function log($level, $message, array $context = []): void
+    {
+        $payment = $context['payment'] ?? null;
+
+        if ($payment instanceof \Darvin\PaymentBundle\Entity\Payment) {
+            $log = new Log($level, $message);
+            $payment->addLog($log);
+
+            $this->em->persist($log);
+            $this->em->flush();
         }
 
-        // TODO нужна возможность добавлять несколько ошибок
-//        if (null !== $payment) {
-//            $payment->setError(new Error($code, $message));
-//
-//            $this->em->flush();
-//        }
+        if (null !== $this->logger) {
+            $this->logger->log($level, $message, $context);
+        }
     }
 }

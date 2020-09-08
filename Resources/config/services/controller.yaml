@@ -4,6 +4,7 @@ parameters:
     darvin_payment.controller.payment.cancel.class: Darvin\PaymentBundle\Controller\Payment\CancelController
     darvin_payment.controller.payment.complete_authorize.class: Darvin\PaymentBundle\Controller\Payment\CompleteAuthorizeController
     darvin_payment.controller.payment.complete_purchase.class: Darvin\PaymentBundle\Controller\Payment\CompletePurchaseController
+    darvin_payment.controller.payment.error.class: Darvin\PaymentBundle\Controller\Payment\ErrorController
     darvin_payment.controller.payment.fail.class: Darvin\PaymentBundle\Controller\Payment\FailController
     darvin_payment.controller.payment.purchase.class: Darvin\PaymentBundle\Controller\Payment\PurchaseController
     darvin_payment.controller.payment.success.class: Darvin\PaymentBundle\Controller\Payment\SuccessController
@@ -13,19 +14,18 @@ services:
         class: '%darvin_payment.controller.payment.abstract.class%'
         abstract:  true
         calls:
-            - [ setGatewayFactory, ['@darvin_payment.gateway.gateway_factory'] ]
-            - [ setEntityManager,  ['@doctrine.orm.entity_manager'] ]
-            - [ setTwig,           ['@twig'] ]
-            - [ setLogger,         ['@darvin_payment.logger'] ]
-            - [ setUrlBuilder,     ['@darvin_payment.url.payment_url_builder'] ]
-            - [ setWorkflow,       ['@state_machine.payment'] ]
+            - [ setGatewayFactory,  ['@darvin_payment.gateway.gateway_factory'] ]
+            - [ setEntityManager,   ['@doctrine.orm.entity_manager'] ]
+            - [ setTwig,            ['@twig'] ]
+            - [ setFormFactory,     ['@form.factory'] ]
+            - [ setLogger,          ['@darvin_payment.logger'] ]
+            - [ setRedirectFactory, ['@darvin_payment.redirect.redirect_factory'] ]
+            - [ setUrlBuilder,      ['@darvin_payment.url.payment_url_builder'] ]
+            - [ setWorkflow,        ['@state_machine.payment'] ]
 
     darvin_payment.controller.payment.autorize:
         class: '%darvin_payment.controller.payment.authorize.class%'
         parent: darvin_payment.controller.payment.abstract
-        calls:
-            - [ setFormFactory, ['@form.factory'] ]
-            - [ setRedirectFactory, ['@darvin_payment.redirect.redirect_factory'] ]
         public: true
 
     darvin_payment.controller.payment.complete_authorize:
@@ -43,6 +43,11 @@ services:
         parent: darvin_payment.controller.payment.abstract
         public: true
 
+    darvin_payment.controller.payment.error:
+        class: '%darvin_payment.controller.payment.error.class%'
+        parent: darvin_payment.controller.payment.abstract
+        public: true
+
     darvin_payment.controller.payment.fail:
         class: '%darvin_payment.controller.payment.fail.class%'
         parent: darvin_payment.controller.payment.abstract
@@ -56,7 +61,4 @@ services:
     darvin_payment.controller.payment.purchase:
         class: '%darvin_payment.controller.payment.purchase.class%'
         parent: darvin_payment.controller.payment.abstract
-        calls:
-            - [ setFormFactory, ['@form.factory'] ]
-            - [ setRedirectFactory, ['@darvin_payment.redirect.redirect_factory'] ]
         public: true

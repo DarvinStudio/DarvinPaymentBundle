@@ -25,6 +25,7 @@ class Transitions
     public const PURCHASE  = 'purchase';
     public const CANCEL    = 'cancel';
     public const REFUND    = 'refund';
+    public const FAIL      = 'fail';
 
     public const TRANSITIONS = [
         self::APPROVE => [
@@ -58,6 +59,10 @@ class Transitions
         self::REFUND => [
             PaymentStateType::PENDING,
             PaymentStateType::REFUNDED,
+        ],
+        self::FAIL => [
+            PaymentStateType::PENDING,
+            PaymentStateType::FAILED,
         ],
     ];
 }
