@@ -32,9 +32,9 @@ class Payment
     protected $id;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column
      *
      * @Assert\NotBlank
      */
@@ -73,7 +73,7 @@ class Payment
     protected $currencyCode;
 
     /**
-     * @var int|null
+     * @var string|null
      *
      * @ORM\Column(nullable=true)
      */
@@ -142,9 +142,9 @@ class Payment
      */
     public function __construct()
     {
-        $this->redirect = new Redirect(null, null, null, null);
+        $this->redirect = new Redirect;
         $this->state = PaymentStateType::APPROVAL;
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new \DateTime;
     }
 
     /**
@@ -164,19 +164,19 @@ class Payment
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getOrderId(): int
+    public function getOrderId(): string
     {
         return $this->orderId;
     }
 
     /**
-     * @param int $orderId
+     * @param string $orderId
      *
      * @return self
      */
-    public function setOrderId(int $orderId): self
+    public function setOrderId(string $orderId): self
     {
         $this->orderId = $orderId;
 
@@ -264,19 +264,19 @@ class Payment
     }
 
     /**
-     * @return int|null
+     * @return string|null
      */
-    public function getClientId(): ?int
+    public function getClientId(): ?string
     {
         return $this->clientId;
     }
 
     /**
-     * @param string|int|null $clientId
+     * @param string|null $clientId
      *
      * @return self
      */
-    public function setClientId($clientId): self
+    public function setClientId(?string $clientId): self
     {
         $this->clientId = $clientId;
 

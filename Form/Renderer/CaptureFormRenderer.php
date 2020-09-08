@@ -49,14 +49,10 @@ class CaptureFormRenderer
     public function renderForm(Payment $payment): ?string
     {
         if (PaymentStateType::AUTHORIZED !== $payment->getState() || null === $payment->getGatewayName()) {
-            return null;
+            throw new \LogicException('Wrong payment type');
         }
 
-        try {
-            $url = $this->urlBuilder->getCaptureUrl($payment);
-        } catch (ActionNotImplementedException $ex) {
-            return sprintf('<p>%s</p>', $ex->getMessage());
-        }
+        $url = $this->urlBuilder->getCaptureUrl($payment);
 
         return $this->twig->render('@DarvinPayment/admin/widget/capture_form.html.twig',[
             'url' => $url,

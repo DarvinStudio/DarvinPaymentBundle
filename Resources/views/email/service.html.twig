@@ -1,5 +1,7 @@
 {% extends '@DarvinMailer/email/layout.html.twig' %}
 
+{% trans_default_domain 'email' %}
+
 {% block content %}
     {% set orderId = order != null ? order.id : null %}
     {% if order != null %}
@@ -7,7 +9,7 @@
              style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
             <a href="{{ admin_url(order) }}"
                style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; font-weight: bold; color: #333333;">
-                {% trans %}email.payment.order{% endtrans %}
+                {% trans %}payment.order{% endtrans %}
             </a>
         </div>
     {% endif %}

@@ -48,7 +48,7 @@ class ApproveFormRenderer
     public function renderForm(Payment $payment): ?string
     {
         if (PaymentStateType::APPROVAL !== $payment->getState()) {
-            return null;
+            throw new \LogicException('Wrong payment type');
         }
 
         $url = $this->urlBuilder->getApproveUrl($payment);

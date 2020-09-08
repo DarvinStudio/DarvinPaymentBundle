@@ -39,8 +39,7 @@ view:
             operation:
                 size: md
                 widget:
-                    payment_operation:
-                        property: state
+                    payment_operation: ~
             transactionReference:
                 size: free
             actionToken:

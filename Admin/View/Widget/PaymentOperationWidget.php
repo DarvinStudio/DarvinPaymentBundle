@@ -12,6 +12,7 @@ namespace Darvin\PaymentBundle\Admin\View\Widget;
 
 use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\AdminBundle\View\Widget\Widget\AbstractWidget;
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer;
 use Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer;
 
@@ -57,14 +58,23 @@ class PaymentOperationWidget extends AbstractWidget
      */
     protected function createContent($entity, array $options): ?string
     {
-        if (!$entity instanceof \Darvin\PaymentBundle\Entity\Payment) {
-            throw new \LogicException('This widget can be used for Payment only');
+        if (PaymentStateType::APPROVAL === $entity->getState()) {
+            return $this->approveFormRenderer->renderForm($entity);
         }
 
-        $content = $this->approveFormRenderer->renderForm($entity) ?? '';
-        $content .= $this->captureFormRenderer->renderForm($entity) ?? '';
+        if (PaymentStateType::AUTHORIZED === $entity->getState() && null !== $entity->getGatewayName()) {
+            return $this->captureFormRenderer->renderForm($entity);
+        }
 
-        return $content;
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getAllowedEntityClasses(): iterable
+    {
+        yield \Darvin\PaymentBundle\Entity\Payment::class;
     }
 
     /**

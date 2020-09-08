@@ -40,13 +40,15 @@ class PaymentStateWidget extends AbstractWidget
     {
         $state = $this->getPropertyValue($entity, $options['property']);
 
-        if (null === $state) {
+        if (null === $state || !PaymentStateType::isValueExist($state)) {
             return null;
         }
 
-        $text = $this->translator->trans(PaymentStateType::getReadableValue($state), [], 'admin');
-
-        return sprintf('<div class="payment-status -%s">%s</div>', $state, $text);
+        return sprintf(
+            '<div class="payment-status -%s">%s</div>', 
+            $state,
+            $this->translator->trans(PaymentStateType::getReadableValue($state), [], 'admin')
+        );
     }
 
     /**

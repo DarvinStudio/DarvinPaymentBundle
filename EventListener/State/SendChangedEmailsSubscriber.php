@@ -13,6 +13,8 @@ namespace Darvin\PaymentBundle\EventListener\State;
 use Darvin\MailerBundle\Factory\Exception\CantCreateEmailException;
 use Darvin\MailerBundle\Mailer\Exception\MailerException;
 use Darvin\MailerBundle\Mailer\MailerInterface;
+use Darvin\MailerBundle\Model\Email;
+use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Logger\PaymentLoggerInterface;
 use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
 use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
@@ -97,24 +99,41 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
         $state = $this->stateProvider->getState($payment->getState());
         $order = $this->em->find($payment->getOrderEntityClass(), $payment->getOrderId());
 
-        if ($payment->getClientEmail() !== null &&
-            $state->getEmail()->getPublicEmail()->isEnabled()) {
-
+        if ($payment->getClientEmail() !== null && $state->getEmail()->getPublicEmail()->isEnabled()) {
             try {
                 $email = $this->emailFactory->createPublicEmail($order, $state, $payment->getClientEmail());
-                $this->mailer->mustSend($email);
-            } catch (CantCreateEmailException | MailerException $ex) {
+            } catch (CantCreateEmailException $ex) {
                 $this->logger->saveErrorLog($payment,(string) $ex->getCode(), $ex->getMessage());
+            }
+
+            if (null !== $email) {
+                $this->mustSend($email, $payment);
             }
         }
 
         if ($state->getEmail()->getServiceEmail()->isEnabled()) {
             try {
                 $email = $this->emailFactory->createServiceEmail($order, $state);
-                $this->mailer->mustSend($email);
-            } catch (CantCreateEmailException | MailerException $ex) {
+            } catch (CantCreateEmailException $ex) {
                 $this->logger->saveErrorLog($payment, (string) $ex->getCode(), $ex->getMessage());
             }
+
+            if (null !== $email) {
+                $this->mustSend($email, $payment);
+            }
+        }
+    }
+
+    /**
+     * @param \Darvin\MailerBundle\Model\Email     $email   Email model
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
+     */
+    private function mustSend(Email $email, Payment $payment): void
+    {
+        try {
+            $this->mailer->mustSend($email);   
+        } catch (MailerException $ex) {
+            $this->logger->saveErrorLog($payment, (string) $ex->getCode(), $ex->getMessage());
         }
     }
 }

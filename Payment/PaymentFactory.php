@@ -70,10 +70,12 @@ class PaymentFactory implements PaymentFactoryInterface
      * @inheritdoc
      */
     public function createPayment(
-        int $orderId,
+        string $orderId,
         string $orderEntityClass,
         string $amount,
-        ?string $currencyCode
+        ?string $currencyCode,
+        ?string $clientId,
+        ?string $clientEmail
     ): Payment {
         $class = $this->entityResolver->resolve(Payment::class);
 
@@ -84,6 +86,8 @@ class PaymentFactory implements PaymentFactoryInterface
             ->setOrderId($orderId)
             ->setOrderEntityClass($orderEntityClass)
             ->setAmount($amount)
+            ->setClientId($clientId)
+            ->setClientEmail($clientEmail)
             ->setCurrencyCode($currencyCode ?? $this->defaultCurrency)
             ->setActionToken(md5(sprintf("%d:%d", $orderId, time())));
 

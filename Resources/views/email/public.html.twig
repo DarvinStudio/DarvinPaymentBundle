@@ -3,7 +3,7 @@
 {% block content %}
     {% set orderId = order != null ? order.id : null %}
     {{ content|trans({'%orderId%': orderId}, 'email')  }}
-    {% if state == constant('Darvin\PaymentBundle\DBAL\Type\PaymentStateType::PENDING') %}
+    {% if state == constant('Darvin\\PaymentBundle\\DBAL\\Type\\PaymentStateType::PENDING') %}
         {{ darvin_payment_widget(order) }}
     {% endif %}
 {% endblock %}

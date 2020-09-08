@@ -18,17 +18,21 @@ use Darvin\PaymentBundle\Entity\Payment;
 interface PaymentFactoryInterface
 {
     /**
-     * @param int         $orderId          Order ID
+     * @param string      $orderId          Order ID
      * @param string      $orderEntityClass Class of order entity
      * @param string      $amount           Amount
      * @param string|null $currencyCode     Currency code
+     * @param string|null $clientId         Client ID
+     * @param string|null $clientEmail      Client email
      *
      * @return Payment
      */
     public function createPayment(
-        int $orderId,
+        string $orderId,
         string $orderEntityClass,
         string $amount,
-        ?string $currencyCode
+        ?string $currencyCode,
+        ?string $clientId,
+        ?string $clientEmail
     ): Payment;
 }

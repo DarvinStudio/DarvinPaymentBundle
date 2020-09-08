@@ -44,8 +44,8 @@ class ServiceEmail
     {
         $this->enabled = $enabled;
         $this->template = $template;
-        $this->subject = sprintf('payment.public.%s.subject', $stateName);
-        $this->content = sprintf('payment.public.%s.content', $stateName);
+        $this->subject = sprintf('payment.service.%s.subject', $stateName);
+        $this->content = sprintf('payment.service.%s.content', $stateName);
     }
 
     /**

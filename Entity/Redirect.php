@@ -53,7 +53,7 @@ class Redirect
      * @param array|null     $data       Data
      * @param \DateTime|null $expiryDate Expire Date
      */
-    public function __construct(?string $url, ?string $method, ?array $data, ?\DateTime $expiryDate)
+    public function __construct(?string $url = null, ?string $method = null, ?array $data = null, ?\DateTime $expiryDate = null)
     {
         $this->url = $url;
         $this->method = $method;
