@@ -1,6 +1,9 @@
 menu:
     position: 30
 
+order_by:
+    createdAt: desc
+
 route_blacklist:
     - new
 
@@ -15,7 +18,7 @@ view:
             createdAt:
                 type:   date
                 widget: datetime
-            orderId: ~
+            orderNumber: ~
             amount: ~
             currencyCode: ~
             clientId: ~
@@ -50,7 +53,7 @@ form:
         fields:
             createdAtFrom: ~
             createdAtTo:   ~
-            orderId: ~
+            orderNumber: ~
             clientEmail: ~
             state:
                 type: Darvin\PaymentBundle\Form\Type\Admin\PaymentStateFilterType
@@ -59,6 +62,7 @@ form:
         fields:
             orderId: ~
             orderEntityClass: ~
+            orderNumber: ~
             transactionReference: ~
             amount: ~
             currencyCode: ~
