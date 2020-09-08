@@ -38,8 +38,9 @@ payment:
         created_at_from: Создана (с)
         created_at_to:   Создана (по)
         id: ID
-        order_id: ID  Заказа
+        order_id: ID Заказа (системный)
         order_entity_class: Класс заказа
+        order_number: Номер заказа
         transaction_reference: ID заказа в платежной системе
         amount: Сумма
         currency_code: Валюта
