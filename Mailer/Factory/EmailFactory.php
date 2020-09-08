@@ -73,7 +73,7 @@ class EmailFactory implements EmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
             $payment->getClientEmail(),
-            $this->translator->trans($emailData->getSubject(), ['%orderId%' => $payment->getOrderNumber()], 'email'),
+            $this->translator->trans($emailData->getSubject(), ['%orderNumber%' => $payment->getOrderNumber()], 'email'),
             $emailData->getTemplate(),
             [
                 'payment' => $payment,
@@ -99,7 +99,7 @@ class EmailFactory implements EmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans($emailData->getSubject(), ['%orderId%' => $payment->getOrderNumber()], 'email'),
+            $this->translator->trans($emailData->getSubject(), ['%orderNumber%' => $payment->getOrderNumber()], 'email'),
             $emailData->getTemplate(),
             [
                 'order'   => $order,

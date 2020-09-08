@@ -13,5 +13,5 @@
         </div>
     {% endif %}
 
-    <p>{{ content|trans({'%orderId%': payment.orderNumber}, 'email')  }}</p>
+    <p>{{ content|trans({'%orderNumber%': payment.orderNumber}, 'email')  }}</p>
 {% endblock %}

@@ -12,4 +12,4 @@ payment:
             submit: Оплатить
 
     success:
-        title: Заказ №%orderId% успешно оплачен.
+        title: Заказ №%orderNumber% успешно оплачен.

@@ -3,7 +3,7 @@
 {% trans_default_domain 'email' %}
 
 {% block content %}
-    {{ content|trans({'%orderId%': payment.orderNumber}, 'email')  }}
+    {{ content|trans({'%orderNumber%': payment.orderNumber}, 'email')  }}
     {% if payment.state == constant('Darvin\\PaymentBundle\\DBAL\\Type\\PaymentStateType::PENDING') %}
         {% set urls = darvin_payment_url(payment) %}
 

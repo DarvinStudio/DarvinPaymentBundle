@@ -12,10 +12,10 @@ payment:
             content: 'Thank you! Payment successfully completed.'
     service:
         canceled:
-            subject: 'Payment has been canceled. Order №%orderId%'
+            subject: 'Payment has been canceled. Order №%orderNumber%'
             content: 'Online payment of order №%orderId% has been canceled'
         failed:
-            subject: 'Error while payment of order №%orderId%'
+            subject: 'Error while payment of order №%orderNumber%'
             content: 'An error occurred while payment: {message}'
         completed:
             subject: 'Payment is done'
