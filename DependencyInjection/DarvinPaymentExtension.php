@@ -12,6 +12,7 @@ namespace Darvin\PaymentBundle\DependencyInjection;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
+use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\DependencyInjection\ConfigInjector;
 use Darvin\Utils\DependencyInjection\ConfigLoader;
 use Darvin\Utils\DependencyInjection\ExtensionConfigurator;
@@ -86,6 +87,16 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                 'states'  => $this->initPaymentStates(),
             ],
         ]);
+
+        $container->prependExtensionConfig('framework', [
+            'workflows' => [
+                'payment' => [
+                    'initial_marking' => PaymentStateType::PENDING,
+                    'places'          => array_values(PaymentStateType::getChoices()),
+                    'transitions'     => $this->initWorkflowTransitions(),
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -116,5 +127,22 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         ];
 
         return $data;
+    }
+
+    /**
+     * @return array
+     */
+    private function initWorkflowTransitions(): array
+    {
+        $transitions = [];
+
+        foreach (Transitions::TRANSITIONS as $name => $data) {
+            $transitions[$name] = [
+                'from' => $data['from'],
+                'to'   => $data['to'],
+            ];
+        }
+
+        return $transitions;
     }
 }

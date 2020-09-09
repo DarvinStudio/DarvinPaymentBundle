@@ -28,6 +28,7 @@
         "doctrine/orm": "^2.5",
         "fresh/doctrine-enum-bundle": "^6.6",
         "league/omnipay": "^3",
+        "ramsey/uuid": "^3||^4",
         "twig/twig": "^2.0||^3.0"
     },
     "suggest": {

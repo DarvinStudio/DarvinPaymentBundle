@@ -23,12 +23,12 @@ class PaymentLogger implements LoggerInterface
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
-    protected $em;
+    private $em;
 
     /**
      * @var \Psr\Log\LoggerInterface|null
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em Redirect factory

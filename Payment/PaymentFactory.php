@@ -13,6 +13,7 @@ namespace Darvin\PaymentBundle\Payment;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 /**
@@ -91,7 +92,7 @@ class PaymentFactory implements PaymentFactoryInterface
             ->setClientId($clientId)
             ->setClientEmail($clientEmail)
             ->setCurrencyCode($currencyCode ?? $this->defaultCurrency)
-            ->setActionToken(md5(sprintf("%d:%d", $orderId, time())));
+            ->setActionToken(Uuid::uuid4()->toString());
 
         if ($this->autoApproval) {
             $this->workflow->apply($payment, 'approve');

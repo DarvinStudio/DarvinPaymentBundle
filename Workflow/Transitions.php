@@ -29,40 +29,40 @@ class Transitions
 
     public const TRANSITIONS = [
         self::APPROVE => [
-            PaymentStateType::APPROVAL,
-            PaymentStateType::PENDING,
+            'from' => PaymentStateType::APPROVAL,
+            'to'   => PaymentStateType::PENDING,
         ],
         self::AUTHORIZE => [
-            PaymentStateType::PENDING,
-            PaymentStateType::AUTHORIZED,
+            'from' => PaymentStateType::PENDING,
+            'to'   => PaymentStateType::AUTHORIZED,
         ],
         self::CAPTURE => [
-            PaymentStateType::AUTHORIZED,
-            PaymentStateType::COMPLETED,
+            'from' => PaymentStateType::AUTHORIZED,
+            'to'   => PaymentStateType::COMPLETED,
         ],
         self::VOID => [
-            PaymentStateType::AUTHORIZED,
-            PaymentStateType::CANCELED,
+            'from' => PaymentStateType::AUTHORIZED,
+            'to'   => PaymentStateType::CANCELED,
         ],
         self::PURCHASE => [
-            PaymentStateType::PENDING,
-            PaymentStateType::COMPLETED,
+            'from' => PaymentStateType::PENDING,
+            'to'   => PaymentStateType::COMPLETED,
         ],
         self::EXPIRE => [
-            PaymentStateType::PENDING,
-            PaymentStateType::EXPIRED,
+            'from' => PaymentStateType::PENDING,
+            'to'   => PaymentStateType::EXPIRED,
         ],
         self::CANCEL => [
-            PaymentStateType::PENDING,
-            PaymentStateType::CANCELED,
+            'from' => PaymentStateType::PENDING,
+            'to'   => PaymentStateType::CANCELED,
         ],
         self::REFUND => [
-            PaymentStateType::PENDING,
-            PaymentStateType::REFUNDED,
+            'from' => PaymentStateType::PENDING,
+            'to'   => PaymentStateType::REFUNDED,
         ],
         self::FAIL => [
-            PaymentStateType::PENDING,
-            PaymentStateType::FAILED,
+            'from' => PaymentStateType::PENDING,
+            'to'   => PaymentStateType::FAILED,
         ],
     ];
 }
