@@ -1,22 +1,21 @@
 parameters:
-    darvin_payment.url.payment_url_builder.class: 'Darvin\PaymentBundle\Url\PaymentUrlBuilder'
-    darvin_payment.url.payment_url_manager.class: 'Darvin\PaymentBundle\Url\PaymentUrlManager'
+    darvin_payment.url.builder.class: 'Darvin\PaymentBundle\Url\PaymentUrlBuilder'
+    darvin_payment.url.manager.class: 'Darvin\PaymentBundle\Url\PaymentUrlManager'
 
 services:
-    Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface: '@darvin_payment.url.payment_url_builder'
+    Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface: '@darvin_payment.url.builder'
 
-    darvin_payment.url.payment_url_builder:
-        class: '%darvin_payment.url.payment_url_builder.class%'
+    darvin_payment.url.builder:
+        class: '%darvin_payment.url.builder.class%'
         arguments:
             - '@router'
-        public: true
 
-    Darvin\PaymentBundle\Url\PaymentUrlManagerInterface: '@darvin_payment.url.payment_url_manager'
 
-    darvin_payment.url.payment_url_manager:
-        class: '%darvin_payment.url.payment_url_manager.class%'
+    Darvin\PaymentBundle\Url\PaymentUrlManagerInterface: '@darvin_payment.url.manager'
+
+    darvin_payment.url.manager:
+        class: '%darvin_payment.url.manager.class%'
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@darvin_payment.url.payment_url_builder'
+            - '@darvin_payment.url.builder'
             - '%darvin_payment.pre_auth%'
-        public: true

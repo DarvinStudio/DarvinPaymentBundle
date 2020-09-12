@@ -1,0 +1,22 @@
+parameters:
+    darvin_payment.config.class: Darvin\PaymentBundle\Config\PaymentConfig
+    darvin_payment.config.form.type.notification_emails.class: Darvin\PaymentBundle\Form\Type\Config\NotificationEmailsType
+
+services:
+    Darvin\PaymentBundle\Config\PaymentConfigInterface: '@darvin_payment.config'
+
+    darvin_payment.config:
+        class: '%darvin_payment.config.class%'
+        arguments:
+            - '@darvin_payment.state.provider'
+            - '%darvin_payment.mailer.enabled%'
+        tags:
+            - { name: darvin_config.configuration }
+
+    darvin_payment.config.form.type.notification_emails:
+        class: '%darvin_payment.config.form.type.notification_emails.class%'
+        arguments:
+            - '@darvin_payment.state.provider'
+            - '@translator'
+        tags:
+            - { name: form.type }

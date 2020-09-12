@@ -1,12 +1,12 @@
 parameters:
-    darvin_payment.bridge.sberbank_bridge.class: Darvin\PaymentBundle\Bridge\SberbankBridge
+    darvin_payment.bridge.sberbank.class: Darvin\PaymentBundle\Bridge\SberbankBridge
 
 services:
     darvin_payment.bridge.sberbank:
-        class: '%darvin_payment.bridge.sberbank_bridge.class%'
+        class: '%darvin_payment.bridge.sberbank.class%'
         arguments:
-            - '@darvin_payment.receipt.receipt_factory_registry'
-            - '@darvin_payment.url.payment_url_builder'
+            - '@darvin_payment.receipt.factory_registry'
+            - '@darvin_payment.url.builder'
             - '@darvin_payment.logger'
         calls:
             - [ setGatewayConfig, [ '%darvin_payment.bridges.sberbank.parameters%' ] ]

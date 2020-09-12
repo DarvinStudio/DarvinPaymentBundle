@@ -12,4 +12,3 @@ services:
             - '@state_machine.payment'
             - '%darvin_payment.default_currency%'
             - '%darvin_payment.auto_approval%'
-        public: true

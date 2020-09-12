@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class AddGatewayNamePass implements CompilerPassInterface
 {
-    private const URL_MANAGER = 'darvin_payment.url.payment_url_manager';
+    private const URL_MANAGER = 'darvin_payment.url.manager';
 
     /**
      * {@inheritDoc}

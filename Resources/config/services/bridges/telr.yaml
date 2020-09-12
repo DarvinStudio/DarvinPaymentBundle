@@ -1,10 +1,10 @@
 parameters:
-    darvin_payment.bridge.telr_bridge.class: Darvin\PaymentBundle\Bridge\TelrBridge
+    darvin_payment.bridge.telr.class: Darvin\PaymentBundle\Bridge\TelrBridge
 
 services:
     darvin_payment.bridge.telr:
-        class: '%darvin_payment.bridge.telr_bridge.class%'
+        class: '%darvin_payment.bridge.telr.class%'
         arguments:
-            - '@darvin_payment.url.payment_url_builder'
+            - '@darvin_payment.url.builder'
         calls:
             - [ setGatewayConfig, [ '%darvin_payment.bridges.telr.parameters%' ] ]

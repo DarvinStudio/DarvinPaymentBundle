@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class AddBridgePass implements CompilerPassInterface
 {
-    private const GATEWAY_FACTORY = 'darvin_payment.gateway.gateway_factory';
+    private const GATEWAY_FACTORY = 'darvin_payment.gateway.factory';
     private const PREFIX_BRIDGE   = 'darvin_payment.bridge.';
 
     /**

@@ -41,8 +41,8 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         (new ConfigInjector($container))->inject($config, $this->getAlias());
 
         (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
-            'admin' => ['bundle' => 'DarvinAdminBundle'],
-            'configuration',
+            'admin'  => ['bundle' => 'DarvinAdminBundle'],
+            'config' => ['bundle' => 'DarvinConfigBundle'],
             'controller',
             'gateway',
             'logger',

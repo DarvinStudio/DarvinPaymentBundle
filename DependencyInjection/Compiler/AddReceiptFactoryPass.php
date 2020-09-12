@@ -25,7 +25,7 @@ class AddReceiptFactoryPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        $registry = $container->getDefinition('darvin_payment.receipt.receipt_factory_registry');
+        $registry = $container->getDefinition('darvin_payment.receipt.factory_registry');
 
         foreach (array_keys($container->findTaggedServiceIds(DarvinPaymentExtension::TAG_RECEIPT_FACTORY)) as $id) {
             $registry->addMethodCall('addFactory', [new Reference($id)]);
