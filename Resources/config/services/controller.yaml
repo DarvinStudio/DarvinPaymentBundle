@@ -13,15 +13,15 @@ services:
     darvin_payment.controller.abstract:
         class: '%darvin_payment.controller.abstract.class%'
         abstract:  true
-        calls:
-            - [ setGatewayFactory,  ['@darvin_payment.gateway.factory'] ]
-            - [ setEntityManager,   ['@doctrine.orm.entity_manager'] ]
-            - [ setTwig,            ['@twig'] ]
-            - [ setFormFactory,     ['@form.factory'] ]
-            - [ setLogger,          ['@darvin_payment.logger'] ]
-            - [ setRedirectFactory, ['@darvin_payment.redirect.factory'] ]
-            - [ setUrlBuilder,      ['@darvin_payment.url.builder'] ]
-            - [ setWorkflow,        ['@state_machine.payment'] ]
+        arguments:
+            - '@darvin_payment.gateway.factory'
+            - '@doctrine.orm.entity_manager'
+            - '@twig'
+            - '@form.factory'
+            - '@darvin_payment.logger'
+            - '@darvin_payment.redirect.factory'
+            - '@darvin_payment.url.builder'
+            - '@state_machine.payment'
 
     darvin_payment.controller.payment.autorize:
         class: '%darvin_payment.controller.payment.authorize.class%'

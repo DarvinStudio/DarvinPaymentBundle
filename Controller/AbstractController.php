@@ -73,66 +73,32 @@ abstract class AbstractController
     protected $workflow;
 
     /**
-     * @param \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface $gatewayFactory
+     * @param \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface $gatewayFactory  Gateway factory
+     * @param \Doctrine\ORM\EntityManagerInterface                          $em              Entity manager
+     * @param \Symfony\Component\Form\FormFactoryInterface                  $formFactory     Form factory
+     * @param \Psr\Log\LoggerInterface                                      $logger          Logger
+     * @param \Darvin\PaymentBundle\Redirect\RedirectFactoryInterface       $redirectFactory Redirect factory
+     * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface          $urlBuilder      URL builder
+     * @param \Twig\Environment                                             $twig            Twig
+     * @param \Symfony\Component\Workflow\WorkflowInterface                 $workflow        Workflow
      */
-    public function setGatewayFactory(GatewayFactoryInterface $gatewayFactory): void
-    {
+    public function __construct(
+        GatewayFactoryInterface $gatewayFactory,
+        EntityManagerInterface $em,
+        FormFactoryInterface $formFactory,
+        LoggerInterface $logger,
+        RedirectFactoryInterface $redirectFactory,
+        PaymentUrlBuilderInterface $urlBuilder,
+        \Twig\Environment $twig,
+        WorkflowInterface $workflow
+    ){
         $this->gatewayFactory = $gatewayFactory;
-    }
-
-    /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em
-     */
-    public function setEntityManager(EntityManagerInterface $em): void
-    {
         $this->em = $em;
-    }
-
-    /**
-     * @param \Symfony\Component\Form\FormFactoryInterface $formFactory From factory
-     */
-    public function setFormFactory(FormFactoryInterface $formFactory): void
-    {
         $this->formFactory = $formFactory;
-    }
-
-    /**
-     * @param \Psr\Log\LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
         $this->logger = $logger;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Redirect\RedirectFactoryInterface $redirectFactory Redirect factory
-     */
-    public function setRedirectFactory(RedirectFactoryInterface $redirectFactory): void
-    {
         $this->redirectFactory = $redirectFactory;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder
-     */
-    public function setUrlBuilder(PaymentUrlBuilderInterface $urlBuilder): void
-    {
         $this->urlBuilder = $urlBuilder;
-    }
-
-    /**
-     * @param \Twig\Environment $twig
-     */
-    public function setTwig(\Twig\Environment $twig): void
-    {
         $this->twig = $twig;
-    }
-
-    /**
-     * @param \Symfony\Component\Workflow\WorkflowInterface $workflow
-     */
-    public function setWorkflow(WorkflowInterface $workflow): void
-    {
         $this->workflow = $workflow;
     }
 
