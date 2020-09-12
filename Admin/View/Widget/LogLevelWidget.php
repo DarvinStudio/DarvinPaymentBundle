@@ -12,41 +12,18 @@ namespace Darvin\PaymentBundle\Admin\View\Widget;
 
 use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\AdminBundle\View\Widget\Widget\AbstractWidget;
-use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * State view widget
  */
-class PaymentStateWidget extends AbstractWidget
+class LogLevelWidget extends AbstractWidget
 {
-    /**
-     * @var \Symfony\Contracts\Translation\TranslatorInterface
-     */
-    protected $translator;
-
-    /**
-     * @param \Symfony\Contracts\Translation\TranslatorInterface $translator Translator
-     */
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
-    }
-
     /**
      * {@inheritDoc}
      */
     protected function createContent($entity, array $options): ?string
     {
-        $state = $entity->getState();
-
-        if (PaymentStateType::isValueExist($state)) {
-            return sprintf(
-                '<div class="payment-status -%s">%s</div>',
-                $state,
-                $this->translator->trans(PaymentStateType::getReadableValue($state), [], 'admin')
-            );
-        }
+        return sprintf('<div class="log-level -%1$s">%1$s</div>', $entity->getLevel());
     }
 
     /**
@@ -54,7 +31,7 @@ class PaymentStateWidget extends AbstractWidget
      */
     protected function getAllowedEntityClasses(): iterable
     {
-        yield \Darvin\PaymentBundle\Entity\Payment::class;
+        yield \Darvin\PaymentBundle\Entity\Log::class;
     }
 
     /**

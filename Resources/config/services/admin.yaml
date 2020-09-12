@@ -1,8 +1,9 @@
 parameters:
     darvin_payment.admin.controller.approve.class: Darvin\PaymentBundle\Controller\Admin\ApproveController
     darvin_payment.admin.controller.capture.class: Darvin\PaymentBundle\Controller\Admin\CaptureController
-    darvin_payment.admin.view.widget.payment_state.class: Darvin\PaymentBundle\Admin\View\Widget\PaymentStateWidget
+    darvin_payment.admin.view.widget.log_level.class: Darvin\PaymentBundle\Admin\View\Widget\LogLevelWidget
     darvin_payment.admin.view.widget.payment_operation.class: Darvin\PaymentBundle\Admin\View\Widget\PaymentOperationWidget
+    darvin_payment.admin.view.widget.payment_state.class: Darvin\PaymentBundle\Admin\View\Widget\PaymentStateWidget
     darvin_payment.admin.from.renderer.approve.class: Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer
     darvin_payment.admin.form.renderer.capture.class: Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer
 
@@ -30,8 +31,8 @@ services:
         tags:
             - { name: controller.service_arguments }
 
-    darvin_payment.admin.view.widget.payment_state:
-        class:  '%darvin_payment.admin.view.widget.payment_state.class%'
+    darvin_payment.admin.view.widget.log_level:
+        class:  '%darvin_payment.admin.view.widget.log_level.class%'
         parent: darvin_admin.view.widget.abstract
         arguments:
             - '@translator'
@@ -44,6 +45,14 @@ services:
         arguments:
             - "@darvin_payment.admin.from.renderer.approve"
             - "@darvin_payment.admin.form.renderer.capture"
+        tags:
+            - { name: darvin_admin.view_widget }
+
+    darvin_payment.admin.view.widget.payment_state:
+        class:  '%darvin_payment.admin.view.widget.payment_state.class%'
+        parent: darvin_admin.view.widget.abstract
+        arguments:
+            - '@translator'
         tags:
             - { name: darvin_admin.view_widget }
 

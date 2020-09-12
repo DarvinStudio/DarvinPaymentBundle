@@ -34,10 +34,8 @@ view:
                         rows: 1
                         trans: true
             state:
-                size: sm
-                widget:
-                    payment_state:
-                        property: state
+                size:   xs
+                widget: payment_state
 
             operation:
                 size: md

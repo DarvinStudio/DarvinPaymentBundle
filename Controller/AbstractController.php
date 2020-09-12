@@ -85,11 +85,11 @@ abstract class AbstractController
     public function __construct(
         GatewayFactoryInterface $gatewayFactory,
         EntityManagerInterface $em,
+        \Twig\Environment $twig,
         FormFactoryInterface $formFactory,
         LoggerInterface $logger,
         RedirectFactoryInterface $redirectFactory,
         PaymentUrlBuilderInterface $urlBuilder,
-        \Twig\Environment $twig,
         WorkflowInterface $workflow
     ){
         $this->gatewayFactory = $gatewayFactory;
