@@ -21,4 +21,18 @@ view:
                 size:   xs
                 widget: log_level
             message:
-                size: free
+                size:   free
+
+    show:
+        fields:
+            createdAt:
+                type:   date
+                widget: datetime
+            level:   ~
+            message: ~
+
+form:
+    filter:
+        fields:
+            createdAtFrom: ~
+            createdAtTo:   ~

@@ -1,3 +1,6 @@
+children:
+    - Darvin\PaymentBundle\Entity\Log
+
 menu:
     position: 30
 
@@ -19,13 +22,12 @@ view:
                 type:   date
                 widget: datetime
             orderNumber: ~
-            amount: ~
-            currencyCode: ~
-            clientId: ~
             clientEmail:
                 size:   md
                 type:   email
                 widget: email_link
+            amount: ~
+            currencyCode: ~
             description:
                 size: sm
                 widget:
@@ -47,6 +49,34 @@ view:
                     child_links:
                         child:      Darvin\PaymentBundle\Entity\Log
                         show_count: true
+
+    show:
+        fields:
+            id: ~
+            createdAt:
+                type:   date
+                widget: datetime
+            orderNumber: ~
+            amount: ~
+            currencyCode: ~
+            orderId: ~
+            orderEntityClass: ~
+            clientId: ~
+            clientEmail:
+                size:   md
+                type:   email
+                widget: email_link
+            description:
+                size: sm
+                widget:
+                    text:
+                        length: 24
+                        rows: 1
+                        trans: true
+            state:
+                widget:
+                    text:
+                        property: state
             transactionReference:
                 size: free
             actionToken:

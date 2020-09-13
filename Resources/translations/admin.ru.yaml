@@ -1,7 +1,7 @@
 configuration:
     darvin_payment:
         parameter:
-            notification_emails: Email для уведомлений
+            notification_emails:    Email для уведомлений
             notification_for_state: Уведомеления о статусе «%state%»
         title: Онлайн оплата
 
@@ -12,45 +12,45 @@ payment:
             submit:  Одобрить платёж
             success: Платёж одобрен!
         capture:
-            confirm: Подтвердите завершение платёжа
+            confirm: Подтвердите операцию
             submit:  Завершить платёж
             success: Платёж успешно завершён!
         delete:
             confirm: Подтвердите удаление платёжа
             submit:  Удалить платёж
-            success: Каталог успешно удалён
+            success: Платёж успешно удалён
         edit:
             link:    Изменить платёж
             success: Платёж успешно изменён
             title:   Изменить платёж №«%entity%»
         index:
-            link:  Платежи
-            title: Платежи
+            link:    Платежи
+            title:   Платежи
         new:
             link:    Добавить платёж
             success: Платёж успешно добавлен
             title:   Новый платёж
         show:
-            link:  Просмотреть платёж
-            title: Платёж №«%entity%»
+            link:    Просмотреть платёж
+            title:   Платёж №«%entity%»
     entity:
-        action_token: Токен
-        amount: Сумма
+        action_token:    Токен
+        amount:          Сумма
         created_at:      Создана
         created_at_from: Создана (с)
         created_at_to:   Создана (по)
-        currency_code: Валюта
-        client_id: ID клиента
-        client_email: Email клиента
-        description: Описание
-        id: ID
-        order_id: ID Заказа (системный)
-        order_entity_class: Класс заказа
-        order_number: Номер заказа
-        operation: Операции
-        logs: Логи
+        currency_code:   Код валюты
+        client_id:       ID клиента
+        client_email:    Email клиента
+        description:     Описание
+        id:              ID
+        order_id:        ID Заказа (системный)
+        order_entity_class: Класс объекта заказа
+        order_number:    Номер заказа
+        operation:       Операции
+        logs:            Логи
         transaction_reference: ID заказа в платежной системе
-        state: Статус
+        state:           Статус
 
     state:
         approval:   Утверждение
@@ -68,20 +68,12 @@ payment_log:
             confirm: Подтвердите удаление лога
             submit:  Удалить лог
             success: Лог успешно удалён
-        edit:
-            link:    Изменить лог
-            success: Лог успешно изменён
-            title:   Изменить лог «%entity%»
         index:
-            link:  Логи
-            title: Логи
-        new:
-            link:    Добавить лог
-            success: Лог успешно добавлен
-            title:   Новый лог
+            link:    Логи
+            title:   Логи
         show:
-            link:  Просмотреть логи
-            title: Лог «%entity%»
+            link:    Просмотреть логи
+            title:   Лог «%entity%»
     entity:
         created_at:      Создана
         created_at_from: Создана (с)
@@ -89,13 +81,3 @@ payment_log:
         level:           Уровень
         message:         Сообщение
         payment:         Платёж
-
-    state:
-        approval:   Утверждение
-        authorized: Авторизован
-        canceled:   Отменен
-        completed:  Оплачен
-        expired:    Просрочен
-        failed:     Отклонен
-        pending:    Ждет оплаты
-        refunded:   Возврат

@@ -1,7 +1,15 @@
-payment:
+ppayment:
     canceled:
-        title: Payment has been canceled
+        title: Online payment has been canceled.
+
     fail:
-        title: An error occurred while online payment. Repeat operation later.
+        title:   There is trouble..
+        message: While payment an error occurred. Please try again later.
+
+    purchase:
+        title: Online payment
+        form:
+            submit: Pay
+
     success:
-        title: Thank you! Payment successfully completed.
+        title: Order №%orderNumber% succesfully paid.

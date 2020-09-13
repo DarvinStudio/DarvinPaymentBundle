@@ -1,18 +1,83 @@
 configuration:
     darvin_payment:
         parameter:
-            notification_emails: Notification emails
+            notification_emails:    Notification emails
             notification_for_state: Notification for state «%state%»
         title: Online Payment
 
 payment:
     action:
-        capture: Capture money
+        approve:
+            confirm: Confirm payment approval
+            submit:  Approve payment
+            success: Payment succesfully approved!
+        capture:
+            confirm: Confirm payment сompletion
+            submit:  Complete payment
+            success: Payment succesfully completed!
+        delete:
+            confirm: Confirm payment removal
+            submit:  Remove payment
+            success: Payment successfully removed
+        edit:
+            link:    Edit payment
+            success: Payment successfully updated
+            title:   Edit payment №«%entity%»
+        index:
+            link:    Payments
+            title:   Payments
+        new:
+            link:    Add payment
+            success: Payment successfully created
+            title:   New payment
+        show:
+            link:    Show payment
+            title:   Payment №«%entity%»
+    entity:
+        action_token:    Token
+        amount:          Amount
+        created_at:      Created at
+        created_at_from: Created at (From)
+        created_at_to:   Created at (To)
+        currency_code:   Currency code
+        client_id:       Client ID
+        client_email:    Client Email
+        description:     Description
+        id:              ID
+        order_id:        Order ID
+        order_entity_class: Order entity class
+        order_number:    Order Number
+        operation:       Operation
+        logs:            Logs
+        transaction_reference: Transaction Reference
+        state:           State
 
     state:
         approval:   Approval
         authorized: Authorized
         canceled:   Canceled
         completed:  Completed
+        expired:    Expired
+        failed:     Failed
         pending:    Pending
         refunded:   Refund
+
+payment_log:
+    action:
+        delete:
+            confirm: Confirm log removal
+            submit:  Remove log
+            success: Log successfully removed
+        index:
+            link:    Logs
+            title:   Logs
+        show:
+            link:    Logs
+            title:   Log «%entity%»
+    entity:
+        created_at:      Created at
+        created_at_from: Created at (From)
+        created_at_to:   Created at (To)
+        level:           Level
+        message:         Message
+        payment:         Payment

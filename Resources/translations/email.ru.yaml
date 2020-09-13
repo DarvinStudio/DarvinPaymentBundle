@@ -3,6 +3,12 @@ payment:
         default: Оплатить
     order: Заказ
     public:
+        approval:
+            subject: 'Заказ №%orderNumber%: Оплата утверждается'
+            content: 'Пожалуйста, подождите. Платёж проходит утверждение администратором.'
+        authorized:
+            subject: 'Оплата успешна! Заказ №%orderNumber%'
+            content: 'Спасибо! Онлайн оплата успешно произведена!'
         canceled:
             subject: 'Оплата отменена'
             content: 'Онлайн оплата заказ №%orderNumber% была отменена.'
@@ -10,7 +16,7 @@ payment:
             subject: 'Оплата успешна! Заказ №%orderNumber%'
             content: 'Спасибо! Онлайн оплата успешно произведена!'
         failed:
-            subject: 'Упс, что-то пошло не так..'
+            subject: 'Оплата отклонена'
             content: 'Во время онлайн оплаты произошла ошибка. Наш менеджер скоро свяжется с вами.'
         pending:
             subject: 'Заказ №%orderNumber% готов к оплате'
@@ -20,24 +26,24 @@ payment:
             content: 'Спасибо! Онлайн оплата успешно произведена!'
 
     service:
+        approval:
+            subject: 'Заказ №%orderNumber%: Создан платёж'
+            content: 'Необходимо утвердить новую заявку на онлайн оплату заказа №%orderNumber%.'
         authorized:
-            subject: 'Заказ №%orderNumber%: Авторизация оплаты успешна'
-            content: 'Заказ №%orderNumber% успешно авторизован. Для списания денег воспользуютесь capture_link'
+            subject: 'Заказ №%orderNumber%: Авторизация платежа успешна'
+            content: 'Заказ №%orderNumber% успешно авторизован.'
         canceled:
-            subject: 'Заказ №%orderNumber%: Оплата отменена'
+            subject: 'Заказ №%orderNumber%: Платёж отменен'
             content: 'Оплата заказа №%orderNumber% была отменена'
         completed:
-            subject: 'Заказ №%orderNumber%: Оплата произведена'
+            subject: 'Заказ №%orderNumber%: Платёж произведен'
             content: 'Заказ №%orderNumber% успешно оплачен.'
         failed:
             subject: 'Заказ №%orderNumber%: Ошибка при оплате'
-            content: 'При оплате заказа №%orderNumber% произошла ошибка: {message}'
-        new:
-            subject: 'Заказ №%orderNumber%: Создана заявка на оплату'
-            content: 'Необходимо утвердить новую заявку на онлайн оплату заказа №%orderNumber%.'
+            content: 'При оплате заказа №%orderNumber% произошла ошибка.'
         pending:
-            subject: 'Заказ №%orderNumber%: Создана заявка на оплату'
-            content: 'По заказу №%orderNumber% клиент приступил к онлайн оплате.'
+            subject: 'Заказ №%orderNumber%: Ждёт оплаты'
+            content: 'Заказу №%orderNumber% ожидает онлайн оплату'
         refund:
             subject: 'Заказ №%orderNumber%: Возврат денег'
             content: 'По заказу №%orderNumber% произведен возврат денег.'

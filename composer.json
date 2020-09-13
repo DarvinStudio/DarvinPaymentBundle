@@ -26,6 +26,7 @@
         "php": ">=7.2",
         "symfony/workflow": "^4.3",
         "doctrine/orm": "^2.5",
+        "darvinstudio/darvin-utils-bundle": "^7",
         "fresh/doctrine-enum-bundle": "^6.6",
         "league/omnipay": "^3",
         "ramsey/uuid": "^3||^4",
@@ -33,6 +34,7 @@
     },
     "suggest": {
         "darvinstudio/darvin-admin-bundle": "Allow admin CRUD operations",
+        "darvinstudio/darvin-config-bundle": "Allow admin email notifications",
         "monolog/monolog": "Allows more advanced logging of the application flow",
         "darvinstudio/omnipay-telr": "Needed to support Telr payment",
         "darvinstudio/omnipay-sberbank": "Needed to support Sberbank payment"

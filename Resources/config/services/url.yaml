@@ -10,7 +10,6 @@ services:
         arguments:
             - '@router'
 
-
     Darvin\PaymentBundle\Url\PaymentUrlManagerInterface: '@darvin_payment.url.manager'
 
     darvin_payment.url.manager:
@@ -18,4 +17,4 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@darvin_payment.url.builder'
-            - '%darvin_payment.pre_auth%'
+            - '%darvin_payment.pre_authorize%'
