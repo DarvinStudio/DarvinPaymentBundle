@@ -20,6 +20,7 @@ use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class payment events subscriber
@@ -47,21 +48,29 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
     private $stateProvider;
 
     /**
+     * @var \Symfony\Contracts\Translation\TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface  $emailFactory  Payment email factory
      * @param \Darvin\MailerBundle\Mailer\MailerInterface                 $mailer        Mailer
      * @param \Psr\Log\LoggerInterface                                    $logger        Payment logger
      * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Provider
+     * @param \Symfony\Contracts\Translation\TranslatorInterface          $translator    Translator
      */
     public function __construct(
         EmailFactoryInterface $emailFactory,
         MailerInterface $mailer,
         LoggerInterface $logger,
-        StateProviderInterface $stateProvider
+        StateProviderInterface $stateProvider,
+        TranslatorInterface $translator
     ) {
         $this->emailFactory = $emailFactory;
         $this->mailer = $mailer;
         $this->logger = $logger;
         $this->stateProvider = $stateProvider;
+        $this->translator = $translator;
     }
 
     /**
@@ -89,7 +98,7 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
 
         $state = $this->stateProvider->getState($payment->getState());
 
-        if ($payment->getClientEmail() !== null && $state->getEmail()->getPublicEmail()->isEnabled()) {
+        if ($state->getEmail()->getPublicEmail()->isEnabled()) {
             $publicEmail = null;
 
             try {
@@ -127,7 +136,11 @@ class SendChangedEmailsSubscriber implements EventSubscriberInterface
         try {
             $this->mailer->mustSend($email);
         } catch (MailerException $ex) {
-            $this->logger->warning($ex->getMessage(), ['payment' => $payment]);
+            $errorMessage = $this->translator->trans('payment.log.error.cant_send_email', [
+                '%message%' => $ex->getMessage(),
+            ], 'messages');
+
+            $this->logger->warning($errorMessage, ['payment' => $payment]);
         }
     }
 }

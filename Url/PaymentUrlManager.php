@@ -43,7 +43,7 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
     /**
      * @param \Doctrine\ORM\EntityManagerInterface                 $em           Entity manager
      * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder   Url builder
-     * @param bool                                                 $preAuthorize Pre-authorize payment
+     * @param bool                                                 $preAuthorize Pre-authorize payment enable
      */
     public function __construct(
         EntityManagerInterface $em,
@@ -69,8 +69,8 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
     public function getUrlsForOrder(int $orderId, string $orderEntityClass): array
     {
         $payments = $this->getPaymentRepository()->findBy([
-            'orderId' => $orderId,
-            'orderEntityClass' => $orderEntityClass,
+            'order.id' => $orderId,
+            'order.class' => $orderEntityClass,
             'state' => PaymentStateType::PENDING,
         ]);
 
@@ -89,6 +89,8 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
      */
     public function getUrlsForPayment(Payment $payment): array
     {
+        $urls = [];
+
         foreach ($this->gatewayNames as $gatewayName) {
             $urls[$gatewayName] = $this->preAuthorize
                 ? $this->urlBuilder->getAuthorizeUrl($payment, $gatewayName)

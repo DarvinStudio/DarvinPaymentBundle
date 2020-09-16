@@ -33,8 +33,8 @@ class CompletePurchaseController extends AbstractController
         $gateway = $this->getGateway($payment->getGatewayName());
         $bridge = $this->getBridge($payment->getGatewayName());
 
-        $this->validatePayment($payment, Transitions::PURCHASE);
         $this->validateGateway($gateway, 'completePurchase');
+        $this->validatePayment($payment, Transitions::PURCHASE);
 
         try {
             $response = $gateway->completePurchase($bridge->completePurchaseParameters($payment))->send();
@@ -48,15 +48,24 @@ class CompletePurchaseController extends AbstractController
             $this->workflow->apply($payment, Transitions::PURCHASE);
             $this->em->flush();
 
+            $this->logger->info(
+                $this->translator->trans('payment.log.info.changed_status', [
+                    '%state%' => $payment->getState(),
+                ]),
+                ['payment' => $payment]
+            );
+
             return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment));
         }
 
-        $this->logger->error(sprintf(
-            '%s: Can\'t handler response. Response code: %s. Response message: %s',
-            __METHOD__,
-            $response->getCode(),
-            $response->getMessage()
-        ), ['payment' => $payment]);
+        $this->logger->error(
+            $this->translator->trans('payment.log.error.bad_response', [
+                '%method%'  => __METHOD__,
+                '%code%'    => $response->getCode(),
+                '%message%' => $response->getMessage(),
+            ]),
+            ['payment' => $payment]
+        );
 
         return $this->createErrorResponse($payment);
     }

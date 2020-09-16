@@ -10,8 +10,6 @@
 
 namespace Darvin\PaymentBundle\Entity;
 
-use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Doctrine\ORM\Mapping as ORM;
@@ -34,38 +32,36 @@ class Payment
     protected $id;
 
     /**
-     * @var string
+     * @var PaidOrder
      *
-     * @ORM\Column
+     * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\PaidOrder")
      *
-     * @Assert\NotBlank
+     * @Assert\Valid
      */
-    protected $orderId;
+    protected $order;
 
     /**
-     * @var string
+     * @var Client
      *
-     * @ORM\Column
+     * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\Client")
      *
-     * @Assert\NotBlank
+     * @Assert\Valid
      */
-    protected $orderEntityClass;
+    protected $client;
 
     /**
-     * @var string
+     * @var Redirect
      *
-     * @ORM\Column
-     *
-     * @Assert\NotBlank
+     * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\Redirect")
      */
-    protected $orderNumber;
+    protected $redirect;
 
     /**
-     * @var string|null
+     * @var \Doctrine\Common\Collections\Collection|Log[]
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\OneToMany(targetEntity="Log", mappedBy="payment", cascade={"remove"})
      */
-    protected $transactionReference;
+    protected $logs;
 
     /**
      * @var string
@@ -79,26 +75,27 @@ class Payment
     /**
      * @var string
      *
-     * @ORM\Column
+     * @ORM\Column(length=3)
+     *
+     * @Assert\Length(max=3)
+     * @Assert\NotBlank
      */
-    protected $currencyCode;
+    protected $currency;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(type="PaymentStateType")
+     * @DoctrineAssert\Enum(entity="Darvin\PaymentBundle\DBAL\Type\PaymentStateType")
+     */
+    protected $state;
 
     /**
      * @var string|null
      *
      * @ORM\Column(nullable=true)
      */
-    protected $clientId;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(length=50, nullable=true)
-     *
-     * @Assert\Email
-     * @Assert\Length(max=50)
-     */
-    protected $clientEmail;
+    protected $transactionReference;
 
     /**
      * @var string|null
@@ -106,14 +103,6 @@ class Payment
      * @ORM\Column(type="text", nullable=true)
      */
     protected $description;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="PaymentStateType")
-     * @DoctrineAssert\Enum(entity="Darvin\PaymentBundle\DBAL\Type\PaymentStateType")
-     */
-    protected $state;
 
     /**
      * @var string|null
@@ -132,13 +121,6 @@ class Payment
     protected $gatewayName;
 
     /**
-     * @var Redirect|null
-     *
-     * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\Redirect")
-     */
-    protected $redirect;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
@@ -149,21 +131,22 @@ class Payment
     protected $createdAt;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|Log[]
-     *
-     * @ORM\OneToMany(targetEntity="Log", mappedBy="payment", cascade={"remove"})
-     */
-    protected $logs;
-
-    /**
      * Payment constructor.
+     *
+     * @param PaidOrder $order    Order
+     * @param Client    $client   Client
+     * @param string    $amount   Amount
+     * @param string    $currency Currency Code
      */
-    public function __construct()
+    public function __construct(PaidOrder $order, Client $client, string $amount, string $currency)
     {
-        $this->redirect = new Redirect;
-        $this->state = PaymentStateType::APPROVAL;
-        $this->createdAt = new \DateTime;
-        $this->logs = new ArrayCollection();
+        $this->order = $order;
+        $this->client = $client;
+        $this->amount = $amount;
+        $this->currency = $currency;
+        $this->redirect = new Redirect();
+        $this->createdAt = new \DateTime();
+        $this->logs = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -183,81 +166,80 @@ class Payment
     }
 
     /**
-     * @return string
+     * @return PaidOrder
      */
-    public function getOrderId(): string
+    public function getOrder(): PaidOrder
     {
-        return $this->orderId;
+        return $this->order;
     }
 
     /**
-     * @param string $orderId
+     * @return Client
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    /**
+     * @return Redirect
+     */
+    public function getRedirect(): Redirect
+    {
+        return $this->redirect;
+    }
+
+    /**
+     * @param Redirect $redirect
      *
      * @return self
      */
-    public function setOrderId(string $orderId): self
+    public function setRedirect(Redirect $redirect): self
     {
-        $this->orderId = $orderId;
+        $this->redirect = $redirect;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getOrderEntityClass(): string
+    public function hasRedirect(): bool
     {
-        return $this->orderEntityClass;
+        return !$this->redirect->isEmpty();
     }
 
     /**
-     * @param string $orderEntityClass
+     * @return \Darvin\PaymentBundle\Entity\Log[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getLogs(): Collection
+    {
+        return $this->logs;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Log[]|\Doctrine\Common\Collections\Collection $logs logs
      *
      * @return self
      */
-    public function setOrderEntityClass(string $orderEntityClass): self
+    public function setLogs(Collection $logs): self
     {
-        $this->orderEntityClass = $orderEntityClass;
+        $this->logs = $logs;
 
         return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getOrderNumber(): string
-    {
-        return $this->orderNumber;
-    }
-
-    /**
-     * @param string $orderNumber
+     * @param \Darvin\PaymentBundle\Entity\Log Log
      *
      * @return self
      */
-    public function setOrderNumber(string $orderNumber): self
+    public function addLog(Log $log): self
     {
-        $this->orderNumber = $orderNumber;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getTransactionReference(): ?string
-    {
-        return $this->transactionReference;
-    }
-
-    /**
-     * @param string|null $transactionReference
-     *
-     * @return self
-     */
-    public function setTransactionReference(?string $transactionReference): self
-    {
-        $this->transactionReference = $transactionReference;
+        if (!$this->logs->contains($log)) {
+            $this->logs->add($log);
+            $log->setPayment($this);
+        }
 
         return $this;
     }
@@ -285,19 +267,19 @@ class Payment
     /**
      * @return string
      */
-    public function getCurrencyCode(): string
+    public function getCurrency(): string
     {
-        return $this->currencyCode;
+        return $this->currency;
     }
 
     /**
-     * @param string $currencyCode
+     * @param string $currency
      *
      * @return self
      */
-    public function setCurrencyCode(string $currencyCode): self
+    public function setCurrency(string $currency): self
     {
-        $this->currencyCode = $currencyCode;
+        $this->currency = $currency;
 
         return $this;
     }
@@ -305,39 +287,19 @@ class Payment
     /**
      * @return string|null
      */
-    public function getClientId(): ?string
+    public function getTransactionReference(): ?string
     {
-        return $this->clientId;
+        return $this->transactionReference;
     }
 
     /**
-     * @param string|null $clientId
+     * @param string|null $transactionReference
      *
      * @return self
      */
-    public function setClientId(?string $clientId): self
+    public function setTransactionReference(?string $transactionReference): self
     {
-        $this->clientId = $clientId;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getClientEmail(): ?string
-    {
-        return $this->clientEmail;
-    }
-
-    /**
-     * @param string|null $clientEmail
-     *
-     * @return self
-     */
-    public function setClientEmail(?string $clientEmail): self
-    {
-        $this->clientEmail = $clientEmail;
+        $this->transactionReference = $transactionReference;
 
         return $this;
     }
@@ -363,9 +325,9 @@ class Payment
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getState(): string
+    public function getState(): ?string
     {
         return $this->state;
     }
@@ -423,34 +385,6 @@ class Payment
     }
 
     /**
-     * @return Redirect
-     */
-    public function getRedirect(): Redirect
-    {
-        return $this->redirect;
-    }
-
-    /**
-     * @param Redirect $redirect
-     *
-     * @return self
-     */
-    public function setRedirect(Redirect $redirect): self
-    {
-        $this->redirect = $redirect;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasRedirect(): bool
-    {
-        return !$this->redirect->isEmpty();
-    }
-
-    /**
      * @return \DateTime
      */
     public function getCreatedAt(): \DateTime
@@ -466,41 +400,6 @@ class Payment
     public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * @return \Darvin\PaymentBundle\Entity\Log[]|\Doctrine\Common\Collections\Collection
-     */
-    public function getLogs(): Collection
-    {
-        return $this->logs;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Entity\Log[]|\Doctrine\Common\Collections\Collection $logs logs
-     *
-     * @return self
-     */
-    public function setLogs(Collection $logs): self
-    {
-        $this->logs = $logs;
-
-        return $this;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Entity\Log Log
-     *
-     * @return self
-     */
-    public function addLog(Log $log): self
-    {
-        if (!$this->logs->contains($log)) {
-            $this->logs->add($log);
-            $log->setPayment($this);
-        }
 
         return $this;
     }

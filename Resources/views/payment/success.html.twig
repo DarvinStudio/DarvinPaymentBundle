@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
-{% block heading %}{% trans with {'%orderNumber%': payment.orderNumber} %}payment.success.title{% endtrans %}{% endblock %}
+{% block heading %}{% trans with {'%orderNumber%': payment.order.number} %}payment.success.title{% endtrans %}{% endblock %}
 
 {% block content %}
-    <p class="h2">{% trans with {'%orderNumber%': payment.orderNumber} %}payment.success.title{% endtrans %}</p>
+    <p class="h2">{% trans with {'%orderNumber%': payment.order.number} %}payment.success.title{% endtrans %}</p>
 {% endblock %}

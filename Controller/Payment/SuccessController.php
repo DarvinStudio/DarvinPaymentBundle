@@ -35,10 +35,15 @@ class SuccessController extends AbstractController
             PaymentStateType::COMPLETED,
             PaymentStateType::AUTHORIZED
         ], true)) {
-            $errorMessage = sprintf('%s: Can\'t show success, because payment state is not completed yet.', __METHOD__);
-            $this->logger->error($errorMessage, ['payment' => $payment]);
+            $this->logger->error(
+                $this->translator->trans('payment.log.error.success', [
+                    '%method%' => __METHOD__,
+                    '%state%'  => $payment->getState(),
+                ]),
+                ['payment' => $payment]
+            );
 
-            throw new NotFoundHttpException($errorMessage);
+            throw new NotFoundHttpException();
         }
 
         return new Response(

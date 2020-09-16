@@ -33,8 +33,8 @@ class CompleteAuthorizeController extends AbstractController
         $gateway = $this->getGateway($payment->getGatewayName());
         $bridge = $this->getBridge($payment->getGatewayName());
 
-        $this->validatePayment($payment, Transitions::AUTHORIZE);
         $this->validateGateway($gateway, 'completeAuthorize');
+        $this->validatePayment($payment, Transitions::AUTHORIZE);
 
         try {
             $response = $gateway->completeAuthorize($bridge->completeAuthorizeParameters($payment))->send();
@@ -48,15 +48,24 @@ class CompleteAuthorizeController extends AbstractController
             $this->workflow->apply($payment, Transitions::AUTHORIZE);
             $this->em->flush();
 
+            $this->logger->info(
+                $this->translator->trans('payment.log.info.changed_status', [
+                    '%state%' => $payment->getState(),
+                ]),
+                ['payment' => $payment]
+            );
+
             return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment));
         }
 
-        $this->logger->error(sprintf(
-            '%s: Can\'t handler response. Response code: %s. Response message: %s',
-            __METHOD__,
-            $response->getCode(),
-            $response->getMessage()
-        ), ['payment' => $payment]);
+        $this->logger->error(
+            $this->translator->trans('payment.log.error.bad_response', [
+                '%method%'  => __METHOD__,
+                '%code%'    => $response->getCode(),
+                '%message%' => $response->getMessage(),
+            ]),
+            ['payment' => $payment]
+        );
 
         return $this->createErrorResponse($payment);
     }

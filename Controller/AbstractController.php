@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\WorkflowInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Common functional for all payment controllers
@@ -63,6 +64,11 @@ abstract class AbstractController
     protected $urlBuilder;
 
     /**
+     * @var \Symfony\Contracts\Translation\TranslatorInterface
+     */
+    protected $translator;
+
+    /**
      * @var \Twig\Environment
      */
     protected $twig;
@@ -73,14 +79,21 @@ abstract class AbstractController
     protected $workflow;
 
     /**
+     * @var bool
+     */
+    protected $preAuthorize;
+
+    /**
      * @param \Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface $gatewayFactory  Gateway factory
      * @param \Doctrine\ORM\EntityManagerInterface                          $em              Entity manager
      * @param \Symfony\Component\Form\FormFactoryInterface                  $formFactory     Form factory
      * @param \Psr\Log\LoggerInterface                                      $logger          Logger
      * @param \Darvin\PaymentBundle\Redirect\RedirectFactoryInterface       $redirectFactory Redirect factory
      * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface          $urlBuilder      URL builder
+     * @param \Symfony\Contracts\Translation\TranslatorInterface            $translator      Translator
      * @param \Twig\Environment                                             $twig            Twig
      * @param \Symfony\Component\Workflow\WorkflowInterface                 $workflow        Workflow
+     * @param bool                                                          $preAuthorize    Pre-authorize payment enable
      */
     public function __construct(
         GatewayFactoryInterface $gatewayFactory,
@@ -90,7 +103,9 @@ abstract class AbstractController
         LoggerInterface $logger,
         RedirectFactoryInterface $redirectFactory,
         PaymentUrlBuilderInterface $urlBuilder,
-        WorkflowInterface $workflow
+        TranslatorInterface $translator,
+        WorkflowInterface $workflow,
+        bool $preAuthorize
     ){
         $this->gatewayFactory = $gatewayFactory;
         $this->em = $em;
@@ -98,8 +113,10 @@ abstract class AbstractController
         $this->logger = $logger;
         $this->redirectFactory = $redirectFactory;
         $this->urlBuilder = $urlBuilder;
+        $this->translator = $translator;
         $this->twig = $twig;
         $this->workflow = $workflow;
+        $this->preAuthorize = $preAuthorize;
     }
 
     /**
@@ -159,22 +176,42 @@ abstract class AbstractController
     protected function validateGateway(GatewayInterface $gateway, string $method): void
     {
         if (!method_exists($gateway, $method)) {
-            throw new NotFoundHttpException(
-                sprintf('Payment gateway "%s" doesn\'t support "%s" method', $gateway->getName(), $method)
-            );
+            $errorMessage = $this->translator->trans('payment.log.error.not_support_gateway_method', [
+                '%gateway%' => $gateway->getName(),
+                '%method%'  => $method,
+            ]);
+
+            throw new NotFoundHttpException($errorMessage);
         }
     }
 
     /**
-     * @param Payment $payment    Payment
-     * @param string  $transition Workflow transition
+     * @param Payment               $payment    Payment
+     * @param string                $transition Workflow transition
+     * @param GatewayInterface|null $gateway    Gateway
      */
-    protected function validatePayment(Payment $payment, string $transition): void
+    protected function validatePayment(Payment $payment, string $transition, ?GatewayInterface $gateway = null): void
     {
         if (!$this->workflow->can($payment, $transition)) {
-            $errorMessage = sprintf('Operation "%s" is not available for payment №%s', $transition, $payment->getOrderId());
+            $errorMessage = $this->translator->trans('payment.log.error.not_available_operation', [
+                '%transition%' => $transition,
+            ]);
 
-            $this->logger->warning($errorMessage, ['payment' => $payment]);
+            $this->logger->error($errorMessage, ['payment' => $payment]);
+
+            throw new NotFoundHttpException($errorMessage);
+        }
+
+        if ($gateway !== null &&
+            $payment->getGatewayName() !== null &&
+            $payment->getGatewayName() !== $gateway->getName()
+        ) {
+            $errorMessage = $this->translator->trans('payment.log.error.wrong_gateway', [
+                '%gateway%'        => $gateway->getName(),
+                '%paymentGateway%' => $payment->getGatewayName(),
+            ]);
+
+            $this->logger->error($errorMessage, ['payment' => $payment]);
 
             throw new NotFoundHttpException($errorMessage);
         }
@@ -187,7 +224,7 @@ abstract class AbstractController
      */
     protected function createErrorResponse(Payment $payment): RedirectResponse
     {
-        return new RedirectResponse($this->urlBuilder->getFailUrl($payment));
+        return new RedirectResponse($this->urlBuilder->getErrorUrl($payment));
     }
 
     /**
@@ -209,7 +246,7 @@ abstract class AbstractController
             $this->workflow->apply($payment, Transitions::EXPIRE);
             $this->em->flush();
 
-            $this->logger->warning('Payment session expired', ['payment' => $payment]);
+            $this->logger->warning($this->translator->trans('payment.log.warning.session_expired'), ['payment' => $payment]);
 
             return $this->createErrorResponse($payment);
         }

@@ -21,13 +21,13 @@ view:
             createdAt:
                 type:   date
                 widget: datetime
-            orderNumber: ~
-            clientEmail:
+            order.number: ~
+            client.email:
                 size:   md
                 type:   email
                 widget: email_link
             amount: ~
-            currencyCode: ~
+            currency: ~
             description:
                 size: sm
                 widget:
@@ -56,11 +56,11 @@ view:
             createdAt:
                 type:   date
                 widget: datetime
-            orderNumber: ~
+            order.number: ~
             amount: ~
-            currencyCode: ~
-            orderId: ~
-            orderEntityClass: ~
+            currency: ~
+            order.id: ~
+            order.entityClass: ~
             clientId: ~
             clientEmail:
                 size:   md
@@ -87,21 +87,20 @@ form:
         fields:
             createdAtFrom: ~
             createdAtTo:   ~
-            orderNumber: ~
-            clientEmail: ~
             state:
                 type: Darvin\PaymentBundle\Form\Type\Admin\PaymentStateFilterType
 
     edit:
         fields:
-            orderId: ~
-            orderEntityClass: ~
-            orderNumber: ~
+            order.id: ~
+            order.entityClass: ~
+            order.number: ~
             transactionReference: ~
             amount: ~
-            currencyCode: ~
-            clientId: ~
-            clientEmail: ~
+            currency: ~
+            client.id: ~
+            client.entityClass: ~
+            client.email: ~
             description: ~
             state: ~
             actionToken: ~

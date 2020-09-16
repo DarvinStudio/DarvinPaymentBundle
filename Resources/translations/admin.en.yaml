@@ -39,14 +39,17 @@ payment:
         created_at:      Created at
         created_at_from: Created at (From)
         created_at_to:   Created at (To)
-        currency_code:   Currency code
-        client_id:       Client ID
-        client_email:    Client Email
+        currency:        Currency code
+        client:
+            class:       Client entity class
+            email:       Client Email
+            id:          Client ID
         description:     Description
         id:              ID
-        order_id:        Order ID
-        order_entity_class: Order entity class
-        order_number:    Order Number
+        order:
+            class:       Order entity class
+            id:          Order ID
+            number:      Order Number
         operation:       Operation
         logs:            Logs
         transaction_reference: Transaction Reference
@@ -61,6 +64,10 @@ payment:
         failed:     Failed
         pending:    Pending
         refunded:   Refund
+
+    log:
+        info:
+            changed_status: "Status changed to «%state%»"
 
 payment_log:
     action:

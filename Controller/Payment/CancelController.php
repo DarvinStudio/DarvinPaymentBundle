@@ -30,7 +30,7 @@ class CancelController extends AbstractController
     public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
-        
+
         if (PaymentStateType::CANCELED === $payment->getState()) {
             return new Response(
                 $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
@@ -42,6 +42,13 @@ class CancelController extends AbstractController
         $this->validatePayment($payment, Transitions::CANCEL);
         $this->workflow->apply($payment, Transitions::CANCEL);
         $this->em->flush();
+
+        $this->logger->info(
+            $this->translator->trans('payment.log.info.changed_status', [
+                '%state%' => $payment->getState(),
+            ]),
+            ['payment' => $payment]
+        );
 
         return new Response(
             $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [

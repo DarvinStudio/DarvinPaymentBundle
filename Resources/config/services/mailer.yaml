@@ -18,5 +18,6 @@ services:
             - '@darvin_mailer.mailer'
             - '@darvin_payment.logger'
             - '@darvin_payment.state.provider'
+            - '@translator'
         tags:
             - { name: kernel.event_subscriber }

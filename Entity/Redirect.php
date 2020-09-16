@@ -62,9 +62,9 @@ class Redirect
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function __toString(): ?string
+    public function __toString(): string
     {
         return $this->getUrl() ?? 'Redirect data is empty';
     }

@@ -39,14 +39,17 @@ payment:
         created_at:      Создана
         created_at_from: Создана (с)
         created_at_to:   Создана (по)
-        currency_code:   Код валюты
-        client_id:       ID клиента
-        client_email:    Email клиента
+        currency:        Код валюты
+        client:
+            class:       Класс объекта клиента
+            email:       Email клиента
+            id:          ID клиента
         description:     Описание
         id:              ID
-        order_id:        ID Заказа (системный)
-        order_entity_class: Класс объекта заказа
-        order_number:    Номер заказа
+        order:
+            class:       Класс объекта заказа
+            id:          ID Заказа
+            number:      Номер заказа
         operation:       Операции
         logs:            Логи
         transaction_reference: ID заказа в платежной системе

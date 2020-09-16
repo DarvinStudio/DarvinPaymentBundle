@@ -57,7 +57,7 @@ class TelrBridge extends AbstractBridge
     {
         return [
             'ivp_amount'   => $payment->getAmount(),
-            'ivp_currency' => $payment->getCurrencyCode(),
+            'ivp_currency' => $payment->getCurrency(),
             'ivp_cart'     => $payment->getId(),
             'ivp_desc'     => $payment->getDescription(),
             'return_auth'  => $this->urlBuilder->getCompletePurchaseUrl($payment),

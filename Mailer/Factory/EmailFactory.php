@@ -70,10 +70,14 @@ class EmailFactory implements EmailFactoryInterface
     {
         $emailData = $state->getEmail()->getPublicEmail();
 
+        if (null === $payment->getClient()->getEmail()) {
+            throw new CantCreateEmailException($this->translator->trans('payment.log.error.missing_public_email', [], 'messages'));
+        }
+
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
-            $payment->getClientEmail(),
-            $this->translator->trans($emailData->getSubject(), ['%orderNumber%' => $payment->getOrderNumber()], 'email'),
+            $payment->getClient()->getEmail(),
+            $this->translator->trans($emailData->getSubject(), ['%orderNumber%' => $payment->getOrder()->getNumber()], 'email'),
             $emailData->getTemplate(),
             [
                 'payment' => $payment,
@@ -90,7 +94,7 @@ class EmailFactory implements EmailFactoryInterface
         $serviceEmails = $this->paymentConfig->getEmailsByStateName($state->getName());
 
         if (empty($serviceEmails)) {
-            throw new CantCreateEmailException(sprintf('Service email for state "%s" is not specified', $state->getName()));
+            throw new CantCreateEmailException($this->translator->trans('payment.log.error.missing_service_email', [], 'messages'));
         }
 
         $emailData = $state->getEmail()->getServiceEmail();
@@ -99,7 +103,7 @@ class EmailFactory implements EmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans($emailData->getSubject(), ['%orderNumber%' => $payment->getOrderNumber()], 'email'),
+            $this->translator->trans($emailData->getSubject(), ['%orderNumber%' => $payment->getOrder()->getNumber()], 'email'),
             $emailData->getTemplate(),
             [
                 'order'   => $order,
@@ -114,6 +118,6 @@ class EmailFactory implements EmailFactoryInterface
      */
     private function getOrder(Payment $payment): ?object
     {
-        return $this->em->find($payment->getOrderEntityClass(), $payment->getOrderId());
+        return $this->em->find($payment->getOrder()->getEntityClass(), $payment->getOrder()->getId());
     }
 }

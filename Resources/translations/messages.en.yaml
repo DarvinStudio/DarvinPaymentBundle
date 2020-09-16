@@ -1,15 +1,37 @@
-ppayment:
-    canceled:
-        title: Online payment has been canceled.
+payment:
+    page:
+        canceled:
+            title: Online payment has been canceled.
 
-    fail:
-        title:   There is trouble..
-        message: While payment an error occurred. Please try again later.
+        fail:
+            title:   There is trouble..
+            message: Payment gateway rejected your payment.
 
-    purchase:
-        title: Online payment
-        form:
-            submit: Pay
+        error:
+            title: There is trouble..
+            message: While payment an error occurred. Please try again later.
 
-    success:
-        title: Order №%orderNumber% succesfully paid.
+        purchase:
+            title: Online payment
+            form:
+                submit: Pay
+
+        success:
+            title: Order №%orderNumber% succesfully paid.
+
+    log:
+        error:
+            bad_response: "%method%: Can't handle response. Response code: %code%. Response message: %message%"
+            cant_create_receipt: "%method%: Can't create receipt"
+            cant_send_email: "Some troubles with sending email: %message%"
+            missing_public_email: "Missing client email"
+            missing_service_email: "Missing service email"
+            not_available_operation: "Operation «%transition%» is not available"
+            not_support_gateway_method: "Payment gateway «%gateway%» doesn't support «%method%» method"
+            wrong_gateway: "Wrong gateway (%gateway%) for this payment. Need gateway %paymentGateway%."
+            success: "%method%: Can't show success, because current state is «%state%»"
+        info:
+            changed_status: "Status changed to «%state%»"
+            created_redirect: "Created payment redirect"
+        warning:
+            session_expired: "Payment session expired"

@@ -30,7 +30,7 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
-                ->scalarNode('default_currency')->defaultValue('RUB')->end()
+                ->scalarNode('default_currency')->defaultValue('RUB')->cannotBeEmpty()->end()
                 ->scalarNode('default_gateway')->defaultNull()->end()
                 ->booleanNode('auto_approval')->defaultTrue()->end()
                 ->booleanNode('pre_authorize')->defaultFalse()->end()

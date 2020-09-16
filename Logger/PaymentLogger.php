@@ -121,8 +121,10 @@ class PaymentLogger implements LoggerInterface
             $log = new Log($level, $message);
             $payment->addLog($log);
 
-            $this->em->persist($log);
-            $this->em->flush();
+            if (null !== $payment->getId()) {
+                $this->em->persist($log);
+                $this->em->getUnitOfWork()->commit($log);
+            }
         }
 
         if (null !== $this->logger) {

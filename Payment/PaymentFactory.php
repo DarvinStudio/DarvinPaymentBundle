@@ -10,7 +10,11 @@
 
 namespace Darvin\PaymentBundle\Payment;
 
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
+use Darvin\PaymentBundle\Entity\Client;
+use Darvin\PaymentBundle\Entity\PaidOrder;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
@@ -71,31 +75,21 @@ class PaymentFactory implements PaymentFactoryInterface
      * @inheritdoc
      */
     public function createPayment(
-        string $orderId,
-        string $orderEntityClass,
-        string $orderNumber,
+        PaidOrder $order,
+        Client $client,
         string $amount,
-        ?string $currencyCode,
-        ?string $clientId,
-        ?string $clientEmail
+        ?string $currency = null
     ): Payment {
         $class = $this->entityResolver->resolve(Payment::class);
 
-        /** @var \Darvin\PaymentBundle\Entity\Payment $payment */
-        $payment = new $class;
+        $payment = new $class($order, $client, $amount, $currency ?? $this->defaultCurrency);
 
-        $payment
-            ->setOrderId($orderId)
-            ->setOrderEntityClass($orderEntityClass)
-            ->setOrderNumber($orderNumber)
-            ->setAmount($amount)
-            ->setClientId($clientId)
-            ->setClientEmail($clientEmail)
-            ->setCurrencyCode($currencyCode ?? $this->defaultCurrency)
-            ->setActionToken(Uuid::uuid4()->toString());
+        $this->workflow->getMarking($payment);
+
+        $payment->setActionToken(Uuid::uuid4()->toString());
 
         if ($this->autoApproval) {
-            $this->workflow->apply($payment, 'approve');
+            $this->workflow->apply($payment, Transitions::APPROVE);
         }
 
         return $payment;

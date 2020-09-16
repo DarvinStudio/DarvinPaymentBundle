@@ -91,7 +91,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         $container->prependExtensionConfig('framework', [
             'workflows' => [
                 'payment' => [
-                    'initial_marking' => PaymentStateType::PENDING,
+                    'initial_marking' => PaymentStateType::APPROVAL,
                     'places'          => array_values(PaymentStateType::getChoices()),
                     'transitions'     => $this->initWorkflowTransitions(),
                 ],

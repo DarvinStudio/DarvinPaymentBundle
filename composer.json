@@ -24,13 +24,13 @@
     ],
     "require": {
         "php": ">=7.2",
-        "symfony/workflow": "^4.3",
-        "doctrine/orm": "^2.5",
-        "darvinstudio/darvin-utils-bundle": "^7",
-        "fresh/doctrine-enum-bundle": "^6.6",
+        "symfony/workflow": "*",
+        "doctrine/orm": "*",
+        "darvinstudio/darvin-utils-bundle": "*",
+        "fresh/doctrine-enum-bundle": "^6",
         "league/omnipay": "^3",
         "ramsey/uuid": "^3||^4",
-        "twig/twig": "^2.0||^3.0"
+        "twig/twig": "*"
     },
     "suggest": {
         "darvinstudio/darvin-admin-bundle": "Allow admin CRUD operations",

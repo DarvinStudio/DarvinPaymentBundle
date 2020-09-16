@@ -10,6 +10,8 @@
 
 namespace Darvin\PaymentBundle\Payment;
 
+use Darvin\PaymentBundle\Entity\Client;
+use Darvin\PaymentBundle\Entity\PaidOrder;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
@@ -18,23 +20,17 @@ use Darvin\PaymentBundle\Entity\Payment;
 interface PaymentFactoryInterface
 {
     /**
-     * @param string      $orderId          Order ID
-     * @param string      $orderEntityClass Class of order entity
-     * @param string      $orderNumber      Public order ID
-     * @param string      $amount           Amount
-     * @param string|null $currencyCode     Currency code
-     * @param string|null $clientId         Client ID
-     * @param string|null $clientEmail      Client email
+     * @param \Darvin\PaymentBundle\Entity\PaidOrder $order    Order
+     * @param \Darvin\PaymentBundle\Entity\Client    $client   Client
+     * @param string                                 $amount   Amount
+     * @param string|null                            $currency Currency code
      *
-     * @return Payment
+     * @return \Darvin\PaymentBundle\Entity\Payment
      */
     public function createPayment(
-        string $orderId,
-        string $orderEntityClass,
-        string $orderNumber,
+        PaidOrder $order,
+        Client $client,
         string $amount,
-        ?string $currencyCode,
-        ?string $clientId,
-        ?string $clientEmail
+        ?string $currency = null
     ): Payment;
 }

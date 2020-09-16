@@ -12,7 +12,6 @@ namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\Workflow\Transitions;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -34,7 +33,7 @@ class PurchaseController extends AbstractController
         $gateway = $this->getGateway($gatewayName);
         $bridge = $this->getBridge($gatewayName);
 
-        $this->validatePayment($payment, Transitions::PURCHASE);
+        $this->validatePayment($payment, Transitions::PURCHASE, $gateway);
         $this->validateGateway($gateway, 'purchase');
 
         if ($payment->hasRedirect()) {
@@ -59,19 +58,19 @@ class PurchaseController extends AbstractController
             $payment->setRedirect($this->redirectFactory->createRedirect($response, $bridge->getSessionTimeout()));
             $this->em->flush();
 
+            $this->logger->info($this->translator->trans('payment.log.info.created_redirect'), ['payment' => $payment]);
+
             return $this->createPaymentResponse($payment);
         }
 
-        if ($response->isCancelled()) {
-            return new RedirectResponse($this->urlBuilder->getCancelUrl($payment));
-        }
-
-        $this->logger->error(sprintf(
-            '%s: Can\'t handler response. Response code: %s. Response message: %s',
-            __METHOD__,
-            $response->getCode(),
-            $response->getMessage()
-        ), ['payment' => $payment]);
+        $this->logger->error(
+            $this->translator->trans('payment.log.error.bad_response', [
+                '%method%'  => __METHOD__,
+                '%code%'    => $response->getCode(),
+                '%message%' => $response->getMessage(),
+            ]),
+            ['payment' => $payment]
+        );
 
         return $this->createErrorResponse($payment);
     }

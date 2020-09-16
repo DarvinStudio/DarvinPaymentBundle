@@ -52,21 +52,22 @@ class PaymentExtension extends AbstractExtension
 
     /**
      * @param Environment $twig             Twig
-     * @param object|null $order            Order object
-     * @param int|null    $orderId          Order id
+     * @param mixed       $order            Order object
      * @param string|null $orderEntityClass Order entity class
      *
      * @return string
      */
-    public function renderPaymentWidget(Environment $twig, ?object $order, ?int $orderId = null, ?string $orderEntityClass = null): string
+    public function renderPaymentWidget(Environment $twig, $order, ?string $orderEntityClass = null): string
     {
-        if (null === $orderId && method_exists($order, 'getId') && is_int($order->getId())) {
+        if (is_scalar($order)) {
+            $orderId = $order;
+        } elseif (is_object($order) && method_exists($order, 'getId') && null !== $order->getId()) {
             $orderId = $order->getId();
         } else {
-            throw new \LogicException('Missing order number');
+            throw new \LogicException('Missing order id');
         }
 
-        if (null === $orderEntityClass && null !== $order) {
+        if (null === $orderEntityClass && is_object($order)) {
             $orderEntityClass = get_class($order);
         } else {
             throw new \LogicException('Missing order entity class');

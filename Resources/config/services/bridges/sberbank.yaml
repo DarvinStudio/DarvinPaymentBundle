@@ -8,5 +8,6 @@ services:
             - '@darvin_payment.receipt.factory_registry'
             - '@darvin_payment.url.builder'
             - '@darvin_payment.logger'
+            - '@translator'
         calls:
             - [ setGatewayConfig, [ '%darvin_payment.bridges.sberbank.parameters%' ] ]
