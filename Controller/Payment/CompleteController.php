@@ -32,13 +32,22 @@ class CompleteController extends AbstractController
         $payment = $this->getPaymentByToken($token);
         $gateway = $this->getGateway($payment->getGateway());
         $bridge = $this->getBridge($payment->getGateway());
-        $method = $this->preAuthorize ? 'completeAuthorize' : 'completePurchase';
+
+        if ($this->preAuthorize) {
+            $method = 'completeAuthorize';
+            $transition = Transitions::AUTHORIZE;
+            $parameters = $bridge->completeAuthorizeParameters($payment);
+        } else {
+            $method = 'completePurchase';
+            $transition = Transitions::PURCHASE;
+            $parameters = $bridge->completePurchaseParameters($payment);
+        }
 
         $this->validateGateway($gateway, $method);
-        $this->validatePayment($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE);
+        $this->validatePayment($payment, $transition);
 
         try {
-            $response = $gateway->{$method}($bridge->{sprintf('%sParameters', $method)}($payment))->send();
+            $response = $gateway->{$method}($parameters)->send();
 
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
@@ -47,7 +56,7 @@ class CompleteController extends AbstractController
         }
 
         if ($response->isSuccessful()) {
-            $this->workflow->apply($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE);
+            $this->workflow->apply($payment, $transition);
             $this->em->flush();
 
             $this->logChangedState($payment);
