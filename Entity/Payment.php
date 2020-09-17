@@ -50,9 +50,9 @@ class Payment
     protected $client;
 
     /**
-     * @var \Darvin\PaymentBundle\Entity\Redirect
+     * @var \Darvin\PaymentBundle\Entity\Redirect|null
      *
-     * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\Redirect")
+     * @ORM\OneToOne(targetEntity="Darvin\PaymentBundle\Entity\Redirect", mappedBy="payment", cascade="remove")
      */
     protected $redirect;
 
@@ -107,9 +107,9 @@ class Payment
     /**
      * @var string|null
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(length=36, nullable=true)
      */
-    protected $actionToken;
+    protected $token;
 
     /**
      * @var string|null
@@ -144,7 +144,6 @@ class Payment
         $this->client = $client;
         $this->amount = $amount;
         $this->currency = $currency;
-        $this->redirect = new Redirect();
         $this->createdAt = new \DateTime();
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -182,19 +181,19 @@ class Payment
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Entity\Redirect
+     * @return \Darvin\PaymentBundle\Entity\Redirect|null
      */
-    public function getRedirect(): Redirect
+    public function getRedirect(): ?Redirect
     {
         return $this->redirect;
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Redirect $redirect
+     * @param \Darvin\PaymentBundle\Entity\Redirect|null $redirect
      *
      * @return self
      */
-    public function setRedirect(Redirect $redirect): self
+    public function setRedirect(?Redirect $redirect): self
     {
         $this->redirect = $redirect;
 
@@ -206,7 +205,7 @@ class Payment
      */
     public function hasRedirect(): bool
     {
-        return !$this->redirect->isEmpty();
+        return null !== $this->redirect;
     }
 
     /**
@@ -347,19 +346,19 @@ class Payment
     /**
      * @return string|null
      */
-    public function getActionToken(): ?string
+    public function getToken(): ?string
     {
-        return $this->actionToken;
+        return $this->token;
     }
 
     /**
-     * @param string|null $actionToken
+     * @param string|null $token
      *
      * @return self
      */
-    public function setActionToken(?string $actionToken): self
+    public function setToken(?string $token): self
     {
-        $this->actionToken = $actionToken;
+        $this->token = $token;
 
         return $this;
     }

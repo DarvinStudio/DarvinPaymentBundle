@@ -13,14 +13,32 @@ namespace Darvin\PaymentBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Embeddable
+ * @ORM\Table(name="payment_redirect")
+ * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\RedirectRepository")
+ * @ORM\InheritanceType("SINGLE_TABLE")
  */
 class Redirect
 {
     /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @var int|null
+     */
+    protected $id;
+
+    /**
+     * @var \Darvin\PaymentBundle\Entity\Redirect
+     *
+     * @ORM\OneToOne(targetEntity="Darvin\PaymentBundle\Entity\Payment", inversedBy="redirect")
+     */
+    protected $payment;
+
+    /**
      * @var string|null
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(length=2048, nullable=true)
      */
     protected $url;
 
@@ -53,7 +71,7 @@ class Redirect
      * @param array|null     $data       Data
      * @param \DateTime|null $expiryDate Expire Date
      */
-    public function __construct(?string $url = null, ?string $method = null, ?array $data = null, ?\DateTime $expiryDate = null)
+    public function __construct(?string $url, ?string $method, ?array $data, ?\DateTime $expiryDate)
     {
         $this->url = $url;
         $this->method = $method;
@@ -87,6 +105,34 @@ class Redirect
         }
 
         return $this->getExpiryDate()->getTimestamp() < (new \DateTime)->getTimestamp();
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\Entity\Payment|null
+     */
+    public function getPayment(): ?Payment
+    {
+        return $this->payment;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment|null $payment
+     *
+     * @return self
+     */
+    public function setPayment(?Payment $payment): self
+    {
+        $this->payment = $payment;
+
+        return $this;
     }
 
     /**

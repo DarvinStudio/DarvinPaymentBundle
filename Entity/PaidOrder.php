@@ -21,27 +21,30 @@ class PaidOrder
     /**
      * @var string
      *
-     * @ORM\Column
+     * @ORM\Column(length=32)
      *
      * @Assert\NotBlank
+     * @Assert\Length(max=32)
      */
     protected $id;
 
     /**
      * @var string
      *
-     * @ORM\Column
+     * @ORM\Column(length=128)
      *
      * @Assert\NotBlank
+     * @Assert\Length(max=128)
      */
     protected $class;
 
     /**
      * @var string
      *
-     * @ORM\Column
+     * @ORM\Column(length=64)
      *
      * @Assert\NotBlank
+     * @Assert\Length(max=64)
      */
     protected $number;
 

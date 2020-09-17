@@ -79,7 +79,7 @@ view:
                         property: state
             transactionReference:
                 size: free
-            actionToken:
+            token:
                 size: free
 
 form:
@@ -99,8 +99,8 @@ form:
             amount: ~
             currency: ~
             client.id: ~
-            client.entityClass: ~
+            client.class: ~
             client.email: ~
             description: ~
             state: ~
-            actionToken: ~
+            token: ~

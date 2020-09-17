@@ -34,7 +34,7 @@ payment:
             link:    Просмотреть платёж
             title:   Платёж №«%entity%»
     entity:
-        action_token:    Токен
+        token:           Токен
         amount:          Сумма
         created_at:      Создана
         created_at_from: Создана (с)

@@ -21,14 +21,19 @@ class Client
     /**
      * @var string|null
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(length=32, nullable=true)
+     *
+     * @Assert\Length(max=32)
      */
     protected $id;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(length=128, nullable=true)
+     *
+     * @Assert\NotBlank
+     * @Assert\Length(max=128)
      */
     protected $class;
 

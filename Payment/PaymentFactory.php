@@ -85,7 +85,7 @@ class PaymentFactory implements PaymentFactoryInterface
 
         $this->workflow->getMarking($payment);
 
-        $payment->setActionToken(Uuid::uuid4()->toString());
+        $payment->setToken(Uuid::uuid4()->toString());
 
         if ($this->autoApproval) {
             $this->workflow->apply($payment, Transitions::APPROVE);

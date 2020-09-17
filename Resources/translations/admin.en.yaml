@@ -34,7 +34,7 @@ payment:
             link:    Show payment
             title:   Payment №«%entity%»
     entity:
-        action_token:    Token
+        token:           Token
         amount:          Amount
         created_at:      Created at
         created_at_from: Created at (From)

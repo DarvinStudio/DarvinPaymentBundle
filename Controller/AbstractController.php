@@ -140,7 +140,7 @@ abstract class AbstractController
     {
         $payment = $this->em
             ->getRepository(Payment::class)
-            ->findOneBy(['actionToken' => $token]);
+            ->findOneBy(['token' => $token]);
 
         if (null === $payment) {
             throw new NotFoundHttpException(sprintf('Unable to find payment with token %s', $token));
