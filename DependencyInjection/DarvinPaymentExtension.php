@@ -138,8 +138,8 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
 
         foreach (Transitions::TRANSITIONS as $name => $data) {
             $transitions[$name] = [
-                'from' => $data['from'],
-                'to'   => $data['to'],
+                'from' => $data[0],
+                'to'   => $data[1],
             ];
         }
 

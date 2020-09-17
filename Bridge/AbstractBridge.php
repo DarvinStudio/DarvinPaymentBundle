@@ -36,6 +36,9 @@ abstract class AbstractBridge implements BridgeInterface
         $this->gatewayConfig = [];
     }
 
+    /**
+     * @param array $gatewayConfig
+     */
     public function setGatewayConfig(array $gatewayConfig = []): void
     {
         $this->gatewayConfig = $gatewayConfig;

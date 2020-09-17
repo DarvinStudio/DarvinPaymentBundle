@@ -28,7 +28,7 @@ class EmailFactory implements EmailFactoryInterface
     /**
      * @var \Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface
      */
-    protected $genericFactory;
+    private $genericFactory;
 
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -38,12 +38,12 @@ class EmailFactory implements EmailFactoryInterface
     /**
      * @var \Darvin\PaymentBundle\Config\PaymentConfigInterface
      */
-    protected $paymentConfig;
+    private $paymentConfig;
 
     /**
      * @var \Symfony\Contracts\Translation\TranslatorInterface
      */
-    protected $translator;
+    private $translator;
 
     /**
      * @param \Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface $genericFactory Generic template email factory
@@ -118,6 +118,6 @@ class EmailFactory implements EmailFactoryInterface
      */
     private function getOrder(Payment $payment): ?object
     {
-        return $this->em->find($payment->getOrder()->getEntityClass(), $payment->getOrder()->getId());
+        return $this->em->find($payment->getOrder()->getClass(), $payment->getOrder()->getId());
     }
 }

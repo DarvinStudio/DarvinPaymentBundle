@@ -12,7 +12,6 @@ namespace Darvin\PaymentBundle\Redirect;
 
 use Darvin\PaymentBundle\Entity\Redirect;
 use Omnipay\Common\Message\RedirectResponseInterface;
-use Omnipay\Common\Message\ResponseInterface;
 
 /**
  * Redirect factory
@@ -20,14 +19,10 @@ use Omnipay\Common\Message\ResponseInterface;
 class RedirectFactory implements RedirectFactoryInterface
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function createRedirect(ResponseInterface $response, int $sessionTimeout): Redirect
+    public function createRedirect(RedirectResponseInterface $response, int $sessionTimeout): Redirect
     {
-        if (!$response instanceof RedirectResponseInterface) {
-            throw new \LogicException('Response not implemented RedirectResponseInterface');
-        }
-
         return new Redirect(
             $response->getRedirectUrl(),
             $response->getRedirectMethod(),

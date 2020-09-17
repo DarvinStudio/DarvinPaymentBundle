@@ -28,41 +28,14 @@ class Transitions
     public const FAIL      = 'fail';
 
     public const TRANSITIONS = [
-        self::APPROVE => [
-            'from' => PaymentStateType::APPROVAL,
-            'to'   => PaymentStateType::PENDING,
-        ],
-        self::AUTHORIZE => [
-            'from' => PaymentStateType::PENDING,
-            'to'   => PaymentStateType::AUTHORIZED,
-        ],
-        self::CAPTURE => [
-            'from' => PaymentStateType::AUTHORIZED,
-            'to'   => PaymentStateType::COMPLETED,
-        ],
-        self::VOID => [
-            'from' => PaymentStateType::AUTHORIZED,
-            'to'   => PaymentStateType::CANCELED,
-        ],
-        self::PURCHASE => [
-            'from' => PaymentStateType::PENDING,
-            'to'   => PaymentStateType::COMPLETED,
-        ],
-        self::EXPIRE => [
-            'from' => PaymentStateType::PENDING,
-            'to'   => PaymentStateType::EXPIRED,
-        ],
-        self::CANCEL => [
-            'from' => PaymentStateType::PENDING,
-            'to'   => PaymentStateType::CANCELED,
-        ],
-        self::REFUND => [
-            'from' => PaymentStateType::PENDING,
-            'to'   => PaymentStateType::REFUNDED,
-        ],
-        self::FAIL => [
-            'from' => PaymentStateType::PENDING,
-            'to'   => PaymentStateType::FAILED,
-        ],
+        self::APPROVE   => [PaymentStateType::APPROVAL, PaymentStateType::PENDING],
+        self::AUTHORIZE => [PaymentStateType::PENDING, PaymentStateType::AUTHORIZED],
+        self::PURCHASE  => [PaymentStateType::PENDING, PaymentStateType::COMPLETED],
+        self::EXPIRE    => [PaymentStateType::PENDING, PaymentStateType::EXPIRED],
+        self::CANCEL    => [PaymentStateType::PENDING, PaymentStateType::CANCELED],
+        self::REFUND    => [PaymentStateType::PENDING, PaymentStateType::REFUNDED],
+        self::FAIL      => [PaymentStateType::PENDING, PaymentStateType::FAILED],
+        self::CAPTURE   => [PaymentStateType::AUTHORIZED, PaymentStateType::COMPLETED],
+        self::VOID      => [PaymentStateType::AUTHORIZED, PaymentStateType::CANCELED],
     ];
 }

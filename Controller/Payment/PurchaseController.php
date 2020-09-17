@@ -47,8 +47,9 @@ class PurchaseController extends AbstractController
         $payment = $this->getPaymentByToken($token);
         $gateway = $this->getGateway($gatewayName);
         $bridge = $this->getBridge($gatewayName);
+        $method = $this->preAuthorize ? 'authorize' : 'purchase';
 
-        $this->validateGateway($gateway, $this->preAuthorize ? 'authorize' : 'purchase');
+        $this->validateGateway($gateway, $method);
         $this->validatePayment($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE, $gateway);
 
         if ($payment->hasRedirect()) {
@@ -56,9 +57,7 @@ class PurchaseController extends AbstractController
         }
 
         try {
-            $response = $this->preAuthorize
-                ? $gateway->purchase($bridge->purchaseParameters($payment))->send()
-                : $gateway->authorize($bridge->authorizeParameters($payment))->send();
+            $response = $gateway->$method($bridge->purchaseParameters($payment))->send();
 
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);

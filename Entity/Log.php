@@ -24,7 +24,7 @@ class Log
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @var int
+     * @var int|null
      */
     protected $id;
 
@@ -45,7 +45,7 @@ class Log
     /**
      * @var \Darvin\PaymentBundle\Entity\Payment
      *
-     * @ORM\ManyToOne(targetEntity="Payment", inversedBy="logs")
+     * @ORM\ManyToOne(targetEntity="Darvin\PaymentBundle\Entity\Payment", inversedBy="logs")
      */
     protected $payment;
 
@@ -64,7 +64,7 @@ class Log
     {
         $this->level = $level;
         $this->message = $message;
-        $this->createdAt = new \DateTime;
+        $this->createdAt = new \DateTime();
     }
 
     /**
@@ -76,9 +76,9 @@ class Log
     }
 
     /**
-     * @return string
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

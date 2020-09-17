@@ -71,7 +71,7 @@ class PaymentFactory implements PaymentFactoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function createPayment(
         PaidOrder $order,

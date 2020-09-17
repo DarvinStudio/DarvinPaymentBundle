@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Redirect;
 
 use Darvin\PaymentBundle\Entity\Redirect;
-use Omnipay\Common\Message\ResponseInterface;
+use Omnipay\Common\Message\RedirectResponseInterface;
 
 /**
  * Redirect manager interface
@@ -19,10 +19,10 @@ use Omnipay\Common\Message\ResponseInterface;
 interface RedirectFactoryInterface
 {
     /**
-     * @param \Omnipay\Common\Message\ResponseInterface $response       Response
-     * @param int                                       $sessionTimeout Session Timeout
+     * @param \Omnipay\Common\Message\RedirectResponseInterface $response       Response
+     * @param int                                               $sessionTimeout Session Timeout
      *
-     * @return Redirect
+     * @return \Darvin\PaymentBundle\Entity\Redirect
      */
-    public function createRedirect(ResponseInterface $response, int $sessionTimeout): Redirect;
+    public function createRedirect(RedirectResponseInterface $response, int $sessionTimeout): Redirect;
 }

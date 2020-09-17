@@ -56,7 +56,7 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getUrlsForOrder(int $orderId, string $orderEntityClass): array
     {
@@ -77,7 +77,7 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getUrlsForPayment(Payment $payment): array
     {

@@ -27,7 +27,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
     public function getSessionTimeout(): int
     {

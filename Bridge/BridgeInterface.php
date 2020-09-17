@@ -33,49 +33,49 @@ interface BridgeInterface
     public function getSessionTimeout(): int;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return array
      */
     public function authorizeParameters(Payment $payment): array;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return array
      */
     public function completeAuthorizeParameters(Payment $payment): array;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return array
      */
     public function captureParameters(Payment $payment): array;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return array
      */
     public function purchaseParameters(Payment $payment): array;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return array
      */
     public function completePurchaseParameters(Payment $payment): array;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return array
      */
     public function refundParameters(Payment $payment): array;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return array
      */

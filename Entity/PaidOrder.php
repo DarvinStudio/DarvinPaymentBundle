@@ -48,9 +48,9 @@ class PaidOrder
     /**
      * Redirect constructor.
      *
-     * @param string $id          Id
-     * @param string $class Entity class
-     * @param string $number      Number
+     * @param string $id     Id
+     * @param string $class  Entity class
+     * @param string $number Number
      */
     public function __construct(string $id, string $class, string $number)
     {

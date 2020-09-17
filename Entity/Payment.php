@@ -32,7 +32,7 @@ class Payment
     protected $id;
 
     /**
-     * @var PaidOrder
+     * @var \Darvin\PaymentBundle\Entity\PaidOrder
      *
      * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\PaidOrder")
      *
@@ -41,7 +41,7 @@ class Payment
     protected $order;
 
     /**
-     * @var Client
+     * @var \Darvin\PaymentBundle\Entity\Client
      *
      * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\Client")
      *
@@ -50,16 +50,16 @@ class Payment
     protected $client;
 
     /**
-     * @var Redirect
+     * @var \Darvin\PaymentBundle\Entity\Redirect
      *
      * @ORM\Embedded(class="Darvin\PaymentBundle\Entity\Redirect")
      */
     protected $redirect;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|Log[]
+     * @var \Doctrine\Common\Collections\Collection|\Darvin\PaymentBundle\Entity\Log[]
      *
-     * @ORM\OneToMany(targetEntity="Log", mappedBy="payment", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="Darvin\PaymentBundle\Entity\Log", mappedBy="payment", cascade={"remove"})
      */
     protected $logs;
 
@@ -133,10 +133,10 @@ class Payment
     /**
      * Payment constructor.
      *
-     * @param PaidOrder $order    Order
-     * @param Client    $client   Client
-     * @param string    $amount   Amount
-     * @param string    $currency Currency Code
+     * @param \Darvin\PaymentBundle\Entity\PaidOrder $order    Order
+     * @param \Darvin\PaymentBundle\Entity\Client    $client   Client
+     * @param string                                 $amount   Amount
+     * @param string                                 $currency Currency Code
      */
     public function __construct(PaidOrder $order, Client $client, string $amount, string $currency)
     {
@@ -166,7 +166,7 @@ class Payment
     }
 
     /**
-     * @return PaidOrder
+     * @return \Darvin\PaymentBundle\Entity\PaidOrder
      */
     public function getOrder(): PaidOrder
     {
@@ -174,7 +174,7 @@ class Payment
     }
 
     /**
-     * @return Client
+     * @return \Darvin\PaymentBundle\Entity\Client
      */
     public function getClient(): Client
     {
@@ -182,7 +182,7 @@ class Payment
     }
 
     /**
-     * @return Redirect
+     * @return \Darvin\PaymentBundle\Entity\Redirect
      */
     public function getRedirect(): Redirect
     {
@@ -190,7 +190,7 @@ class Payment
     }
 
     /**
-     * @param Redirect $redirect
+     * @param \Darvin\PaymentBundle\Entity\Redirect $redirect
      *
      * @return self
      */

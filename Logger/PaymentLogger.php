@@ -11,6 +11,7 @@
 namespace Darvin\PaymentBundle\Logger;
 
 use Darvin\PaymentBundle\Entity\Log;
+use Darvin\PaymentBundle\Entity\Payment;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -28,7 +29,7 @@ class PaymentLogger implements LoggerInterface
     /**
      * @var \Psr\Log\LoggerInterface|null
      */
-    private $logger;
+    private $monolog;
 
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em Redirect factory
@@ -39,11 +40,11 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @param \Psr\Log\LoggerInterface|null $logger
+     * @param \Psr\Log\LoggerInterface|null $monolog
      */
-    public function setLogger(?LoggerInterface $logger): void
+    public function setMonolog(?LoggerInterface $monolog): void
     {
-        $this->logger = $logger;
+        $this->monolog = $monolog;
     }
 
     /**
@@ -117,7 +118,7 @@ class PaymentLogger implements LoggerInterface
     {
         $payment = $context['payment'] ?? null;
 
-        if ($payment instanceof \Darvin\PaymentBundle\Entity\Payment) {
+        if ($payment instanceof Payment) {
             $log = new Log($level, $message);
             $payment->addLog($log);
 
@@ -127,8 +128,8 @@ class PaymentLogger implements LoggerInterface
             }
         }
 
-        if (null !== $this->logger) {
-            $this->logger->log($level, $message, $context);
+        if (null !== $this->monolog) {
+            $this->monolog->log($level, $message, $context);
         }
     }
 }
