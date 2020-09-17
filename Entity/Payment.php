@@ -27,7 +27,7 @@ class Payment
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @var int
+     * @var int|null
      */
     protected $id;
 
@@ -118,7 +118,7 @@ class Payment
      *
      * @Assert\Length(max=20)
      */
-    protected $gatewayName;
+    protected $gateway;
 
     /**
      * @var \DateTime
@@ -158,9 +158,9 @@ class Payment
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -367,19 +367,19 @@ class Payment
     /**
      * @return string|null
      */
-    public function getGatewayName(): ?string
+    public function getGateway(): ?string
     {
-        return $this->gatewayName;
+        return $this->gateway;
     }
 
     /**
-     * @param string|null $gatewayName
+     * @param string|null $gateway
      *
      * @return self
      */
-    public function setGatewayName(?string $gatewayName): self
+    public function setGateway(?string $gateway): self
     {
-        $this->gatewayName = $gatewayName;
+        $this->gateway = $gateway;
 
         return $this;
     }

@@ -43,12 +43,7 @@ class CancelController extends AbstractController
         $this->workflow->apply($payment, Transitions::CANCEL);
         $this->em->flush();
 
-        $this->logger->info(
-            $this->translator->trans('payment.log.info.changed_status', [
-                '%state%' => $payment->getState(),
-            ]),
-            ['payment' => $payment]
-        );
+        $this->logChangedState($payment);
 
         return new Response(
             $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [

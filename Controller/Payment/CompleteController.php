@@ -30,16 +30,15 @@ class CompleteController extends AbstractController
     public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
-        $gateway = $this->getGateway($payment->getGatewayName());
-        $bridge = $this->getBridge($payment->getGatewayName());
+        $gateway = $this->getGateway($payment->getGateway());
+        $bridge = $this->getBridge($payment->getGateway());
+        $method = $this->preAuthorize ? 'completeAuthorize' : 'completePurchase';
 
-        $this->validateGateway($gateway, $this->preAuthorize ? 'completeAuthorize' : 'completePurchase');
-        $this->validatePayment($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE, $gateway);
+        $this->validateGateway($gateway, $method);
+        $this->validatePayment($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE);
 
         try {
-            $response = $this->preAuthorize
-                ? $gateway->completeAuthorize($bridge->completeAuthorizeParameters($payment))->send()
-                : $gateway->completePurchase($bridge->completePurchaseParameters($payment))->send();
+            $response = $gateway->{$method}($bridge->{sprintf('%sParameters', $method)}($payment))->send();
 
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
@@ -51,12 +50,7 @@ class CompleteController extends AbstractController
             $this->workflow->apply($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE);
             $this->em->flush();
 
-            $this->logger->info(
-                $this->translator->trans('payment.log.info.changed_status', [
-                    '%state%' => $payment->getState(),
-                ]),
-                ['payment' => $payment]
-            );
+            $this->logChangedState($payment);
 
             return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment));
         }

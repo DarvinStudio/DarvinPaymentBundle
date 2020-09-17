@@ -27,13 +27,13 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
      */
     public function addFactory(ReceiptFactoryInterface $receiptFactory): void
     {
-        $alias = $receiptFactory->getName();
+        $name = $receiptFactory->getName();
 
-        if (isset($this->receiptFactories[$alias])) {
-            throw new \InvalidArgumentException(sprintf('Receipt factory "%s" already exists.', $alias));
+        if (isset($this->receiptFactories[$name])) {
+            throw new \InvalidArgumentException(sprintf('Receipt factory "%s" already exists.', $name));
         }
 
-        $this->receiptFactories[$alias] = $receiptFactory;
+        $this->receiptFactories[$name] = $receiptFactory;
     }
 
     /**

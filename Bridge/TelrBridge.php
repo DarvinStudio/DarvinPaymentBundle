@@ -10,7 +10,6 @@
 
 namespace Darvin\PaymentBundle\Bridge;
 
-use Darvin\OmnipayTelr\TelrGateway;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
@@ -23,7 +22,15 @@ class TelrBridge extends AbstractBridge
      */
     public function getGatewayClassName(): string
     {
-        return TelrGateway::class;
+        return \Darvin\OmnipayTelr\TelrGateway::class;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getGatewayName(): string
+    {
+        return 'telr';
     }
 
     /**

@@ -78,12 +78,7 @@ class ApproveController extends AbstractController
         $this->workflow->apply($payment, Transitions::APPROVE);
         $this->em->flush();
 
-        $this->logger->info(
-            $this->translator->trans('payment.log.info.changed_status', [
-                '%state%' => $payment->getState(),
-            ]),
-            ['payment' => $payment]
-        );
+        $this->logChangedState($payment);
 
         $successMessage = 'payment.action.approve.success';
 

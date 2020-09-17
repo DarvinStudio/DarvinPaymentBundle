@@ -48,7 +48,7 @@ class CaptureFormRenderer
      */
     public function renderForm(Payment $payment): string
     {
-        if (PaymentStateType::AUTHORIZED !== $payment->getState() || null === $payment->getGatewayName()) {
+        if (PaymentStateType::AUTHORIZED !== $payment->getState() || null === $payment->getGateway()) {
             throw new \LogicException('Wrong payment type');
         }
 

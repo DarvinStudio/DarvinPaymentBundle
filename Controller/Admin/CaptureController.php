@@ -66,8 +66,8 @@ class CaptureController extends AbstractController
     public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
-        $bridge  = $this->getBridge($payment->getGatewayName());
-        $gateway = $this->getGateway($payment->getGatewayName());
+        $bridge  = $this->getBridge($payment->getGateway());
+        $gateway = $this->getGateway($payment->getGateway());
         $request = $this->requestStack->getCurrentRequest();
 
         $this->validateGateway($gateway, 'capture');
@@ -104,12 +104,7 @@ class CaptureController extends AbstractController
             return new RedirectResponse($redirectUrl);
         }
 
-        $this->logger->info(
-            $this->translator->trans('payment.log.info.changed_status', [
-                '%state%' => $payment->getState(),
-            ]),
-            ['payment' => $payment]
-        );
+        $this->logChangedState($payment);
 
         $errorMessage = sprintf('Payment server response: %s', $response->getMessage());
 

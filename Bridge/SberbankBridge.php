@@ -55,11 +55,19 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getGatewayClassName(): string
     {
         return \Omnipay\Sberbank\SberbankGateway::class;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getGatewayName(): string
+    {
+        return 'sberbank';
     }
 
     /**
@@ -177,7 +185,7 @@ class SberbankBridge extends AbstractBridge
             $factory = $this->receiptFactoryRegistry->getFactory($payment);
 
             try {
-                return json_encode($factory->createReceipt($payment));
+                return json_encode($factory->createReceipt($payment, $gatewayName));
             } catch (\Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException $ex) {
 
                 $this->logger->warning($this->translator->trans('payment.log.info.created_redirect'), ['payment' => $payment]);

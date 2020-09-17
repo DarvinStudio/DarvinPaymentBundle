@@ -7,4 +7,4 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
         calls:
-            - [ setLogger, ['@?monolog.logger.payment'] ]
+            - [ setMonolog, ['@?monolog.logger.payment'] ]

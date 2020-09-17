@@ -23,6 +23,11 @@ interface BridgeInterface
     public function getGatewayClassName(): string;
 
     /**
+     * @return string
+     */
+    public function getGatewayName(): string;
+
+    /**
      * @return array
      */
     public function initializationParameters(): array;

@@ -62,7 +62,7 @@ class PaymentOperationWidget extends AbstractWidget
             return $this->approveFormRenderer->renderForm($entity);
         }
 
-        if (PaymentStateType::AUTHORIZED === $entity->getState() && null !== $entity->getGatewayName()) {
+        if (PaymentStateType::AUTHORIZED === $entity->getState() && null !== $entity->getGateway()) {
             return $this->captureFormRenderer->renderForm($entity);
         }
 
