@@ -60,7 +60,7 @@ class TelrBridge extends AbstractBridge
             'ivp_currency' => $payment->getCurrency(),
             'ivp_cart'     => $payment->getId(),
             'ivp_desc'     => $payment->getDescription(),
-            'return_auth'  => $this->urlBuilder->getCompletePurchaseUrl($payment),
+            'return_auth'  => $this->urlBuilder->getCompleteUrl($payment),
             'return_decl'  => $this->urlBuilder->getFailUrl($payment),
             'return_can'   => $this->urlBuilder->getCancelUrl($payment)
         ];

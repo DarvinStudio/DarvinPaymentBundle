@@ -1,18 +1,10 @@
-darvin_payment_authorize:
-    path:     /{gatewayName}/authorize/{token}
-    defaults: { _controller: darvin_payment.controller.payment.autorize }
-
-darvin_payment_complete_authorize:
-    path:    /complete_authorize/{token}
-    defaults: { _controller: darvin_payment.controller.payment.complete_authorize }
-
 darvin_payment_purchase:
     path:     /{gatewayName}/purchase/{token}
     defaults: { _controller: darvin_payment.controller.payment.purchase }
 
-darvin_payment_complete_purchase:
-    path:     /complete_purchase/{token}
-    defaults: { _controller: darvin_payment.controller.payment.complete_purchase }
+darvin_payment_complete:
+    path:     /complete/{token}
+    defaults: { _controller: darvin_payment.controller.payment.complete }
 
 darvin_payment_cancel:
     path:     /cancel/{token}

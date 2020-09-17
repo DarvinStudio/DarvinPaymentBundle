@@ -17,4 +17,3 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@darvin_payment.url.builder'
-            - '%darvin_payment.pre_authorize%'

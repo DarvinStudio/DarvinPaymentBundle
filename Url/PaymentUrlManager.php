@@ -36,23 +36,15 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
     private $gatewayNames;
 
     /**
-     * @var bool
-     */
-    private $preAuthorize;
-
-    /**
      * @param \Doctrine\ORM\EntityManagerInterface                 $em           Entity manager
      * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder   Url builder
-     * @param bool                                                 $preAuthorize Pre-authorize payment enable
      */
     public function __construct(
         EntityManagerInterface $em,
-        PaymentUrlBuilderInterface $urlBuilder,
-        bool $preAuthorize
+        PaymentUrlBuilderInterface $urlBuilder
     ) {
         $this->em = $em;
         $this->urlBuilder = $urlBuilder;
-        $this->preAuthorize = $preAuthorize;
     }
 
     /**
@@ -92,10 +84,7 @@ class PaymentUrlManager implements PaymentUrlManagerInterface
         $urls = [];
 
         foreach ($this->gatewayNames as $gatewayName) {
-            $urls[$gatewayName] = $this->preAuthorize
-                ? $this->urlBuilder->getAuthorizeUrl($payment, $gatewayName)
-                : $this->urlBuilder->getPurchaseUrl($payment, $gatewayName)
-            ;
+            $urls[$gatewayName] = $this->urlBuilder->getPurchaseUrl($payment, $gatewayName);
         }
 
         return $urls;

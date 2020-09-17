@@ -35,23 +35,6 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getAuthorizeUrl(Payment $payment, string $gatewayName): string
-    {
-        if ($payment->getActionToken() === null) {
-            throw new \LogicException('Action token must be set for payment');
-        }
-
-        return $this->router->generate('darvin_payment_authorize', [
-            'gatewayName' => $gatewayName,
-            'token'       => $payment->getActionToken(),
-        ],
-            RouterInterface::ABSOLUTE_URL
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getPurchaseUrl(Payment $payment, string $gatewayName): string
     {
         if ($payment->getActionToken() === null) {
@@ -69,13 +52,13 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getCompleteAuthorizeUrl(Payment $payment): string
+    public function getCompleteUrl(Payment $payment): string
     {
         if ($payment->getActionToken() === null) {
             throw new \LogicException('Action token must be set for payment');
         }
 
-        return $this->router->generate('darvin_payment_complete_authorize', [
+        return $this->router->generate('darvin_payment_complete', [
             'token' => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);
     }
@@ -90,20 +73,6 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
         }
 
         return $this->router->generate('darvin_payment_admin_capture', [
-            'token' => $payment->getActionToken()
-        ], RouterInterface::ABSOLUTE_URL);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getCompletePurchaseUrl(Payment $payment): string
-    {
-        if ($payment->getActionToken() === null) {
-            throw new \LogicException('Action token must be set for payment');
-        }
-
-        return $this->router->generate('darvin_payment_complete_purchase', [
             'token' => $payment->getActionToken()
         ], RouterInterface::ABSOLUTE_URL);
     }

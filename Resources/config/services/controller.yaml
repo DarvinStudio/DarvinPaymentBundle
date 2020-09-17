@@ -1,12 +1,10 @@
 parameters:
     darvin_payment.controller.abstract.class: Darvin\PaymentBundle\Controller\AbstractController
-    darvin_payment.controller.payment.authorize.class: Darvin\PaymentBundle\Controller\Payment\AuthorizeController
+    darvin_payment.controller.payment.purchase.class: Darvin\PaymentBundle\Controller\Payment\PurchaseController
+    darvin_payment.controller.payment.complete.class: Darvin\PaymentBundle\Controller\Payment\CompleteController
     darvin_payment.controller.payment.cancel.class: Darvin\PaymentBundle\Controller\Payment\CancelController
-    darvin_payment.controller.payment.complete_authorize.class: Darvin\PaymentBundle\Controller\Payment\CompleteAuthorizeController
-    darvin_payment.controller.payment.complete_purchase.class: Darvin\PaymentBundle\Controller\Payment\CompletePurchaseController
     darvin_payment.controller.payment.error.class: Darvin\PaymentBundle\Controller\Payment\ErrorController
     darvin_payment.controller.payment.fail.class: Darvin\PaymentBundle\Controller\Payment\FailController
-    darvin_payment.controller.payment.purchase.class: Darvin\PaymentBundle\Controller\Payment\PurchaseController
     darvin_payment.controller.payment.success.class: Darvin\PaymentBundle\Controller\Payment\SuccessController
 
 services:
@@ -17,28 +15,23 @@ services:
             - '@darvin_payment.gateway.factory'
             - '@doctrine.orm.entity_manager'
             - '@twig'
-            - '@form.factory'
             - '@darvin_payment.logger'
-            - '@darvin_payment.redirect.factory'
             - '@darvin_payment.url.builder'
             - '@translator'
             - '@state_machine.payment'
             - '%darvin_payment.pre_authorize%'
 
-    darvin_payment.controller.payment.autorize:
-        class: '%darvin_payment.controller.payment.authorize.class%'
+    darvin_payment.controller.payment.purchase:
+        class: '%darvin_payment.controller.payment.purchase.class%'
         parent: darvin_payment.controller.abstract
         tags:
             - { name: controller.service_arguments }
+        calls:
+            - [ setFormFactory, [ '@form.factory' ] ]
+            - [ setRedirectFactory, [ '@darvin_payment.redirect.factory' ] ]
 
-    darvin_payment.controller.payment.complete_authorize:
-        class: '%darvin_payment.controller.payment.complete_authorize.class%'
-        parent: darvin_payment.controller.abstract
-        tags:
-            - { name: controller.service_arguments }
-
-    darvin_payment.controller.payment.complete_purchase:
-        class: '%darvin_payment.controller.payment.complete_purchase.class%'
+    darvin_payment.controller.payment.complete:
+        class: '%darvin_payment.controller.payment.complete.class%'
         parent: darvin_payment.controller.abstract
         tags:
             - { name: controller.service_arguments }
@@ -67,8 +60,3 @@ services:
         tags:
             - { name: controller.service_arguments }
 
-    darvin_payment.controller.payment.purchase:
-        class: '%darvin_payment.controller.payment.purchase.class%'
-        parent: darvin_payment.controller.abstract
-        tags:
-            - { name: controller.service_arguments }

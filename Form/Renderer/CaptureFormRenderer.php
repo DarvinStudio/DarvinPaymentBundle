@@ -44,9 +44,9 @@ class CaptureFormRenderer
     /**
      * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
-     * @return string|null
+     * @return string
      */
-    public function renderForm(Payment $payment): ?string
+    public function renderForm(Payment $payment): string
     {
         if (PaymentStateType::AUTHORIZED !== $payment->getState() || null === $payment->getGatewayName()) {
             throw new \LogicException('Wrong payment type');

@@ -43,9 +43,9 @@ class ApproveFormRenderer
     /**
      * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
-     * @return string|null
+     * @return string
      */
-    public function renderForm(Payment $payment): ?string
+    public function renderForm(Payment $payment): string
     {
         if (PaymentStateType::APPROVAL !== $payment->getState()) {
             throw new \LogicException('Wrong payment type');

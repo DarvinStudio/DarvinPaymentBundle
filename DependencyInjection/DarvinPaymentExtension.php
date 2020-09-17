@@ -112,7 +112,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                     'enabled' => false,
                 ],
                 'service' => [
-                    'enabled' => false,
+                    'enabled' => true,
                 ],
             ];
         }

@@ -16,9 +16,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Authorize success controller
+ * Complete controller
  */
-class CompleteAuthorizeController extends AbstractController
+class CompleteController extends AbstractController
 {
     /**
      * @param string $token Payment token
@@ -33,11 +33,14 @@ class CompleteAuthorizeController extends AbstractController
         $gateway = $this->getGateway($payment->getGatewayName());
         $bridge = $this->getBridge($payment->getGatewayName());
 
-        $this->validateGateway($gateway, 'completeAuthorize');
-        $this->validatePayment($payment, Transitions::AUTHORIZE);
+        $this->validateGateway($gateway, $this->preAuthorize ? 'completeAuthorize' : 'completePurchase');
+        $this->validatePayment($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE, $gateway);
 
         try {
-            $response = $gateway->completeAuthorize($bridge->completeAuthorizeParameters($payment))->send();
+            $response = $this->preAuthorize
+                ? $gateway->completeAuthorize($bridge->completeAuthorizeParameters($payment))->send()
+                : $gateway->completePurchase($bridge->completePurchaseParameters($payment))->send();
+
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 
@@ -45,7 +48,7 @@ class CompleteAuthorizeController extends AbstractController
         }
 
         if ($response->isSuccessful()) {
-            $this->workflow->apply($payment, Transitions::AUTHORIZE);
+            $this->workflow->apply($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE);
             $this->em->flush();
 
             $this->logger->info(

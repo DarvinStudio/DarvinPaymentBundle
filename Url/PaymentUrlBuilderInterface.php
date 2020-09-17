@@ -24,14 +24,6 @@ interface PaymentUrlBuilderInterface
      *
      * @return string
      */
-    public function getAuthorizeUrl(Payment $payment, string $gatewayName): string;
-
-    /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
-     *
-     * @return string
-     */
     public function getPurchaseUrl(Payment $payment, string $gatewayName): string;
 
     /**
@@ -39,14 +31,7 @@ interface PaymentUrlBuilderInterface
      *
      * @return string
      */
-    public function getCompleteAuthorizeUrl(Payment $payment): string;
-
-    /**
-     * @param Payment $payment Payment
-     *
-     * @return string
-     */
-    public function getCompletePurchaseUrl(Payment $payment): string;
+    public function getCompleteUrl(Payment $payment): string;
 
     /**
      * @param Payment $payment Payment

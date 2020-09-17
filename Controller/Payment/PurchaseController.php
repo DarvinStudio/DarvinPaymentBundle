@@ -11,14 +11,29 @@
 namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
+use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
+use Darvin\PaymentBundle\Redirect\RedirectFactoryInterface;
 use Darvin\PaymentBundle\Workflow\Transitions;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormFactoryInterface;
 
 /**
  * Purchase controller
  */
 class PurchaseController extends AbstractController
 {
+    /**
+     * @var \Symfony\Component\Form\FormFactoryInterface
+     */
+    private $formFactory;
+
+    /**
+     * @var \Darvin\PaymentBundle\Redirect\RedirectFactoryInterface
+     */
+    private $redirectFactory;
+
     /**
      * @param string $gatewayName Gateway name
      * @param string $token       Payment token
@@ -33,15 +48,18 @@ class PurchaseController extends AbstractController
         $gateway = $this->getGateway($gatewayName);
         $bridge = $this->getBridge($gatewayName);
 
-        $this->validatePayment($payment, Transitions::PURCHASE, $gateway);
-        $this->validateGateway($gateway, 'purchase');
+        $this->validateGateway($gateway, $this->preAuthorize ? 'authorize' : 'purchase');
+        $this->validatePayment($payment, $this->preAuthorize ? Transitions::AUTHORIZE : Transitions::PURCHASE, $gateway);
 
         if ($payment->hasRedirect()) {
             return $this->createPaymentResponse($payment);
         }
 
         try {
-            $response = $gateway->purchase($bridge->purchaseParameters($payment))->send();
+            $response = $this->preAuthorize
+                ? $gateway->purchase($bridge->purchaseParameters($payment))->send()
+                : $gateway->authorize($bridge->authorizeParameters($payment))->send();
+
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 
@@ -73,5 +91,61 @@ class PurchaseController extends AbstractController
         );
 
         return $this->createErrorResponse($payment);
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @throws \LogicException
+     */
+    protected function createPaymentResponse(Payment $payment): Response
+    {
+        if (!$payment->hasRedirect()) {
+            throw new \LogicException('Redirect could not be empty');
+        }
+
+        $redirect = $payment->getRedirect();
+
+        if ($payment->getRedirect()->isExpired()) {
+            $this->workflow->apply($payment, Transitions::EXPIRE);
+            $this->em->flush();
+
+            $this->logger->warning($this->translator->trans('payment.log.warning.session_expired'), ['payment' => $payment]);
+
+            return $this->createErrorResponse($payment);
+        }
+
+        if ($redirect->getMethod() !== 'POST') {
+            return new RedirectResponse($redirect->getUrl());
+        }
+
+        $form = $this->formFactory->create(GatewayRedirectType::class, $redirect->getData(), [
+            'action' => $redirect->getUrl(),
+            'method' => $redirect->getMethod(),
+        ]);
+
+        return new Response(
+            $this->twig->render('@DarvinPayment/payment/purchase.html.twig', [
+                'form' => $form->createView(),
+            ])
+        );
+    }
+
+    /**
+     * @param \Symfony\Component\Form\FormFactoryInterface $formFactory Form factory
+     */
+    public function setFormFactory(FormFactoryInterface $formFactory): void
+    {
+        $this->formFactory = $formFactory;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Redirect\RedirectFactoryInterface $redirectFactory Redirect factory
+     */
+    public function setRedirectFactory(RedirectFactoryInterface $redirectFactory): void
+    {
+        $this->redirectFactory = $redirectFactory;
     }
 }

@@ -10,7 +10,6 @@
 
 namespace Darvin\PaymentBundle\Redirect;
 
-use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Entity\Redirect;
 use Omnipay\Common\Message\ResponseInterface;
 
