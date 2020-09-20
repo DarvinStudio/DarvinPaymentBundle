@@ -5,3 +5,11 @@ darvin_payment_admin_approve:
 darvin_payment_admin_capture:
     path:     /capture/{token}
     defaults: { _controller: darvin_payment.controller.admin.capture }
+
+darvin_payment_admin_refund:
+    path:     /refund/{token}
+    defaults: { _controller: darvin_payment.controller.admin.refund }
+
+darvin_payment_admin_void:
+    path:     /void/{token}
+    defaults: { _controller: darvin_payment.controller.admin.void }

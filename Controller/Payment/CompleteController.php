@@ -52,14 +52,14 @@ class CompleteController extends AbstractController
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 
+            $this->em->flush();
+
             return $this->createErrorResponse($payment);
         }
 
         if ($response->isSuccessful()) {
             $this->workflow->apply($payment, $transition);
             $this->em->flush();
-
-            $this->logChangedState($payment);
 
             return new RedirectResponse($this->urlBuilder->getSuccessUrl($payment));
         }
@@ -72,6 +72,8 @@ class CompleteController extends AbstractController
             ]),
             ['payment' => $payment]
         );
+
+        $this->em->flush();
 
         return $this->createErrorResponse($payment);
     }

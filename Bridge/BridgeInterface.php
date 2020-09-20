@@ -77,6 +77,13 @@ interface BridgeInterface
      *
      * @return array
      */
+    public function voidParameters(Payment $payment): array;
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     *
+     * @return array
+     */
     public function refundParameters(Payment $payment): array;
 
     /**

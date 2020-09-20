@@ -166,9 +166,9 @@ abstract class AbstractController
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment    Payment
-     * @param string                               $transition Workflow transition
-     * @param GatewayInterface|null                $gateway    Gateway
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
+     * @param string                               $transition  Workflow transition
+     * @param string|null                          $gatewayName Current gateway Name
      */
     protected function validatePayment(Payment $payment, string $transition, ?string $gatewayName = null): void
     {
@@ -179,6 +179,8 @@ abstract class AbstractController
 
             $this->logger->error($errorMessage, ['payment' => $payment]);
 
+            $this->em->flush();
+
             throw new NotFoundHttpException($errorMessage);
         }
 
@@ -187,11 +189,13 @@ abstract class AbstractController
             $payment->getGateway() !== $gatewayName
         ) {
             $errorMessage = $this->translator->trans('payment.log.error.wrong_gateway', [
-                '%gateway%'        => $gateway->getShortName(),
+                '%gateway%'        => $gatewayName,
                 '%paymentGateway%' => $payment->getGateway(),
             ]);
 
             $this->logger->error($errorMessage, ['payment' => $payment]);
+
+            $this->em->flush();
 
             throw new NotFoundHttpException($errorMessage);
         }
@@ -205,18 +209,5 @@ abstract class AbstractController
     protected function createErrorResponse(Payment $payment): RedirectResponse
     {
         return new RedirectResponse($this->urlBuilder->getErrorUrl($payment));
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
-     */
-    protected function logChangedState(Payment $payment): void
-    {
-        $this->logger->info(
-            $this->translator->trans('payment.log.info.changed_status', [
-                '%state%' => $this->translator->trans(PaymentStateType::getReadableValue($payment->getState()), [], 'admin'),
-            ]),
-            ['payment' => $payment]
-        );
     }
 }

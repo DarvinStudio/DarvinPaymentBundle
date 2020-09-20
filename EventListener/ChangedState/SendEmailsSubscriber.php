@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\EventListener\State;
+namespace Darvin\PaymentBundle\EventListener\ChangedState;
 
 use Darvin\MailerBundle\Factory\Exception\CantCreateEmailException;
 use Darvin\MailerBundle\Mailer\Exception\MailerException;
@@ -25,7 +25,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * Class payment events subscriber
  */
-class SendChangedEmailsSubscriber implements EventSubscriberInterface
+class SendEmailsSubscriber implements EventSubscriberInterface
 {
     /**
      * @var \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface

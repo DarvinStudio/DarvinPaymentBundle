@@ -83,20 +83,7 @@ class SberbankBridge extends AbstractBridge
      */
     public function authorizeParameters(Payment $payment): array
     {
-        return [
-            'orderNumber'        => $payment->getId(),
-            'amount'             => $payment->getAmount(),
-            'currency'           => $payment->getCurrency(),
-            'description'        => $payment->getDescription(),
-            'returnUrl'          => $this->urlBuilder->getCompleteUrl($payment),
-            'failUrl'            => $this->urlBuilder->getFailUrl($payment),
-            'jsonParams'         => json_encode(['Order ID' => $payment->getOrder()->getNumber()]),
-            'sessionTimeoutSecs' => $this->getSessionTimeout(),
-            'clientId'           => $payment->getClient()->getId(),
-            'email'              => $payment->getClient()->getEmail(),
-            'taxSystem'          => $this->getGatewayConfig()['taxSystem'] ?? null,
-            'orderBundle'        => $this->getReceipt($payment),
-        ];
+        return $this->purchaseParameters($payment);
     }
 
     /**
@@ -111,7 +98,7 @@ class SberbankBridge extends AbstractBridge
         ];
     }
 
-    /**
+    /**x
      * @inheritDoc
      */
     public function purchaseParameters(Payment $payment): array
@@ -141,6 +128,17 @@ class SberbankBridge extends AbstractBridge
             'orderId'     => $payment->getTransactionReference(),
             'orderNumber' => $payment->getOrder()->getId(),
             'amount'      => $payment->getAmount(),
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function voidParameters(Payment $payment): array
+    {
+        return [
+            'orderId' => $payment->getTransactionReference(),
+            'amount'  => $payment->getAmount(),
         ];
     }
 

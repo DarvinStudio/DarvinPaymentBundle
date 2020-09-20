@@ -43,8 +43,6 @@ class FailController extends AbstractController
         $this->workflow->apply($payment, Transitions::FAIL);
         $this->em->flush();
 
-        $this->logChangedState($payment);
-
         return new Response(
             $this->twig->render('@DarvinPayment/payment/fail.html.twig', [
                 'payment' => $payment,

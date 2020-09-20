@@ -31,7 +31,7 @@ payment:
             wrong_gateway: "Wrong gateway (%gateway%) for this payment. Need gateway %paymentGateway%."
             success: "%method%: Can't show success, because current state is «%state%»"
         info:
-            changed_status: "Status changed to «%state%»"
+            changed_state: "State changed to «%state%»"
             created_redirect: "Created payment redirect"
         warning:
             session_expired: "Payment session expired"

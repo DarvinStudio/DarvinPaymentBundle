@@ -83,9 +83,10 @@ class PurchaseController extends AbstractController
         if ($response->isSuccessful() && $response->isRedirect()) {
             $payment->setRedirect($this->redirectFactory->createRedirect($response, $bridge->getSessionTimeout()));
             $this->em->persist($payment->getRedirect());
-            $this->em->flush();
 
             $this->logger->info($this->translator->trans('payment.log.info.created_redirect'), ['payment' => $payment]);
+
+            $this->em->flush();
 
             return $this->createPaymentResponse($payment);
         }
@@ -111,17 +112,19 @@ class PurchaseController extends AbstractController
      */
     protected function createPaymentResponse(Payment $payment): Response
     {
-        if (!$payment->hasRedirect()) {
+        $redirect = $payment->getRedirect();
+
+        if (null === $redirect) {
             throw new \LogicException('Redirect could not be empty');
         }
 
-        $redirect = $payment->getRedirect();
-
-        if ($payment->getRedirect()->isExpired()) {
+        if ($redirect->isExpired()) {
             $this->workflow->apply($payment, Transitions::EXPIRE);
             $this->em->flush();
 
             $this->logger->warning($this->translator->trans('payment.log.warning.session_expired'), ['payment' => $payment]);
+
+            $this->em->flush();
 
             return $this->createErrorResponse($payment);
         }

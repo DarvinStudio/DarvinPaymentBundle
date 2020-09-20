@@ -12,38 +12,14 @@ namespace Darvin\PaymentBundle\Form\Renderer;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
-use Twig\Environment;
 
 /**
  * Renderer for approve form
  */
-class ApproveFormRenderer
+class ApproveFormRenderer extends AbstractFormRenderer
 {
     /**
-     * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
-     */
-    private $urlBuilder;
-
-    /**
-     * @var \Twig\Environment
-     */
-    private $twig;
-
-    /**
-     * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder Url builder
-     * @param \Twig\Environment                                    $twig       Twig
-     */
-    public function __construct(PaymentUrlBuilderInterface $urlBuilder, Environment $twig)
-    {
-        $this->urlBuilder = $urlBuilder;
-        $this->twig = $twig;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
-     *
-     * @return string
+     * @inheritDoc
      */
     public function renderForm(Payment $payment): string
     {

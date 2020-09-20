@@ -30,7 +30,7 @@ payment:
             wrong_gateway: "Данный платеж не может обрабатываться платежным шлюзом %gateway%. Необходим шлюз %paymentGateway%."
             success: "%method%: Страница успеха недоступна, так как заказ находится в статусе «%state%»"
         info:
-            changed_status: "Статус изменен на «%state%»"
+            changed_state: "Статус изменен на «%state%»"
             created_redirect: "Создана ссылка на оплату в платежном шлюзе"
         warning:
             session_expired: "Время на оплату истекло"

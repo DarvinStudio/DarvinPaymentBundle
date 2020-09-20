@@ -123,10 +123,6 @@ class PaymentLogger implements LoggerInterface
             $payment->addLog($log);
 
             $this->em->persist($log);
-
-            if (null !== $payment->getId()) {
-                $this->em->getUnitOfWork()->commit($log);
-            }
         }
 
         if (null !== $this->monolog) {

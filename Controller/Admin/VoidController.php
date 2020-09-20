@@ -15,9 +15,9 @@ use Darvin\PaymentBundle\Workflow\Transitions;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Capture controller
+ * Void controller
  */
-class CaptureController extends AbstractController
+class VoidController extends AbstractController
 {
     use OperationTrait;
 
@@ -31,6 +31,6 @@ class CaptureController extends AbstractController
      */
     public function __invoke(string $token): Response
     {
-        return $this->execute(Transitions::CAPTURE, 'capture', $token);
+        return $this->execute(Transitions::VOID, 'void', $token);
     }
 }

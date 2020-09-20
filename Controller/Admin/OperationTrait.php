@@ -12,22 +12,23 @@ namespace Darvin\PaymentBundle\Controller\Admin;
 
 use Darvin\AdminBundle\Route\AdminRouterInterface;
 use Darvin\AdminBundle\Security\Permissions\Permission;
-use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer;
 use Darvin\Utils\Flash\FlashNotifierInterface;
 use Darvin\Utils\HttpFoundation\AjaxResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * Approve controller
+ * Operation trait
  */
-class ApproveController extends AbstractController
+trait OperationTrait
 {
     /**
      * @var \Darvin\AdminBundle\Route\AdminRouterInterface
@@ -40,6 +41,11 @@ class ApproveController extends AbstractController
     private $authorizationChecker;
 
     /**
+     * @var \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer
+     */
+    private $captureFormRenderer;
+
+    /**
      * @var \Darvin\Utils\Flash\FlashNotifierInterface
      */
     private $flashNotifier;
@@ -50,19 +56,21 @@ class ApproveController extends AbstractController
     private $requestStack;
 
     /**
-     * @param string $token Payment token
+     * @param string $method     Payment method
+     * @param string $transition Payment transition
+     * @param string $token      Payment token
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
-    public function __invoke(string $token): Response
+    public function execute(string $method, string $transition, string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
-        $request = $this->requestStack->getCurrentRequest();
-
-        $this->validatePayment($payment, Transitions::APPROVE);
+        $bridge  = $this->getBridge($payment->getGateway());
+        $gateway = $this->getGateway($payment->getGateway());
+        $request = $this->getRequest();
 
         if (!$this->authorizationChecker->isGranted(Permission::EDIT, $payment)) {
             throw new AccessDeniedException(
@@ -70,21 +78,52 @@ class ApproveController extends AbstractController
             );
         }
 
-        $referer = $request->headers->get(
-            'referer',
-            $this->adminRouter->generate($payment, Payment::class, AdminRouterInterface::TYPE_INDEX, [], UrlGeneratorInterface::ABSOLUTE_URL)
-        );
+        $redirectUrl = $this->adminRouter->generate($payment, Payment::class, AdminRouterInterface::TYPE_INDEX, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $this->workflow->apply($payment, Transitions::APPROVE);
-        $this->em->flush();
+        $referer = $request->headers->get('referer', $redirectUrl);
 
-        $successMessage = 'payment.action.approve.success';
+        $this->validateGateway($gateway, $method);
+        $this->validatePayment($payment, $transition);
 
-        if ($request->isXmlHttpRequest()) {
-            return new AjaxResponse(null, true, $successMessage, [], $referer);
+        $parameters = $bridge->{sprintf('%sParameters', $method)}($payment);
+
+        $response = $gateway->{$method}($parameters)->send();
+
+        if ($response->isSuccessful()) {
+            $this->workflow->apply($payment, $transition);
+            $this->em->flush();
+
+            if (parse_url($referer, PHP_URL_PATH) === parse_url($redirectUrl, PHP_URL_PATH)) {
+                $redirectUrl = $referer;
+            }
+
+            $successMessage = sprintf('payment.action.%s.success', $method);
+
+            if ($request->isXmlHttpRequest()) {
+                return new AjaxResponse(null, true, $successMessage, [], $redirectUrl);
+            }
+
+            $this->flashNotifier->success($successMessage);
+
+            return new RedirectResponse($redirectUrl);
         }
 
-        $this->flashNotifier->success($successMessage);
+        $this->logger->error(
+            $this->translator->trans('payment.log.error.bad_response', [
+                '%method%'  => __METHOD__,
+                '%code%'    => $response->getCode(),
+                '%message%' => $response->getMessage(),
+            ]),
+            ['payment' => $payment]
+        );
+
+        $errorMessage = sprintf('Payment server response: %s', $response->getMessage());
+
+        $this->flashNotifier->error($errorMessage);
+
+        if ($request->isXmlHttpRequest()) {
+            return new AjaxResponse($this->captureFormRenderer->renderForm($payment), false, $errorMessage);
+        }
 
         return new RedirectResponse($referer);
     }
@@ -106,6 +145,14 @@ class ApproveController extends AbstractController
     }
 
     /**
+     * @param \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer $captureFormRenderer View widget pool
+     */
+    public function setCaptureFormRenderer(CaptureFormRenderer $captureFormRenderer): void
+    {
+        $this->captureFormRenderer = $captureFormRenderer;
+    }
+
+    /**
      * @param \Darvin\Utils\Flash\FlashNotifierInterface $flashNotifier Flash notifier
      */
     public function setFlashNotifier(FlashNotifierInterface $flashNotifier): void
@@ -119,5 +166,19 @@ class ApproveController extends AbstractController
     public function setRequestStack(RequestStack $requestStack): void
     {
         $this->requestStack = $requestStack;
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Request
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    private function getRequest(): Request
+    {
+        if (null === $this->requestStack->getCurrentRequest()) {
+            throw new NotFoundHttpException();
+        }
+
+        return $this->requestStack->getCurrentRequest();
     }
 }

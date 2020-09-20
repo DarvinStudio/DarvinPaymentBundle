@@ -14,20 +14,20 @@ use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
- * Renderer for capture form
+ * Renderer for refund form
  */
-class CaptureFormRenderer extends AbstractFormRenderer
+class RefundFormRenderer extends AbstractFormRenderer
 {
     /**
      * @inheritDoc
      */
     public function renderForm(Payment $payment): string
     {
-        if (PaymentStateType::AUTHORIZED !== $payment->getState() || null === $payment->getGateway()) {
+        if (PaymentStateType::COMPLETED !== $payment->getState() || null === $payment->getGateway()) {
             throw new \LogicException('Wrong payment type');
         }
 
-        $url = $this->urlBuilder->getCaptureUrl($payment);
+        $url = $this->urlBuilder->getRefundUrl($payment);
 
         return $this->twig->render('@DarvinPayment/admin/widget/capture_form.html.twig',[
             'url' => $url,

@@ -14,9 +14,9 @@ use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
- * Renderer for capture form
+ * Renderer for void form
  */
-class CaptureFormRenderer extends AbstractFormRenderer
+class VoidFormRenderer extends AbstractFormRenderer
 {
     /**
      * @inheritDoc
@@ -27,7 +27,7 @@ class CaptureFormRenderer extends AbstractFormRenderer
             throw new \LogicException('Wrong payment type');
         }
 
-        $url = $this->urlBuilder->getCaptureUrl($payment);
+        $url = $this->urlBuilder->getVoid($payment);
 
         return $this->twig->render('@DarvinPayment/admin/widget/capture_form.html.twig',[
             'url' => $url,

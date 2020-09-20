@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle\Payment;
 
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Entity\Client;
 use Darvin\PaymentBundle\Entity\PaidOrder;
 use Darvin\PaymentBundle\Entity\Payment;
@@ -89,6 +90,13 @@ class PaymentFactory implements PaymentFactoryInterface
 
         if ($this->autoApproval) {
             $this->workflow->apply($payment, Transitions::APPROVE);
+
+            $this->logger->info(
+                $this->translator->trans('payment.log.info.changed_state', [
+                    '%state%' => $this->translator->trans(PaymentStateType::getReadableValue($payment->getState()), [], 'admin'),
+                ]),
+                ['payment' => $payment]
+            );
         }
 
         return $payment;
