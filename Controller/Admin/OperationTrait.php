@@ -13,6 +13,7 @@ namespace Darvin\PaymentBundle\Controller\Admin;
 use Darvin\AdminBundle\Route\AdminRouterInterface;
 use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer;
 use Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer;
 use Darvin\Utils\Flash\FlashNotifierInterface;
 use Darvin\Utils\HttpFoundation\AjaxResponse;
@@ -41,9 +42,9 @@ trait OperationTrait
     private $authorizationChecker;
 
     /**
-     * @var \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer
+     * @var \Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer
      */
-    private $captureFormRenderer;
+    private $formRenderer;
 
     /**
      * @var \Darvin\Utils\Flash\FlashNotifierInterface
@@ -122,7 +123,7 @@ trait OperationTrait
         $this->flashNotifier->error($errorMessage);
 
         if ($request->isXmlHttpRequest()) {
-            return new AjaxResponse($this->captureFormRenderer->renderForm($payment), false, $errorMessage);
+            return new AjaxResponse($this->formRenderer->renderForm($payment), false, $errorMessage);
         }
 
         return new RedirectResponse($referer);
@@ -145,11 +146,11 @@ trait OperationTrait
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer $captureFormRenderer View widget pool
+     * @param \Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer $formRenderer View widget pool
      */
-    public function setCaptureFormRenderer(CaptureFormRenderer $captureFormRenderer): void
+    public function setFormRenderer(AbstractFormRenderer $formRenderer): void
     {
-        $this->captureFormRenderer = $captureFormRenderer;
+        $this->formRenderer = $formRenderer;
     }
 
     /**

@@ -12,6 +12,7 @@ namespace Darvin\PaymentBundle\Logger;
 
 use Darvin\PaymentBundle\Entity\Log;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Repository\LogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -119,14 +120,26 @@ class PaymentLogger implements LoggerInterface
         $payment = $context['payment'] ?? null;
 
         if ($payment instanceof Payment) {
-            $log = new Log($level, $message);
+            $log = new Log($payment, $level, $message);
             $payment->addLog($log);
 
-            $this->em->persist($log);
+            if (null === $payment->getId()) {
+                $this->em->persist($log);
+            } else {
+                $this->getLogRepository()->saveLog($log);
+            }
         }
 
         if (null !== $this->monolog) {
             $this->monolog->log($level, $message, $context);
         }
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\Repository\LogRepository
+     */
+    private function getLogRepository(): LogRepository
+    {
+        return $this->em->getRepository(Log::class);
     }
 }

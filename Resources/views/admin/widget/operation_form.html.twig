@@ -1,13 +1,13 @@
 {% trans_default_domain 'admin' %}
 
 {% set style = app.request.request.get('style') %}
-{% set title = 'payment.action.approve.submit'|trans %}
-{% set name  = 'approve_' ~ id %}
+{% set title = ('payment.action.' ~ operation ~ '.submit')|trans %}
+{% set name  =  operation ~ '_' ~ id %}
 {% set classes = {
-    'default': 'table-row__btn-approve',
-    'footer':  'page-footer__btn-approve',
-    'header':  'page-header__btn-approve',
-    'show':    'modal-actions__btn-approve',
+    'default': 'table-row__btn-' ~ operation,
+    'footer':  'page-footer__btn-' ~ operation,
+    'header':  'page-header__btn-' ~ operation,
+    'show':    'modal-actions__btn-' ~ operation,
 } %}
 
 <form name="{{ name }}" action="{{ url }}" method="post" class="js-form" data-reload-page="1">
@@ -19,7 +19,7 @@
     {% endfor %}
     <button type="submit"
             title="{{ title|e('html_attr') }}"
-            onclick="return confirm('{{ 'payment.action.approve.confirm'|trans|e('js') }}');">
+            onclick="return confirm('{{ ('payment.action.' ~ operation ~ '.confirm')|trans|e('js') }}');">
         {{ title }}
     </button>
 </form>

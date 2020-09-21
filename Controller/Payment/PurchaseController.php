@@ -81,8 +81,11 @@ class PurchaseController extends AbstractController
         $this->em->flush();
 
         if ($response->isSuccessful() && $response->isRedirect()) {
-            $payment->setRedirect($this->redirectFactory->createRedirect($response, $bridge->getSessionTimeout()));
-            $this->em->persist($payment->getRedirect());
+            $redirect = $this->redirectFactory->createRedirect($response, $bridge->getSessionTimeout());
+            $redirect->setPayment($payment);
+            $payment->setRedirect($redirect);
+
+            $this->em->persist($redirect);
 
             $this->logger->info($this->translator->trans('payment.log.info.created_redirect'), ['payment' => $payment]);
 

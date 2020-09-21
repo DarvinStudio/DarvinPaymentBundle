@@ -1,6 +1,6 @@
 parameters:
     darvin_payment.mailer.factory.class: Darvin\PaymentBundle\Mailer\Factory\EmailFactory
-    darvin_payment.subscriber.send_changed_emails.class: Darvin\PaymentBundle\EventListener\State\SendChangedEmailsSubscriber
+    darvin_payment.subscriber.changed_state.send_emails.class: Darvin\PaymentBundle\EventListener\State\Changed\SendEmailsSubscriber
 
 services:
     darvin_payment.mailer.factory:
@@ -11,8 +11,8 @@ services:
             - '@darvin_payment.config'
             - '@translator'
 
-    darvin_payment.subscriber.send_changed_emails:
-        class: '%darvin_payment.subscriber.send_changed_emails.class%'
+    darvin_payment.subscriber.changed_state.send_emails:
+        class: '%darvin_payment.subscriber.changed_state.send_emails.class%'
         arguments:
             - '@darvin_payment.mailer.factory'
             - '@darvin_mailer.mailer'

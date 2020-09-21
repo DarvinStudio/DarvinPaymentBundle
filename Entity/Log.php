@@ -57,11 +57,15 @@ class Log
     protected $createdAt;
 
     /**
-     * @param string      $level
-     * @param string|null $message
+     * Log constructor.
+     *
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     * @param string                               $level
+     * @param string|null                          $message
      */
-    public function __construct(string $level, ?string $message)
+    public function __construct(Payment $payment, string $level, ?string $message)
     {
+        $this->payment = $payment;
         $this->level = $level;
         $this->message = $message;
         $this->createdAt = new \DateTime();
@@ -92,35 +96,11 @@ class Log
     }
 
     /**
-     * @param string $level
-     *
-     * @return self
-     */
-    public function setLevel(string $level): self
-    {
-        $this->level = $level;
-
-        return $this;
-    }
-
-    /**
      * @return string|null
      */
     public function getMessage(): ?string
     {
         return $this->message;
-    }
-
-    /**
-     * @param string|null $message
-     *
-     * @return self
-     */
-    public function setMessage(?string $message): self
-    {
-        $this->message = $message;
-
-        return $this;
     }
 
     /**
@@ -132,34 +112,10 @@ class Log
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
-     *
-     * @return self
-     */
-    public function setPayment(Payment $payment): self
-    {
-        $this->payment = $payment;
-
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getCreatedAt(): \DateTime
     {
         return $this->createdAt;
-    }
-
-    /**
-     * @param \DateTime $createdAt createdAt
-     *
-     * @return self
-     */
-    public function setCreatedAt(\DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 }

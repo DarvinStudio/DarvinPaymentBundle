@@ -17,8 +17,10 @@ use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Workflow\WorkflowInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Payment factory
@@ -36,6 +38,16 @@ class PaymentFactory implements PaymentFactoryInterface
     protected $entityResolver;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * @var \Symfony\Contracts\Translation\TranslatorInterface
+     */
+    protected $translator;
+
+    /**
      * @var \Symfony\Component\Workflow\WorkflowInterface
      */
     protected $workflow;
@@ -51,21 +63,27 @@ class PaymentFactory implements PaymentFactoryInterface
     protected $autoApproval;
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface      $entityManager   Entity manager
-     * @param \Darvin\Utils\ORM\EntityResolverInterface $entityResolver  Entity resolver
-     * @param WorkflowInterface                         $workflow        Workflow for payment state
-     * @param string                                    $defaultCurrency Currency by default
-     * @param bool                                      $autoApproval    Auto approval or need admin approval
+     * @param \Doctrine\ORM\EntityManagerInterface               $entityManager   Entity manager
+     * @param \Darvin\Utils\ORM\EntityResolverInterface          $entityResolver  Entity resolver
+     * @param \Psr\Log\LoggerInterface                           $logger          Logger
+     * @param \Symfony\Contracts\Translation\TranslatorInterface $translator      Translator
+     * @param WorkflowInterface                                  $workflow        Workflow for payment state
+     * @param string                                             $defaultCurrency Currency by default
+     * @param bool                                               $autoApproval    Auto approval or need admin approval
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         EntityResolverInterface $entityResolver,
+        LoggerInterface $logger,
+        TranslatorInterface $translator,
         WorkflowInterface $workflow,
         string $defaultCurrency,
         bool $autoApproval
     ) {
         $this->entityManager = $entityManager;
         $this->entityResolver = $entityResolver;
+        $this->logger = $logger;
+        $this->translator = $translator;
         $this->workflow = $workflow;
         $this->defaultCurrency = $defaultCurrency;
         $this->autoApproval = $autoApproval;

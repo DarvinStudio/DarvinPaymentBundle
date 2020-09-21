@@ -53,8 +53,8 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'receipt',
             'redirect',
             'state',
-            'url',
             'twig',
+            'url',
             'bridges/telr' => ['callback' => static function () use ($config): bool {
                 return $config['bridges']['telr']['enabled'] ?? false;
             }],

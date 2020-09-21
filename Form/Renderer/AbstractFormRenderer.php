@@ -15,7 +15,7 @@ use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Twig\Environment;
 
 /**
- * Renderer for approve form
+ * Renderer for form of admin operation
  */
 abstract class AbstractFormRenderer
 {

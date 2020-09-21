@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\EventListener\ChangedState;
+namespace Darvin\PaymentBundle\EventListener\State\Changed;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Psr\Log\LoggerInterface;
@@ -17,7 +17,7 @@ use Symfony\Component\Workflow\Event\Event;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Class payment events subscriber
+ * Class payment events subscriber for log about changed state
  */
 class LogSubscriber implements EventSubscriberInterface
 {
@@ -32,13 +32,11 @@ class LogSubscriber implements EventSubscriberInterface
     protected $translator;
 
     /**
-     * @param \Psr\Log\LoggerInterface                            $logger    Logger
+     * @param \Psr\Log\LoggerInterface                           $logger     Logger
      * @param \Symfony\Contracts\Translation\TranslatorInterface $translator Translator
      */
-    public function __construct(
-        LoggerInterface $logger,
-        TranslatorInterface $translator
-    ){
+    public function __construct(LoggerInterface $logger, TranslatorInterface $translator)
+    {
         $this->logger = $logger;
         $this->translator = $translator;
     }

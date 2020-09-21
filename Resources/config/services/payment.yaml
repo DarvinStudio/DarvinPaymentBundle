@@ -9,6 +9,8 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@Darvin\Utils\ORM\EntityResolverInterface'
+            - '@darvin_payment.logger'
+            - '@translator'
             - '@state_machine.payment'
             - '%darvin_payment.default_currency%'
             - '%darvin_payment.auto_approval%'

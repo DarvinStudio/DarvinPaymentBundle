@@ -1,5 +1,6 @@
 parameters:
     darvin_payment.logger.class: Darvin\PaymentBundle\Logger\PaymentLogger
+    darvin_payment.subscriber.changed_state.log.class: Darvin\PaymentBundle\EventListener\State\Changed\LogSubscriber
 
 services:
     darvin_payment.logger:
@@ -8,3 +9,11 @@ services:
             - '@doctrine.orm.entity_manager'
         calls:
             - [ setMonolog, ['@?monolog.logger.payment'] ]
+
+    darvin_payment.subscriber.changed_state.log:
+        class: '%darvin_payment.subscriber.changed_state.log.class%'
+        arguments:
+            - '@darvin_payment.logger'
+            - '@translator'
+        tags:
+            - { name: kernel.event_subscriber }

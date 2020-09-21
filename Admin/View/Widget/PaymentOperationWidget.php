@@ -15,6 +15,8 @@ use Darvin\AdminBundle\View\Widget\Widget\AbstractWidget;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer;
 use Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer;
+use Darvin\PaymentBundle\Form\Renderer\RefundFormRenderer;
+use Darvin\PaymentBundle\Form\Renderer\VoidFormRenderer;
 
 /**
  * Operation view widget
@@ -34,15 +36,31 @@ class PaymentOperationWidget extends AbstractWidget
     private $captureFormRenderer;
 
     /**
+     * @var \Darvin\PaymentBundle\Form\Renderer\RefundFormRenderer
+     */
+    private $refundFormRenderer;
+
+    /**
+     * @var \Darvin\PaymentBundle\Form\Renderer\VoidFormRenderer
+     */
+    private $voidFormRenderer;
+
+    /**
      * @param \Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer $approveFormRenderer Approve form renderer
      * @param \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer $captureFormRenderer Capture form renderer
+     * @param \Darvin\PaymentBundle\Form\Renderer\RefundFormRenderer  $refundFormRenderer  Refund form renderer
+     * @param \Darvin\PaymentBundle\Form\Renderer\VoidFormRenderer    $voidFormRenderer    Void form renderer
      */
     public function __construct(
         ApproveFormRenderer $approveFormRenderer,
-        CaptureFormRenderer $captureFormRenderer
+        CaptureFormRenderer $captureFormRenderer,
+        RefundFormRenderer $refundFormRenderer,
+        VoidFormRenderer $voidFormRenderer
     ) {
         $this->approveFormRenderer = $approveFormRenderer;
         $this->captureFormRenderer = $captureFormRenderer;
+        $this->refundFormRenderer = $refundFormRenderer;
+        $this->voidFormRenderer = $voidFormRenderer;
     }
 
     /**
@@ -62,8 +80,16 @@ class PaymentOperationWidget extends AbstractWidget
             return $this->approveFormRenderer->renderForm($entity);
         }
 
-        if (PaymentStateType::AUTHORIZED === $entity->getState() && null !== $entity->getGateway()) {
+        if (PaymentStateType::AUTHORIZED === $entity->getState()) {
             return $this->captureFormRenderer->renderForm($entity);
+        }
+
+        if (PaymentStateType::COMPLETED === $entity->getState()) {
+            return $this->refundFormRenderer->renderForm($entity);
+        }
+
+        if (PaymentStateType::AUTHORIZED === $entity->getState()) {
+            return $this->voidFormRenderer->renderForm($entity);
         }
 
         return null;

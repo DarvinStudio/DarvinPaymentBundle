@@ -80,15 +80,21 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getRefundUrl(Payment $payment, string $gatewayName): string
+    public function getRefundUrl(Payment $payment): string
     {
-        throw new ActionNotImplementedException('refund');
+        if ($payment->getToken() === null) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        return $this->router->generate('darvin_payment_admin_refund', [
+            'token' => $payment->getToken()
+        ], RouterInterface::ABSOLUTE_URL);
     }
 
     /**
      * @inheritDoc
      */
-    public function getNotifyUrl(Payment $payment, string $gatewayName): string
+    public function getNotifyUrl(Payment $payment): string
     {
         throw new ActionNotImplementedException('notify');
     }
@@ -117,6 +123,20 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
         }
 
         return $this->router->generate('darvin_payment_cancel', [
+            'token' => $payment->getToken()
+        ], RouterInterface::ABSOLUTE_URL);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getVoidUrl(Payment $payment): string
+    {
+        if ($payment->getToken() === null) {
+            throw new \LogicException('Action token must be set for payment');
+        }
+
+        return $this->router->generate('darvin_payment_admin_void', [
             'token' => $payment->getToken()
         ], RouterInterface::ABSOLUTE_URL);
     }
