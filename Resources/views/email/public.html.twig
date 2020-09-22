@@ -5,7 +5,7 @@
 {% block content %}
     {{ content|trans({'%orderNumber%': payment.order.number}, 'email')  }}
     {% if payment.state == constant('Darvin\\PaymentBundle\\DBAL\\Type\\PaymentStateType::PENDING') %}
-        {% set urls = darvin_payment_url(payment) %}
+        {% set urls = payment_purchase_urls(payment) %}
 
         {% if urls|length == 1 %}
             <p><a href="{{ urls|first }}">{% trans %}payment.button.default{% endtrans %}</a></p>

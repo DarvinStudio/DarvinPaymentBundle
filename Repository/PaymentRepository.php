@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle\Repository;
 
+use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -17,5 +18,19 @@ use Doctrine\ORM\EntityRepository;
  */
 class PaymentRepository extends EntityRepository
 {
-
+    /**
+     * @param string $orderId    Order ID
+     * @param string $orderClass Order class
+     * @param string $state      State
+     *
+     * @return array
+     */
+    public function getForOrder(string $orderId, string $orderClass, string $state = PaymentStateType::PENDING): array
+    {
+        return $this->findBy([
+            'order.id'    => $orderId,
+            'order.class' => $orderClass,
+            'state'       => $state,
+        ]);
+    }
 }

@@ -11,7 +11,6 @@
 namespace Darvin\PaymentBundle\Repository;
 
 use Darvin\PaymentBundle\Entity\Log;
-use Darvin\PaymentBundle\Entity\Payment;
 use Doctrine\ORM\EntityRepository;
 
 /**

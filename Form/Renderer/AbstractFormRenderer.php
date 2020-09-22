@@ -12,6 +12,7 @@ namespace Darvin\PaymentBundle\Form\Renderer;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 use Twig\Environment;
 
 /**
@@ -30,13 +31,23 @@ abstract class AbstractFormRenderer
     protected $twig;
 
     /**
+     * @var \Symfony\Component\Workflow\WorkflowInterface
+     */
+    protected $workflow;
+
+    /**
      * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder Url builder
      * @param \Twig\Environment                                    $twig       Twig
+     * @param \Symfony\Component\Workflow\WorkflowInterface        $workflow   Workflow for payment state
      */
-    public function __construct(PaymentUrlBuilderInterface $urlBuilder, Environment $twig)
-    {
+    public function __construct(
+        PaymentUrlBuilderInterface $urlBuilder,
+        Environment $twig,
+        WorkflowInterface $workflow
+    ) {
         $this->urlBuilder = $urlBuilder;
         $this->twig = $twig;
+        $this->workflow = $workflow;
     }
 
     /**

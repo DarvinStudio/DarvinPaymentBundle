@@ -5,6 +5,7 @@ services:
     darvin_payment.twig.extension:
         class: '%darvin_payment.twig.extension.class%'
         arguments:
-            - '@darvin_payment.url.manager'
+            - '@doctrine.orm.entity_manager'
+            - '@darvin_payment.url.builder'
         tags:
             - { name: twig.extension }

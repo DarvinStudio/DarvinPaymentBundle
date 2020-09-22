@@ -1,6 +1,5 @@
 parameters:
     darvin_payment.url.builder.class: 'Darvin\PaymentBundle\Url\PaymentUrlBuilder'
-    darvin_payment.url.manager.class: 'Darvin\PaymentBundle\Url\PaymentUrlManager'
 
 services:
     Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface: '@darvin_payment.url.builder'
@@ -9,11 +8,3 @@ services:
         class: '%darvin_payment.url.builder.class%'
         arguments:
             - '@router'
-
-    Darvin\PaymentBundle\Url\PaymentUrlManagerInterface: '@darvin_payment.url.manager'
-
-    darvin_payment.url.manager:
-        class: '%darvin_payment.url.manager.class%'
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@darvin_payment.url.builder'

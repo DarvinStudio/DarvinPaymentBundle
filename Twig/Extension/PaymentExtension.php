@@ -11,7 +11,9 @@
 namespace Darvin\PaymentBundle\Twig\Extension;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Url\PaymentUrlManagerInterface;
+use Darvin\PaymentBundle\Repository\PaymentRepository;
+use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -22,16 +24,36 @@ use Twig\TwigFunction;
 class PaymentExtension extends AbstractExtension
 {
     /**
-     * @var \Darvin\PaymentBundle\Url\PaymentUrlManagerInterface
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
-    private $urlManager;
+    private $em;
 
     /**
-     * @param \Darvin\PaymentBundle\Url\PaymentUrlManagerInterface $urlManager
+     * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
      */
-    public function __construct(PaymentUrlManagerInterface $urlManager)
+    private $urlBuilder;
+
+    /**
+     * @var array
+     */
+    private $gatewayNames;
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface                 $em         Entity manager
+     * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder Url builder
+     */
+    public function __construct(EntityManagerInterface $em, PaymentUrlBuilderInterface $urlBuilder)
     {
-        $this->urlManager = $urlManager;
+        $this->em = $em;
+        $this->urlBuilder = $urlBuilder;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function addGatewayName(string $name): void
+    {
+        $this->gatewayNames[] = $name;
     }
 
     /**
@@ -40,43 +62,43 @@ class PaymentExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('darvin_payment_widget', [$this, 'renderPaymentWidget'], [
+            new TwigFunction('payment_purchase_widget', [$this, 'renderPurchaseWidget'], [
                 'needs_environment' => true,
                 'is_safe'           => ['html'],
             ]),
-            new TwigFunction('darvin_payment_url', [$this, 'getPaymentUrl'], [
+            new TwigFunction('payment_purchase_urls', [$this, 'getPurchaseUrls'], [
                 'is_safe'           => ['html'],
             ]),
         ];
     }
 
     /**
-     * @param Environment $twig             Twig
-     * @param mixed       $order            Order object
-     * @param string|null $orderEntityClass Order entity class
+     * @param \Twig\Environment $twig       Twig
+     * @param mixed             $order      Order object
+     * @param string|null       $orderClass Order entity class
      *
      * @return string
      */
-    public function renderPaymentWidget(Environment $twig, $order, ?string $orderEntityClass = null): string
+    public function renderPurchaseWidget(Environment $twig, $order, ?string $orderClass = null): string
     {
         if (is_scalar($order)) {
-            $orderId = $order;
+            $orderId = (string)$order;
         } elseif (is_object($order) && method_exists($order, 'getId') && null !== $order->getId()) {
-            $orderId = $order->getId();
+            $orderId = (string)$order->getId();
         } else {
             throw new \LogicException('Missing order id');
         }
 
-        if (null === $orderEntityClass && is_object($order)) {
-            $orderEntityClass = get_class($order);
+        if (null === $orderClass && is_object($order)) {
+            $orderClass = get_class($order);
         } else {
             throw new \LogicException('Missing order entity class');
         }
 
-        $urls = $this->urlManager->getUrlsForOrder($orderId, $orderEntityClass);
+        $payments = $this->getPaymentRepository()->getForOrder($orderId, $orderClass);
 
-        return $twig->render('@DarvinPayment/payment/payment_widget.html.twig', [
-            'urls' => $urls,
+        return $twig->render('@DarvinPayment/payment/purchase_widget.html.twig', [
+            'payments' => $payments,
         ]);
     }
 
@@ -85,8 +107,22 @@ class PaymentExtension extends AbstractExtension
      *
      * @return array
      */
-    public function getPaymentUrl(Payment $payment): array
+    public function getPurchaseUrls(Payment $payment): array
     {
-        return $this->urlManager->getUrlsForPayment($payment);
+        $urls = [];
+
+        foreach ($this->gatewayNames as $gatewayName) {
+            $urls[$gatewayName] = $this->urlBuilder->getPurchaseUrl($payment, $gatewayName);
+        }
+
+        return $urls;
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\Repository\PaymentRepository
+     */
+    private function getPaymentRepository(): PaymentRepository
+    {
+        return $this->em->getRepository(Payment::class);
     }
 }

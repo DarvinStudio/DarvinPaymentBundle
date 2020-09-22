@@ -42,6 +42,9 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
 
         (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
             'admin'  => ['bundle' => 'DarvinAdminBundle'],
+            'approve' => ['callback' => static function () use ($config): bool {
+                return !$config['auto_approval'];
+            }],
             'config' => ['bundle' => 'DarvinConfigBundle'],
             'controller',
             'gateway',
@@ -50,8 +53,14 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                 return $config['mailer']['enabled'];
             }],
             'payment',
+            'pre_authorize' => ['callback' => static function () use ($config): bool {
+                return $config['pre_authorize'];
+            }],
             'receipt',
             'redirect',
+            'refund' => ['callback' => static function () use ($config): bool {
+                return $config['refund'];
+            }],
             'state',
             'twig',
             'url',

@@ -10,7 +10,6 @@
 
 namespace Darvin\PaymentBundle\Form\Renderer;
 
-use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Workflow\Transitions;
 
@@ -24,14 +23,12 @@ class RefundFormRenderer extends AbstractFormRenderer
      */
     public function renderForm(Payment $payment): string
     {
-        if (PaymentStateType::COMPLETED !== $payment->getState()) {
+        if (!$this->workflow->can($payment, Transitions::REFUND)) {
             throw new \LogicException('Wrong payment type');
         }
 
-        $url = $this->urlBuilder->getRefundUrl($payment);
-
         return $this->twig->render('@DarvinPayment/admin/widget/operation_form.html.twig',[
-            'url'       => $url,
+            'url'       => $this->urlBuilder->getRefundUrl($payment),
             'id'        => $payment->getId(),
             'operation' => Transitions::REFUND,
         ]);
