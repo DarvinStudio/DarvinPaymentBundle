@@ -31,6 +31,6 @@ class CaptureController extends AbstractController
      */
     public function __invoke(string $token): Response
     {
-        return $this->execute(Transitions::CAPTURE, 'capture', $token);
+        return $this->execute('capture', Transitions::CAPTURE, $token);
     }
 }

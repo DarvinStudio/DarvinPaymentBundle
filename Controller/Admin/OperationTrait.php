@@ -34,27 +34,27 @@ trait OperationTrait
     /**
      * @var \Darvin\AdminBundle\Route\AdminRouterInterface
      */
-    private $adminRouter;
+    protected $adminRouter;
 
     /**
      * @var \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
      */
-    private $authorizationChecker;
+    protected $authorizationChecker;
 
     /**
      * @var \Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer
      */
-    private $formRenderer;
+    protected $formRenderer;
 
     /**
      * @var \Darvin\Utils\Flash\FlashNotifierInterface
      */
-    private $flashNotifier;
+    protected $flashNotifier;
 
     /**
      * @var \Symfony\Component\HttpFoundation\RequestStack
      */
-    private $requestStack;
+    protected $requestStack;
 
     /**
      * @param string $method     Payment method

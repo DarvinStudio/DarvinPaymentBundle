@@ -20,27 +20,25 @@ use Doctrine\ORM\EntityRepository;
 class LogRepository extends EntityRepository
 {
     /**
-     * @param \Darvin\PaymentBundle\Entity\Log $log Log
+     * @param \Darvin\PaymentBundle\Entity\Log $log       Log
+     * @param int                              $paymentId Payment Id
      *
      * @throws \Doctrine\DBAL\DBALException
      * @throws \ReflectionException
      */
-    public function saveLog(Log $log): void
+    public function saveLog(Log $log, int $paymentId): void
     {
-        
-        if (null === $log->getPayment() && $log->getPayment()->getId()) {
-            throw new \LogicException('Can\'t create log, because payment is missing from the database');
-        }
+        $className = (new \ReflectionClass($log))->getShortName();
 
-        $result = $this->getEntityManager()->getConnection()->executeUpdate('
+        $this->getEntityManager()->getConnection()->executeUpdate('
             INSERT INTO payment_log (payment_id, level, message, created_at, dtype) 
             VALUES (:payment_id, :level, :message, :created_at, :dtype)',
             [
-                'payment_id' => $payment->getId(),
-                'level'      => $level,
-                'message'    => $message,
-                'created_at' => new \DateTime(),
-                'dtype'      => (new \ReflectionClass($payment))->getShortName(),
+                'payment_id' => $paymentId,
+                'level'      => $log->getLevel(),
+                'message'    => $log->getMessage(),
+                'created_at' => $log->getCreatedAt(),
+                'dtype'      => mb_strtolower($className),
             ], [
                 'payment_id' => \Doctrine\DBAL\Types\Types::INTEGER,
                 'level'      => \Doctrine\DBAL\Types\Types::STRING,
@@ -49,7 +47,5 @@ class LogRepository extends EntityRepository
                 'dtype'      => \Doctrine\DBAL\Types\Types::STRING,
             ]
         );
-
-        var_dump($result); die;
     }
 }

@@ -31,6 +31,6 @@ class VoidController extends AbstractController
      */
     public function __invoke(string $token): Response
     {
-        return $this->execute(Transitions::VOID, 'void', $token);
+        return $this->execute('void', Transitions::VOID, $token);
     }
 }

@@ -3,6 +3,7 @@ menu:
 
 order_by:
     createdAt: desc
+    id: desc
 
 route_blacklist:
     - new

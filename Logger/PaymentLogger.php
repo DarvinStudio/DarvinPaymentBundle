@@ -121,12 +121,11 @@ class PaymentLogger implements LoggerInterface
 
         if ($payment instanceof Payment) {
             $log = new Log($payment, $level, $message);
-            $payment->addLog($log);
 
-            if (null === $payment->getId()) {
-                $this->em->persist($log);
+            if (null !== $payment->getId()) {
+                $this->getLogRepository()->saveLog($log, $payment->getId());
             } else {
-                $this->getLogRepository()->saveLog($log);
+                $this->em->persist($log);
             }
         }
 

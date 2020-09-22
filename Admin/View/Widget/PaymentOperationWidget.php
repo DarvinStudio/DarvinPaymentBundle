@@ -76,23 +76,25 @@ class PaymentOperationWidget extends AbstractWidget
      */
     protected function createContent($entity, array $options): ?string
     {
+        $content = '';
+
         if (PaymentStateType::APPROVAL === $entity->getState()) {
-            return $this->approveFormRenderer->renderForm($entity);
+            $content .= $this->approveFormRenderer->renderForm($entity);
         }
 
         if (PaymentStateType::AUTHORIZED === $entity->getState()) {
-            return $this->captureFormRenderer->renderForm($entity);
+            $content .= $this->captureFormRenderer->renderForm($entity);
+        }
+
+        if (PaymentStateType::AUTHORIZED === $entity->getState()) {
+            $content .= $this->voidFormRenderer->renderForm($entity);
         }
 
         if (PaymentStateType::COMPLETED === $entity->getState()) {
-            return $this->refundFormRenderer->renderForm($entity);
+            $content .= $this->refundFormRenderer->renderForm($entity);
         }
 
-        if (PaymentStateType::AUTHORIZED === $entity->getState()) {
-            return $this->voidFormRenderer->renderForm($entity);
-        }
-
-        return null;
+        return $content;
     }
 
     /**

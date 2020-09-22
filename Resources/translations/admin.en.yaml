@@ -26,6 +26,10 @@ payment:
         index:
             link:    Payments
             title:   Payments
+        refund:
+            confirm: Confirm payment refund
+            submit:  Refund payment
+            success: Payment succesfully refunded!
         new:
             link:    Add payment
             success: Payment successfully created
@@ -33,6 +37,10 @@ payment:
         show:
             link:    Show payment
             title:   Payment №«%entity%»
+        void:
+            confirm: Confirm payment cancel
+            submit:  Cancel payment
+            success: Payment succesfully canceled!
     entity:
         token:           Token
         amount:          Amount

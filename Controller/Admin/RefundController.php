@@ -31,6 +31,6 @@ class RefundController extends AbstractController
      */
     public function __invoke(string $token): Response
     {
-        return $this->execute(Transitions::REFUND, 'refund', $token);
+        return $this->execute('refund', Transitions::REFUND, $token);
     }
 }

@@ -124,11 +124,11 @@ class Redirect
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment|null $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return self
      */
-    public function setPayment(?Payment $payment): self
+    public function setPayment(Payment $payment): self
     {
         $this->payment = $payment;
 

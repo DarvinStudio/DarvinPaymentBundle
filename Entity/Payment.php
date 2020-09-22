@@ -237,7 +237,6 @@ class Payment
     {
         if (!$this->logs->contains($log)) {
             $this->logs->add($log);
-            $log->setPayment($this);
         }
 
         return $this;

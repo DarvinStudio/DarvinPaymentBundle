@@ -76,6 +76,8 @@ services:
         arguments:
             - "@darvin_payment.admin.from.renderer.approve"
             - "@darvin_payment.admin.form.renderer.capture"
+            - "@darvin_payment.admin.form.renderer.refund"
+            - "@darvin_payment.admin.form.renderer.void"
         tags:
             - { name: darvin_admin.view_widget }
 

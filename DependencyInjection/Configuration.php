@@ -34,6 +34,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('default_gateway')->defaultNull()->end()
                 ->booleanNode('auto_approval')->defaultTrue()->end()
                 ->booleanNode('pre_authorize')->defaultFalse()->end()
+                ->booleanNode('refund')->defaultFalse()->end()
                 ->arrayNode('bridges')->useAttributeAsKey('name')
                     ->prototype('array')->canBeDisabled()
                         ->children()

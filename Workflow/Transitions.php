@@ -33,8 +33,8 @@ class Transitions
         self::PURCHASE  => [PaymentStateType::PENDING, PaymentStateType::COMPLETED],
         self::EXPIRE    => [PaymentStateType::PENDING, PaymentStateType::EXPIRED],
         self::CANCEL    => [PaymentStateType::PENDING, PaymentStateType::CANCELED],
-        self::REFUND    => [PaymentStateType::PENDING, PaymentStateType::REFUNDED],
         self::FAIL      => [PaymentStateType::PENDING, PaymentStateType::FAILED],
+        self::REFUND    => [PaymentStateType::COMPLETED, PaymentStateType::REFUNDED],
         self::CAPTURE   => [PaymentStateType::AUTHORIZED, PaymentStateType::COMPLETED],
         self::VOID      => [PaymentStateType::AUTHORIZED, PaymentStateType::CANCELED],
     ];

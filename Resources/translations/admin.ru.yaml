@@ -26,6 +26,10 @@ payment:
         index:
             link:    Платежи
             title:   Платежи
+        refund:
+            confirm: Подтвердите операцию возврата денег
+            submit:  Возврат денег
+            success: Заявка на возврат успешно отправлена
         new:
             link:    Добавить платёж
             success: Платёж успешно добавлен
@@ -33,6 +37,10 @@ payment:
         show:
             link:    Просмотреть платёж
             title:   Платёж №«%entity%»
+        void:
+            confirm: Подтвердите операцию отмены оплаты
+            submit:  Отменить платёж
+            success: Платёж успешно отменен
     entity:
         token:           Токен
         amount:          Сумма
