@@ -109,11 +109,11 @@ trait OperationTrait
         }
 
         $this->logger->error(
-            $this->translator->trans('payment.log.error.bad_response', [
+            $this->translator->trans('log.payment.error.bad_response', [
                 '%method%'  => __METHOD__,
                 '%code%'    => $response->getCode(),
                 '%message%' => $response->getMessage(),
-            ]),
+            ], 'admin'),
             ['payment' => $payment]
         );
 

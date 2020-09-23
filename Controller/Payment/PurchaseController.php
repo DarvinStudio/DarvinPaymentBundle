@@ -86,20 +86,22 @@ class PurchaseController extends AbstractController
             $payment->setRedirect($redirect);
 
             $this->em->persist($redirect);
-
-            $this->logger->info($this->translator->trans('payment.log.info.created_redirect'), ['payment' => $payment]);
-
             $this->em->flush();
+
+            $this->logger->info(
+                $this->translator->trans('log.payment.info.created_redirect', [], 'admin'),
+                ['payment' => $payment]
+            );
 
             return $this->createPaymentResponse($payment);
         }
 
         $this->logger->error(
-            $this->translator->trans('payment.log.error.bad_response', [
+            $this->translator->trans('log.payment.error.bad_response', [
                 '%method%'  => __METHOD__,
                 '%code%'    => $response->getCode(),
                 '%message%' => $response->getMessage(),
-            ]),
+            ], 'admin'),
             ['payment' => $payment]
         );
 
@@ -125,9 +127,10 @@ class PurchaseController extends AbstractController
             $this->workflow->apply($payment, Transitions::EXPIRE);
             $this->em->flush();
 
-            $this->logger->warning($this->translator->trans('payment.log.warning.session_expired'), ['payment' => $payment]);
-
-            $this->em->flush();
+            $this->logger->warning(
+                $this->translator->trans('log.payment.warning.session_expired', [], 'admin'),
+                ['payment' => $payment]
+            );
 
             return $this->createErrorResponse($payment);
         }

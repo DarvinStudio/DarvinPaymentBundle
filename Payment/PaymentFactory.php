@@ -17,6 +17,7 @@ use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Validation;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 /**
@@ -87,10 +88,30 @@ class PaymentFactory implements PaymentFactoryInterface
 
         $payment->setToken(Uuid::uuid4()->toString());
 
+        $this->validate($payment);
+
         if ($this->autoApproval) {
             $this->workflow->apply($payment, Transitions::APPROVE);
         }
 
         return $payment;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     */
+    protected function validate(Payment $payment): void
+    {
+        $violations = (Validation::createValidator())->validate($payment);
+
+        if (0 !== count($violations)) {
+            $errors = [];
+
+            foreach ($violations as $violation) {
+                $errors[] = $violation->getMessage();
+            }
+
+            throw new \InvalidArgumentException(sprintf('Errors: %s', implode(', ', $errors)));
+        }
     }
 }

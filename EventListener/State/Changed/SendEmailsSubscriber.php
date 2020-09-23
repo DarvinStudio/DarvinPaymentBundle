@@ -16,6 +16,7 @@ use Darvin\MailerBundle\Mailer\MailerInterface;
 use Darvin\MailerBundle\Model\Email;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
+use Darvin\PaymentBundle\State\Event\ChangedStateEvent;
 use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -79,22 +80,16 @@ class SendEmailsSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.payment.completed' => 'sendEmails',
+            ChangedStateEvent::class => 'sendEmails',
         ];
     }
 
     /**
-     * @param \Symfony\Component\Workflow\Event\Event $event Event
-     *
-     * @throws \Darvin\PaymentBundle\State\Exception\UnknownStateException
+     * @param \Darvin\PaymentBundle\State\Event\ChangedStateEvent $event Event
      */
-    public function sendEmails(Event $event): void
+    public function sendEmails(ChangedStateEvent $event): void
     {
-        $payment = $event->getSubject();
-
-        if (!$payment instanceof \Darvin\PaymentBundle\Entity\Payment) {
-            return;
-        }
+        $payment = $event->getPayment();
 
         $state = $this->stateProvider->getState($payment->getState());
 
@@ -119,6 +114,7 @@ class SendEmailsSubscriber implements EventSubscriberInterface
                 $serviceEmail = $this->emailFactory->createServiceEmail($payment, $state);
             } catch (CantCreateEmailException $ex) {
                 $this->logger->warning($ex->getMessage(), ['payment' => $payment]);
+
             }
 
             if (null !== $serviceEmail) {
@@ -136,9 +132,9 @@ class SendEmailsSubscriber implements EventSubscriberInterface
         try {
             $this->mailer->mustSend($email);
         } catch (MailerException $ex) {
-            $errorMessage = $this->translator->trans('payment.log.error.cant_send_email', [
+            $errorMessage = $this->translator->trans('log.payment.error.cant_send_email', [
                 '%message%' => $ex->getMessage(),
-            ], 'messages');
+            ], 'admin');
 
             $this->logger->warning($errorMessage, ['payment' => $payment]);
         }

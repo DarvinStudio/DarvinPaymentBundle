@@ -10,33 +10,36 @@
 
 namespace Darvin\PaymentBundle\Repository;
 
-use Darvin\PaymentBundle\Entity\Log;
+use Darvin\PaymentBundle\Entity\Event;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Log Repository
+ * Event Repository
  */
-class LogRepository extends EntityRepository
+class EventRepository extends EntityRepository
 {
     /**
-     * @param \Darvin\PaymentBundle\Entity\Log $log       Log
-     * @param int                              $paymentId Payment Id
+     * @param \Darvin\PaymentBundle\Entity\Event $event Event
      *
      * @throws \Doctrine\DBAL\DBALException
      * @throws \ReflectionException
      */
-    public function saveLog(Log $log, int $paymentId): void
+    public function save(Event $event): void
     {
-        $className = (new \ReflectionClass($log))->getShortName();
+        $className = (new \ReflectionClass($event))->getShortName();
+
+        if (null === $event->getPayment()->getId()) {
+            throw new \LogicException('Payment ID missing');
+        }
 
         $this->getEntityManager()->getConnection()->executeUpdate('
-            INSERT INTO payment_log (payment_id, level, message, created_at, dtype) 
+            INSERT INTO payment_event (payment_id, level, message, created_at, dtype) 
             VALUES (:payment_id, :level, :message, :created_at, :dtype)',
             [
-                'payment_id' => $paymentId,
-                'level'      => $log->getLevel(),
-                'message'    => $log->getMessage(),
-                'created_at' => $log->getCreatedAt(),
+                'payment_id' => $event->getPayment()->getId(),
+                'level'      => $event->getLevel(),
+                'message'    => $event->getMessage(),
+                'created_at' => $event->getCreatedAt(),
                 'dtype'      => mb_strtolower($className),
             ], [
                 'payment_id' => \Doctrine\DBAL\Types\Types::INTEGER,

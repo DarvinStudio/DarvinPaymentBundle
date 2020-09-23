@@ -26,6 +26,8 @@ interface PaymentFactoryInterface
      * @param string|null                            $currency Currency code
      *
      * @return \Darvin\PaymentBundle\Entity\Payment
+     *
+     * @throws \InvalidArgumentException
      */
     public function createPayment(
         PaidOrder $order,

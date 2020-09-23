@@ -11,6 +11,7 @@
 namespace Darvin\PaymentBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -19,6 +20,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table
  * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\PaymentRepository")
  * @ORM\InheritanceType("SINGLE_TABLE")
+ *
+ * @HasLifecycleCallbacks
  */
 class Payment
 {
@@ -57,11 +60,11 @@ class Payment
     protected $redirect;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|\Darvin\PaymentBundle\Entity\Log[]
+     * @var \Doctrine\Common\Collections\Collection|\Darvin\PaymentBundle\Entity\Event[]
      *
-     * @ORM\OneToMany(targetEntity="Darvin\PaymentBundle\Entity\Log", mappedBy="payment", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="Darvin\PaymentBundle\Entity\Event", mappedBy="payment", cascade={"remove"})
      */
-    protected $logs;
+    protected $events;
 
     /**
      * @var string
@@ -145,7 +148,7 @@ class Payment
         $this->amount = $amount;
         $this->currency = $currency;
         $this->createdAt = new \DateTime();
-        $this->logs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->events = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -209,34 +212,34 @@ class Payment
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Entity\Log[]|\Doctrine\Common\Collections\Collection
+     * @return \Darvin\PaymentBundle\Entity\Event[]|\Doctrine\Common\Collections\Collection
      */
-    public function getLogs(): Collection
+    public function getEvents(): Collection
     {
-        return $this->logs;
+        return $this->events;
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Log[]|\Doctrine\Common\Collections\Collection $logs logs
+     * @param \Darvin\PaymentBundle\Entity\Event[]|\Doctrine\Common\Collections\Collection $events events
      *
      * @return self
      */
-    public function setLogs(Collection $logs): self
+    public function setEvents(Collection $events): self
     {
-        $this->logs = $logs;
+        $this->events = $events;
 
         return $this;
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Log Log
+     * @param \Darvin\PaymentBundle\Entity\Event Event
      *
      * @return self
      */
-    public function addLog(Log $log): self
+    public function addEvent(Event $event): self
     {
-        if (!$this->logs->contains($log)) {
-            $this->logs->add($log);
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
         }
 
         return $this;

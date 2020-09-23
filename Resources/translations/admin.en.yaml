@@ -5,6 +5,24 @@ configuration:
             notification_for_state: Notification for state «%state%»
         title: Online Payment
 
+log:
+    payment:
+        error:
+            bad_response: "%method%: Can't handle response. Response code: %code%. Response message: %message%"
+            cant_create_receipt: "%method%: Can't create receipt"
+            cant_send_email: "Some troubles with sending email: %message%"
+            missing_public_email: "Missing client email"
+            missing_service_email: "Missing service email"
+            not_available_operation: "Operation «%transition%» is not available"
+            not_support_gateway_method: "Payment gateway «%gateway%» doesn't support «%method%» method"
+            wrong_gateway: "Wrong gateway (%gateway%) for this payment. Need gateway %paymentGateway%."
+            success: "%method%: Can't show success, because current state is «%state%»"
+        info:
+            changed_state: "State changed to «%state%»"
+            created_redirect: "Created payment redirect"
+        warning:
+            session_expired: "Payment session expired"
+
 payment:
     action:
         approve:
@@ -59,7 +77,7 @@ payment:
             id:          Order ID
             number:      Order Number
         operation:       Operation
-        logs:            Logs
+        events:          Events
         transaction_reference: Transaction Reference
         state:           State
 
@@ -73,22 +91,18 @@ payment:
         pending:    Pending
         refunded:   Refund
 
-    log:
-        info:
-            changed_status: "Status changed to «%state%»"
-
-payment_log:
+payment_event:
     action:
         delete:
-            confirm: Confirm log removal
-            submit:  Remove log
-            success: Log successfully removed
+            confirm: Confirm event removal
+            submit:  Remove event
+            success: Event successfully removed
         index:
-            link:    Logs
-            title:   Logs
+            link:    Events
+            title:   Events
         show:
-            link:    Logs
-            title:   Log «%entity%»
+            link:    Events
+            title:   Event «%entity%»
     entity:
         created_at:      Created at
         created_at_from: Created at (From)

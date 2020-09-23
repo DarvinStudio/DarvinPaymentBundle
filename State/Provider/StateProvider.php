@@ -11,7 +11,6 @@
 namespace Darvin\PaymentBundle\State\Provider;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\State\Exception\UnknownStateException;
 use Darvin\PaymentBundle\State\Model\Email\Email;
 use Darvin\PaymentBundle\State\Model\Email\PublicEmail;
 use Darvin\PaymentBundle\State\Model\Email\ServiceEmail;
@@ -58,7 +57,7 @@ class StateProvider implements StateProviderInterface
      */
     public function getAllStates(): array
     {
-        if (empty($this->states)) {
+        if (0 === count($this->states)) {
             foreach ($this->configs as $name => $config) {
 
                 $this->states[$name] = new State(
@@ -93,7 +92,7 @@ class StateProvider implements StateProviderInterface
             }
         }
 
-        throw new UnknownStateException($name);
+        throw new \InvalidArgumentException(sprintf('Unknown state  "%s"', $name));
     }
 
     /**

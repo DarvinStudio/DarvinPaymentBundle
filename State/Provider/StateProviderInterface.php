@@ -21,8 +21,6 @@ interface StateProviderInterface
      * @param string $name Type name
      *
      * @return \Darvin\PaymentBundle\State\Model\State
-     *
-     * @throws \Darvin\PaymentBundle\State\Exception\UnknownStateException
      */
     public function getState(string $name): State;
 

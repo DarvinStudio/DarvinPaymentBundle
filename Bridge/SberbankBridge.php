@@ -183,10 +183,13 @@ class SberbankBridge extends AbstractBridge
             $factory = $this->receiptFactoryRegistry->getFactory($payment);
 
             try {
-                return json_encode($factory->createReceipt($payment, $gatewayName));
+                return json_encode($factory->createReceipt($payment, $this->getGatewayName()));
             } catch (\Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException $ex) {
 
-                $this->logger->warning($this->translator->trans('payment.log.info.created_redirect'), ['payment' => $payment]);
+                $this->logger->warning(
+                    $this->translator->trans('log.payment.error.cant_create_receipt', [], 'admin'),
+                    ['payment' => $payment]
+                );
 
                 return null;
             }

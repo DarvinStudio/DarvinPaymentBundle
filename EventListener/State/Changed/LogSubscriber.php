@@ -11,6 +11,7 @@
 namespace Darvin\PaymentBundle\EventListener\State\Changed;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
+use Darvin\PaymentBundle\State\Event\ChangedStateEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
@@ -47,25 +48,21 @@ class LogSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.payment.completed' => 'log',
+            ChangedStateEvent::class => 'log',
         ];
     }
 
     /**
-     * @param \Symfony\Component\Workflow\Event\Event $event Event
+     * @param \Darvin\PaymentBundle\State\Event\ChangedStateEvent $event
      */
-    public function log(Event $event): void
+    public function log(ChangedStateEvent $event): void
     {
-        $payment = $event->getSubject();
+        $payment = $event->getPayment();
 
-        if (!$payment instanceof \Darvin\PaymentBundle\Entity\Payment) {
-            return;
-        }
+        $stateTitle = $this->translator->trans(PaymentStateType::getReadableValue($payment->getState()), [], 'admin');
 
         $this->logger->info(
-            $this->translator->trans('payment.log.info.changed_state', [
-                '%state%' => $this->translator->trans(PaymentStateType::getReadableValue($payment->getState()), [], 'admin'),
-            ]),
+            $this->translator->trans('log.payment.info.changed_state', ['%state%' => $stateTitle], 'admin'),
             ['payment' => $payment]
         );
     }

@@ -5,6 +5,24 @@ configuration:
             notification_for_state: Уведомеления о статусе «%state%»
         title: Онлайн оплата
 
+log:
+    payment:
+        error:
+            bad_response: "%method%: Невозможно обработать ответ платежного шлюза. Response code: %code%. Response message: %message%"
+            cant_create_receipt: "%method%: Проблемы с генерацией чека"
+            cant_send_email: "Проблема с отправкой email-уведомления: %message%"
+            missing_public_email: "У клиента отсутствует email"
+            missing_service_email: "У админа отсутствует email"
+            not_available_operation: "Операция «%transition%» не доступна"
+            not_support_gateway_method: "Платежный шлюз «%gateway%» не поддерживает «%method%» метод"
+            wrong_gateway: "Данный платеж не может обрабатываться платежным шлюзом %gateway%. Необходим шлюз %paymentGateway%."
+            success: "%method%: Страница успеха недоступна, так как заказ находится в статусе «%state%»"
+        info:
+            changed_state: "Статус изменен на «%state%»"
+            created_redirect: "Создана ссылка на оплату в платежном шлюзе"
+        warning:
+            session_expired: "Время на оплату истекло"
+
 payment:
     action:
         approve:
@@ -41,6 +59,7 @@ payment:
             confirm: Подтвердите операцию отмены оплаты
             submit:  Отменить платёж
             success: Платёж успешно отменен
+
     entity:
         token:           Токен
         amount:          Сумма
@@ -59,7 +78,7 @@ payment:
             id:          ID Заказа
             number:      Номер заказа
         operation:       Операции
-        logs:            Логи
+        events:          События
         transaction_reference: ID заказа в платежной системе
         state:           Статус
 
@@ -73,18 +92,18 @@ payment:
         pending:    Ждет оплаты
         refunded:   Возврат
 
-payment_log:
+payment_event:
     action:
         delete:
-            confirm: Подтвердите удаление лога
-            submit:  Удалить лог
-            success: Лог успешно удалён
+            confirm: Подтвердите удаление события
+            submit:  Удалить событие
+            success: Событие успешно удалён
         index:
-            link:    Логи
-            title:   Логи
+            link:    События
+            title:   События
         show:
-            link:    Просмотреть логи
-            title:   Лог «%entity%»
+            link:    Просмотреть события
+            title:   Событие «%entity%»
     entity:
         created_at:      Создана
         created_at_from: Создана (с)

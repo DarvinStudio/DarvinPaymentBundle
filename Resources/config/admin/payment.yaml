@@ -1,5 +1,5 @@
 children:
-    - Darvin\PaymentBundle\Entity\Log
+    - Darvin\PaymentBundle\Entity\Event
 
 menu:
     position: 30
@@ -43,11 +43,11 @@ view:
                 size: md
                 widget:
                     payment_operation: ~
-            logs:
+            events:
                 type: link-with-add
                 widget:
                     child_links:
-                        child:      Darvin\PaymentBundle\Entity\Log
+                        child:      Darvin\PaymentBundle\Entity\Event
                         show_count: true
 
     show:

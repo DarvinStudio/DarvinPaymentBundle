@@ -14,9 +14,9 @@ use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\AdminBundle\View\Widget\Widget\AbstractWidget;
 
 /**
- * Log level admin view widget
+ * Event level admin view widget
  */
-class LogLevelWidget extends AbstractWidget
+class EventLevelWidget extends AbstractWidget
 {
     /**
      * {@inheritDoc}
@@ -31,7 +31,7 @@ class LogLevelWidget extends AbstractWidget
      */
     protected function getAllowedEntityClasses(): iterable
     {
-        yield \Darvin\PaymentBundle\Entity\Log::class;
+        yield \Darvin\PaymentBundle\Entity\Event::class;
     }
 
     /**

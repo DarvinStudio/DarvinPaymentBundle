@@ -12,7 +12,6 @@ namespace Darvin\PaymentBundle\Controller;
 
 use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException;
-use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
@@ -173,13 +172,11 @@ abstract class AbstractController
     protected function validatePayment(Payment $payment, string $transition, ?string $gatewayName = null): void
     {
         if (!$this->workflow->can($payment, $transition)) {
-            $errorMessage = $this->translator->trans('payment.log.error.not_available_operation', [
+            $errorMessage = $this->translator->trans('log.payment.error.not_available_operation', [
                 '%transition%' => $transition,
-            ]);
+            ], 'admin');
 
             $this->logger->error($errorMessage, ['payment' => $payment]);
-
-            $this->em->flush();
 
             throw new NotFoundHttpException($errorMessage);
         }
@@ -188,14 +185,12 @@ abstract class AbstractController
             $payment->getGateway() !== null &&
             $payment->getGateway() !== $gatewayName
         ) {
-            $errorMessage = $this->translator->trans('payment.log.error.wrong_gateway', [
+            $errorMessage = $this->translator->trans('log.payment.error.wrong_gateway', [
                 '%gateway%'        => $gatewayName,
                 '%paymentGateway%' => $payment->getGateway(),
-            ]);
+            ], 'admin');
 
             $this->logger->error($errorMessage, ['payment' => $payment]);
-
-            $this->em->flush();
 
             throw new NotFoundHttpException($errorMessage);
         }

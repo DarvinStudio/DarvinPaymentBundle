@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="payment_redirect")
- * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\RedirectRepository")
+ * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  */
 class Redirect

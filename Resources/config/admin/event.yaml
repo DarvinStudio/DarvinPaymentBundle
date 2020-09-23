@@ -20,7 +20,7 @@ view:
                 widget: datetime
             level:
                 size:   xs
-                widget: log_level
+                widget: event_level
             message:
                 size:   free
 

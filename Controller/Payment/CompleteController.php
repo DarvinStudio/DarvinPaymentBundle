@@ -52,8 +52,6 @@ class CompleteController extends AbstractController
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 
-            $this->em->flush();
-
             return $this->createErrorResponse($payment);
         }
 
@@ -65,15 +63,13 @@ class CompleteController extends AbstractController
         }
 
         $this->logger->error(
-            $this->translator->trans('payment.log.error.bad_response', [
+            $this->translator->trans('log.payment.error.bad_response', [
                 '%method%'  => __METHOD__,
                 '%code%'    => $response->getCode(),
                 '%message%' => $response->getMessage(),
-            ]),
+            ], 'admin'),
             ['payment' => $payment]
         );
-
-        $this->em->flush();
 
         return $this->createErrorResponse($payment);
     }

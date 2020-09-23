@@ -10,9 +10,9 @@
 
 namespace Darvin\PaymentBundle\Logger;
 
-use Darvin\PaymentBundle\Entity\Log;
+use Darvin\PaymentBundle\Entity\Event;
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Repository\LogRepository;
+use Darvin\PaymentBundle\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -120,13 +120,9 @@ class PaymentLogger implements LoggerInterface
         $payment = $context['payment'] ?? null;
 
         if ($payment instanceof Payment) {
-            $log = new Log($payment, $level, $message);
+            $event = new Event($payment, $level, $message);
 
-            if (null !== $payment->getId()) {
-                $this->getLogRepository()->saveLog($log, $payment->getId());
-            } else {
-                $this->em->persist($log);
-            }
+            $this->getEventRepository()->save($event);
         }
 
         if (null !== $this->monolog) {
@@ -135,10 +131,10 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Repository\LogRepository
+     * @return \Darvin\PaymentBundle\Repository\EventRepository
      */
-    private function getLogRepository(): LogRepository
+    private function getEventRepository(): EventRepository
     {
-        return $this->em->getRepository(Log::class);
+        return $this->em->getRepository(Event::class);
     }
 }

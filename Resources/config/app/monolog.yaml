@@ -2,7 +2,7 @@ monolog:
     channels: ['payment']
     handlers:
         payment_logger:
-            level:    debug #TODO подумать
+            level:    info
             type:     stream
             path:     '%kernel.logs_dir%/payment.%kernel.environment%.log'
             channels: [payment]

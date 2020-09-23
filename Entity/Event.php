@@ -13,11 +13,11 @@ namespace Darvin\PaymentBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="payment_log")
- * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\LogRepository")
+ * @ORM\Table(name="payment_event")
+ * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\EventRepository")
  * @ORM\InheritanceType("SINGLE_TABLE")
  */
-class Log
+class Event
 {
     /**
      * @ORM\Column(name="id", type="integer")
@@ -45,7 +45,7 @@ class Log
     /**
      * @var \Darvin\PaymentBundle\Entity\Payment
      *
-     * @ORM\ManyToOne(targetEntity="Darvin\PaymentBundle\Entity\Payment", inversedBy="logs")
+     * @ORM\ManyToOne(targetEntity="Darvin\PaymentBundle\Entity\Payment", inversedBy="events")
      */
     protected $payment;
 
@@ -57,7 +57,7 @@ class Log
     protected $createdAt;
 
     /**
-     * Log constructor.
+     * Event constructor.
      *
      * @param \Darvin\PaymentBundle\Entity\Payment $payment
      * @param string                               $level

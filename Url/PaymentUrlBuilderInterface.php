@@ -37,8 +37,6 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
-     *
-     * @throws ActionNotImplementedException
      */
     public function getCaptureUrl(Payment $payment): string;
 
@@ -46,8 +44,6 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
-     *
-     * @throws ActionNotImplementedException
      */
     public function getRefundUrl(Payment $payment): string;
 
@@ -55,8 +51,6 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
-     *
-     * @throws ActionNotImplementedException
      */
     public function getNotifyUrl(Payment $payment): string;
 

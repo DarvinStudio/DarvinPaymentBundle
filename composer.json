@@ -24,6 +24,7 @@
     ],
     "require": {
         "php": ">=7.2",
+        "symfony/validator": "*",
         "symfony/workflow": "*",
         "doctrine/orm": "*",
         "darvinstudio/darvin-utils-bundle": "*",
