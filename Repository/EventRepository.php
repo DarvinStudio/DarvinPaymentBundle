@@ -21,8 +21,7 @@ class EventRepository extends EntityRepository
     /**
      * @param \Darvin\PaymentBundle\Entity\Event $event Event
      *
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \ReflectionException
+     * @throws \LogicException
      */
     public function save(Event $event): void
     {

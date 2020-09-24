@@ -78,6 +78,7 @@ class PaymentExtension extends AbstractExtension
      * @param string|null       $orderClass Order entity class
      *
      * @return string
+     * @throws \LogicException
      */
     public function renderPurchaseWidget(Environment $twig, $order, ?string $orderClass = null): string
     {

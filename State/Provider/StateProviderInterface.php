@@ -21,6 +21,7 @@ interface StateProviderInterface
      * @param string $name Type name
      *
      * @return \Darvin\PaymentBundle\State\Model\State
+     * @throws \InvalidArgumentException
      */
     public function getState(string $name): State;
 

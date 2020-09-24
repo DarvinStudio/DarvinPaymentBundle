@@ -54,6 +54,7 @@ abstract class AbstractFormRenderer
      * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return string
+     * @throws \LogicException
      */
     abstract public function renderForm(Payment $payment): string;
 }

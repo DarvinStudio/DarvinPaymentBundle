@@ -99,6 +99,8 @@ class PaymentFactory implements PaymentFactoryInterface
 
     /**
      * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     *
+     * @throws \InvalidArgumentException
      */
     protected function validate(Payment $payment): void
     {

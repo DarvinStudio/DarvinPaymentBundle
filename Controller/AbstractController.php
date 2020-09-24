@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\WorkflowInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 /**
  * Common functional for all payment controllers
@@ -81,13 +82,13 @@ abstract class AbstractController
     public function __construct(
         GatewayFactoryInterface $gatewayFactory,
         EntityManagerInterface $em,
-        \Twig\Environment $twig,
+        Environment $twig,
         LoggerInterface $logger,
         PaymentUrlBuilderInterface $urlBuilder,
         TranslatorInterface $translator,
         WorkflowInterface $workflow,
         bool $preAuthorize
-    ){
+    ) {
         $this->gatewayFactory = $gatewayFactory;
         $this->em = $em;
         $this->logger = $logger;
@@ -102,7 +103,6 @@ abstract class AbstractController
      * @param string $gatewayName Gateway name
      *
      * @return \Darvin\PaymentBundle\Bridge\BridgeInterface
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     protected function getBridge(string $gatewayName): BridgeInterface
@@ -118,7 +118,6 @@ abstract class AbstractController
      * @param string $gatewayName Gateway name
      *
      * @return \Omnipay\Common\GatewayInterface
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     protected function getGateway(string $gatewayName): GatewayInterface
@@ -134,6 +133,7 @@ abstract class AbstractController
      * @param string $token Token
      *
      * @return \Darvin\PaymentBundle\Entity\Payment
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     protected function getPaymentByToken(string $token): Payment
     {
@@ -151,6 +151,8 @@ abstract class AbstractController
     /**
      * @param \Omnipay\Common\GatewayInterface $gateway Gateway
      * @param string                           $method  Name of gateway method
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     protected function validateGateway(GatewayInterface $gateway, string $method): void
     {
@@ -168,6 +170,8 @@ abstract class AbstractController
      * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
      * @param string                               $transition  Workflow transition
      * @param string|null                          $gatewayName Current gateway Name
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     protected function validatePayment(Payment $payment, string $transition, ?string $gatewayName = null): void
     {
@@ -181,9 +185,9 @@ abstract class AbstractController
             throw new NotFoundHttpException($errorMessage);
         }
 
-        if ($gatewayName !== null &&
-            $payment->getGateway() !== null &&
-            $payment->getGateway() !== $gatewayName
+        if ($gatewayName !== null
+            && $payment->getGateway() !== null
+            && $payment->getGateway() !== $gatewayName
         ) {
             $errorMessage = $this->translator->trans('error.wrong_gateway', [
                 '%gateway%'        => $gatewayName,

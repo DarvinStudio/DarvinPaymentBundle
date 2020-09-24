@@ -23,6 +23,7 @@ interface PaymentUrlBuilderInterface
      * @param string  $gatewayName Gateway name
      *
      * @return string
+     * @throws \LogicException
      */
     public function getPurchaseUrl(Payment $payment, string $gatewayName): string;
 
@@ -30,6 +31,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getCompleteUrl(Payment $payment): string;
 
@@ -37,6 +39,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getCaptureUrl(Payment $payment): string;
 
@@ -44,6 +47,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getRefundUrl(Payment $payment): string;
 
@@ -58,6 +62,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getApproveUrl(Payment $payment): string;
 
@@ -65,6 +70,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getCancelUrl(Payment $payment): string;
 
@@ -72,6 +78,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getVoidUrl(Payment $payment): string;
 
@@ -79,6 +86,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getSuccessUrl(Payment $payment): string;
 
@@ -86,6 +94,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getFailUrl(Payment $payment): string;
 
@@ -93,6 +102,7 @@ interface PaymentUrlBuilderInterface
      * @param Payment $payment Payment
      *
      * @return string
+     * @throws \LogicException
      */
     public function getErrorUrl(Payment $payment): string;
 }
