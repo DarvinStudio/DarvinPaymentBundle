@@ -1,2 +1,2 @@
 # DarvinPaymentBundle
-This bundle provides basic payment logic for Symfony-based applications basic on Omnipay lib.
+This Omnipay-based bundle provides basic payment logic for Symfony applications.
