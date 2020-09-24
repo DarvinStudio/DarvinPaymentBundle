@@ -25,7 +25,7 @@ abstract class AbstractBridge implements BridgeInterface
     /**
      * @var array
      */
-    private $gatewayConfig;
+    protected $gatewayConfig;
 
     /**
      * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder URL Builder
@@ -33,23 +33,27 @@ abstract class AbstractBridge implements BridgeInterface
     public function __construct(PaymentUrlBuilderInterface $urlBuilder)
     {
         $this->urlBuilder = $urlBuilder;
+
         $this->gatewayConfig = [];
     }
 
     /**
-     * @param array $gatewayConfig
+     * @param array $gatewayConfig Gateway config
      */
-    public function setGatewayConfig(array $gatewayConfig = []): void
+    public function setGatewayConfig(array $gatewayConfig): void
     {
         $this->gatewayConfig = $gatewayConfig;
     }
 
     /**
-     * @return array
+     * @param string $name    Parameter name
+     * @param mixed  $default Default value
+     *
+     * @return mixed
      */
-    public function getGatewayConfig(): array
+    public function getGatewayParameter(string $name, $default = null)
     {
-        return $this->gatewayConfig;
+        return $this->gatewayConfig[$name] ?? $default;
     }
 
     /**
@@ -57,6 +61,6 @@ abstract class AbstractBridge implements BridgeInterface
      */
     public function initializationParameters(): array
     {
-        return $this->getGatewayConfig();
+        return $this->gatewayConfig;
     }
 }

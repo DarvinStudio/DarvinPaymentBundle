@@ -18,17 +18,14 @@ class BridgeNotExistsException extends \Exception
     /**
      * @var string
      */
-    protected $gatewayName;
+    private $gatewayName;
 
     /**
-     * @param string $gatewayName
+     * @param string $gatewayName Gateway name
      */
     public function __construct(string $gatewayName)
     {
-        parent::__construct(sprintf(
-            'Parameters bridge for %s gateway not found',
-            $gatewayName
-        ));
+        parent::__construct(sprintf('Parameters bridge for %s gateway not found', $gatewayName));
 
         $this->gatewayName = $gatewayName;
     }

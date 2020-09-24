@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Bridge;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
- * Interface Bridge
+ * Bridge
  */
 interface BridgeInterface
 {

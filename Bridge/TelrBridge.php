@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle\Bridge;
 
+use Darvin\OmnipayTelr\TelrGateway;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
@@ -22,7 +23,7 @@ class TelrBridge extends AbstractBridge
      */
     public function getGatewayClassName(): string
     {
-        return \Darvin\OmnipayTelr\TelrGateway::class;
+        return TelrGateway::class;
     }
 
     /**
@@ -55,6 +56,7 @@ class TelrBridge extends AbstractBridge
     public function captureParameters(Payment $payment): array
     {
         // TODO: Implement captureParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -69,7 +71,7 @@ class TelrBridge extends AbstractBridge
             'ivp_desc'     => $payment->getDescription(),
             'return_auth'  => $this->urlBuilder->getCompleteUrl($payment),
             'return_decl'  => $this->urlBuilder->getFailUrl($payment),
-            'return_can'   => $this->urlBuilder->getCancelUrl($payment)
+            'return_can'   => $this->urlBuilder->getCancelUrl($payment),
         ];
     }
 
@@ -79,7 +81,7 @@ class TelrBridge extends AbstractBridge
     public function completePurchaseParameters(Payment $payment): array
     {
         return [
-            'order_ref' => $payment->getTransactionReference()
+            'order_ref' => $payment->getTransactionReference(),
         ];
     }
 
@@ -91,13 +93,13 @@ class TelrBridge extends AbstractBridge
         return $this->completePurchaseParameters($payment);
     }
 
-
     /**
      * {@inheritDoc}
      */
     public function refundParameters(Payment $payment): array
     {
         // TODO: Implement refundParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -106,5 +108,15 @@ class TelrBridge extends AbstractBridge
     public function acceptNotificationParameters(Payment $payment): array
     {
         // TODO: Implement acceptNotificationParameters() method.
+        throw new \RuntimeException('Not implemented.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function voidParameters(Payment $payment): array
+    {
+        // TODO: Implement voidParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 }

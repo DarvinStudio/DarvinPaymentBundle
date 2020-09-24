@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Darvin Studio <info@darvin-studio.ru>
  * @copyright Copyright (c) 2018-2020, Darvin Studio
@@ -11,8 +11,10 @@
 namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryRegistryInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
+use Omnipay\Sberbank\SberbankGateway;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -49,6 +51,7 @@ class SberbankBridge extends AbstractBridge
         TranslatorInterface $translator
     ) {
         parent::__construct($urlBuilder);
+
         $this->receiptFactoryRegistry = $receiptFactoryRegistry;
         $this->logger = $logger;
         $this->translator = $translator;
@@ -59,7 +62,7 @@ class SberbankBridge extends AbstractBridge
      */
     public function getGatewayClassName(): string
     {
-        return \Omnipay\Sberbank\SberbankGateway::class;
+        return SberbankGateway::class;
     }
 
     /**
@@ -75,7 +78,7 @@ class SberbankBridge extends AbstractBridge
      */
     public function getSessionTimeout(): int
     {
-        return $this->getGatewayConfig()['sessionTimeoutSecs'] ?? 86400;
+        return $this->getGatewayParameter('sessionTimeoutSecs', 86400);
     }
 
     /**
@@ -98,7 +101,7 @@ class SberbankBridge extends AbstractBridge
         ];
     }
 
-    /**x
+    /**
      * {@inheritDoc}
      */
     public function purchaseParameters(Payment $payment): array
@@ -114,7 +117,7 @@ class SberbankBridge extends AbstractBridge
             'sessionTimeoutSecs' => $this->getSessionTimeout(),
             'clientId'           => $payment->getClient()->getId(),
             'email'              => $payment->getClient()->getEmail(),
-            'taxSystem'          => $this->getGatewayConfig()['taxSystem'] ?? null,
+            'taxSystem'          => $this->getGatewayParameter('taxSystem'),
             'orderBundle'        => $this->getReceipt($payment),
         ];
     }
@@ -170,6 +173,7 @@ class SberbankBridge extends AbstractBridge
     public function acceptNotificationParameters(Payment $payment): array
     {
         // TODO: Implement acceptNotificationParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -179,20 +183,21 @@ class SberbankBridge extends AbstractBridge
      */
     private function getReceipt(Payment $payment): ?string
     {
-        if ($this->receiptFactoryRegistry->hasFactory($payment)) {
-            $factory = $this->receiptFactoryRegistry->getFactory($payment);
+        if (!$this->receiptFactoryRegistry->hasFactory($payment)) {
+            return null;
+        }
 
-            try {
-                return json_encode($factory->createReceipt($payment, $this->getGatewayName()));
-            } catch (\Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException $ex) {
+        $factory = $this->receiptFactoryRegistry->getFactory($payment);
 
-                $this->logger->warning(
-                    $this->translator->trans('error.cant_create_receipt', [], 'payment_event'),
-                    ['payment' => $payment]
-                );
-
-                return null;
-            }
+        try {
+            return json_encode($factory->createReceipt($payment, $this->getGatewayName()));
+        } catch (CantCreateReceiptException $ex) {
+            $this->logger->warning(
+                $this->translator->trans('error.cant_create_receipt', [], 'payment_event'),
+                [
+                    'payment' => $payment,
+                ]
+            );
         }
 
         return null;
