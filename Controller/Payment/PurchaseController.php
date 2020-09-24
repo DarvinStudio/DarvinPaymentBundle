@@ -89,7 +89,7 @@ class PurchaseController extends AbstractController
             $this->em->flush();
 
             $this->logger->info(
-                $this->translator->trans('log.payment.info.created_redirect', [], 'admin'),
+                $this->translator->trans('info.created_redirect', [], 'payment_event'),
                 ['payment' => $payment]
             );
 
@@ -97,11 +97,11 @@ class PurchaseController extends AbstractController
         }
 
         $this->logger->error(
-            $this->translator->trans('log.payment.error.bad_response', [
+            $this->translator->trans('error.bad_response', [
                 '%method%'  => __METHOD__,
                 '%code%'    => $response->getCode(),
                 '%message%' => $response->getMessage(),
-            ], 'admin'),
+            ], 'payment_event'),
             ['payment' => $payment]
         );
 
@@ -128,7 +128,7 @@ class PurchaseController extends AbstractController
             $this->em->flush();
 
             $this->logger->warning(
-                $this->translator->trans('log.payment.warning.session_expired', [], 'admin'),
+                $this->translator->trans('warning.session_expired', [], 'payment_event'),
                 ['payment' => $payment]
             );
 

@@ -36,10 +36,10 @@ class SuccessController extends AbstractController
             PaymentStateType::AUTHORIZED
         ], true)) {
             $this->logger->error(
-                $this->translator->trans('log.payment.error.success', [
+                $this->translator->trans('error.success', [
                     '%method%' => __METHOD__,
                     '%state%'  => $payment->getState(),
-                ], 'admin'),
+                ], 'payment_event'),
                 ['payment' => $payment]
             );
 

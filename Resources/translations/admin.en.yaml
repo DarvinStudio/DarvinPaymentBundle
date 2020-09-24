@@ -5,24 +5,6 @@ configuration:
             notification_for_state: Notification for state «%state%»
         title: Online Payment
 
-log:
-    payment:
-        error:
-            bad_response: "%method%: Can't handle response. Response code: %code%. Response message: %message%"
-            cant_create_receipt: "%method%: Can't create receipt"
-            cant_send_email: "Some troubles with sending email: %message%"
-            missing_public_email: "Missing client email"
-            missing_service_email: "Missing service email"
-            not_available_operation: "Operation «%transition%» is not available"
-            not_support_gateway_method: "Payment gateway «%gateway%» doesn't support «%method%» method"
-            wrong_gateway: "Wrong gateway (%gateway%) for this payment. Need gateway %paymentGateway%."
-            success: "%method%: Can't show success, because current state is «%state%»"
-        info:
-            changed_state: "State changed to «%state%»"
-            created_redirect: "Created payment redirect"
-        warning:
-            session_expired: "Payment session expired"
-
 payment:
     action:
         approve:

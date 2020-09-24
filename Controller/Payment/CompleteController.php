@@ -63,11 +63,11 @@ class CompleteController extends AbstractController
         }
 
         $this->logger->error(
-            $this->translator->trans('log.payment.error.bad_response', [
+            $this->translator->trans('error.bad_response', [
                 '%method%'  => __METHOD__,
                 '%code%'    => $response->getCode(),
                 '%message%' => $response->getMessage(),
-            ], 'admin'),
+            ], 'payment_event'),
             ['payment' => $payment]
         );
 

@@ -187,7 +187,7 @@ class SberbankBridge extends AbstractBridge
             } catch (\Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException $ex) {
 
                 $this->logger->warning(
-                    $this->translator->trans('log.payment.error.cant_create_receipt', [], 'admin'),
+                    $this->translator->trans('error.cant_create_receipt', [], 'payment_event'),
                     ['payment' => $payment]
                 );
 

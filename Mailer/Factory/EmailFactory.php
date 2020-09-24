@@ -71,7 +71,7 @@ class EmailFactory implements EmailFactoryInterface
         $emailData = $state->getEmail()->getPublicEmail();
 
         if (null === $payment->getClient()->getEmail()) {
-            throw new CantCreateEmailException($this->translator->trans('log.payment.error.missing_public_email', [], 'admin'));
+            throw new CantCreateEmailException($this->translator->trans('error.missing_public_email', [], 'payment_event'));
         }
 
         return $this->genericFactory->createEmail(
@@ -94,7 +94,7 @@ class EmailFactory implements EmailFactoryInterface
         $serviceEmails = $this->paymentConfig->getEmailsByStateName($state->getName());
 
         if (0 === count($serviceEmails)) {
-            throw new CantCreateEmailException($this->translator->trans('log.payment.error.missing_service_email', [], 'admin'));
+            throw new CantCreateEmailException($this->translator->trans('error.missing_service_email', [], 'payment_event'));
         }
 
         $emailData = $state->getEmail()->getServiceEmail();

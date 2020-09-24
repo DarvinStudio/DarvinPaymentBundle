@@ -14,7 +14,6 @@ use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\State\Event\ChangedStateEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Workflow\Event\Event;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -62,7 +61,7 @@ class LogSubscriber implements EventSubscriberInterface
         $stateTitle = $this->translator->trans(PaymentStateType::getReadableValue($payment->getState()), [], 'admin');
 
         $this->logger->info(
-            $this->translator->trans('log.payment.info.changed_state', ['%state%' => $stateTitle], 'admin'),
+            $this->translator->trans('info.changed_state', ['%state%' => $stateTitle], 'payment_event'),
             ['payment' => $payment]
         );
     }

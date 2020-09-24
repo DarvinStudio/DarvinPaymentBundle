@@ -155,10 +155,10 @@ abstract class AbstractController
     protected function validateGateway(GatewayInterface $gateway, string $method): void
     {
         if (!method_exists($gateway, $method)) {
-            $errorMessage = $this->translator->trans('payment.log.error.not_support_gateway_method', [
+            $errorMessage = $this->translator->trans('error.not_support_gateway_method', [
                 '%gateway%' => $gateway->getName(),
                 '%method%'  => $method,
-            ]);
+            ], 'payment_event');
 
             throw new NotFoundHttpException($errorMessage);
         }
@@ -172,9 +172,9 @@ abstract class AbstractController
     protected function validatePayment(Payment $payment, string $transition, ?string $gatewayName = null): void
     {
         if (!$this->workflow->can($payment, $transition)) {
-            $errorMessage = $this->translator->trans('log.payment.error.not_available_operation', [
+            $errorMessage = $this->translator->trans('error.not_available_operation', [
                 '%transition%' => $transition,
-            ], 'admin');
+            ], 'payment_event');
 
             $this->logger->error($errorMessage, ['payment' => $payment]);
 
@@ -185,10 +185,10 @@ abstract class AbstractController
             $payment->getGateway() !== null &&
             $payment->getGateway() !== $gatewayName
         ) {
-            $errorMessage = $this->translator->trans('log.payment.error.wrong_gateway', [
+            $errorMessage = $this->translator->trans('error.wrong_gateway', [
                 '%gateway%'        => $gatewayName,
                 '%paymentGateway%' => $payment->getGateway(),
-            ], 'admin');
+            ], 'payment_event');
 
             $this->logger->error($errorMessage, ['payment' => $payment]);
 

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\EventListener\Payment\Updated;
+namespace Darvin\PaymentBundle\EventListener\State\Changed;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\State\Event\ChangedStateEvent;
@@ -21,7 +21,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * Class payment events subscriber for log about changed state
  */
-class EventDispatchSubscriber implements EventSubscriber
+class TriggerEventSubscriber implements EventSubscriber
 {
     /**
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
@@ -29,11 +29,17 @@ class EventDispatchSubscriber implements EventSubscriber
     private $eventDispatcher;
 
     /**
+     * @var array
+     */
+    private $events;
+
+    /**
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
      */
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->events = [];
     }
 
     /**
@@ -53,10 +59,13 @@ class EventDispatchSubscriber implements EventSubscriber
     public function onFlush(OnFlushEventArgs $args): void
     {
         $uow = $args->getEntityManager()->getUnitOfWork();
-        foreach ($uow->getIdentityMap() as $key => $entities) {
-            foreach ($entities as $entity) {
-                if ($entity instanceof Payment) {
-                    $this->eventDispatcher->dispatch(new ChangedStateEvent($entity));
+
+        foreach (array_merge($uow->getScheduledEntityInsertions(), $uow->getScheduledEntityUpdates()) as $entity) {
+            if ($entity instanceof Payment) {
+                $changeSet = $uow->getEntityChangeSet($entity);
+
+                if (isset($changeSet['state'])) {
+                    $this->events[] = new ChangedStateEvent($entity);
                 }
             }
         }
@@ -67,15 +76,9 @@ class EventDispatchSubscriber implements EventSubscriber
      */
     public function postFlush(PostFlushEventArgs $args): void
     {
-        $uow = $args->getEntityManager()->getUnitOfWork();
-
-        foreach ($uow->getScheduledEntityUpdates() as $entity) {
-            if ($entity instanceof Payment) {
-                $changeSet = $uow->getEntityChangeSet($entity);
-                if (isset($changeSet['state'])) {
-                    $this->eventDispatcher->dispatch(new ChangedStateEvent($entity));
-                }
-            }
+        foreach ($this->events as $key => $event) {
+            $this->eventDispatcher->dispatch($event);
+            unset($this->events[$key]);
         }
     }
 }

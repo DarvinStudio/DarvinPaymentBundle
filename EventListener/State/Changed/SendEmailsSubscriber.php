@@ -20,7 +20,6 @@ use Darvin\PaymentBundle\State\Event\ChangedStateEvent;
 use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Workflow\Event\Event;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -132,9 +131,9 @@ class SendEmailsSubscriber implements EventSubscriberInterface
         try {
             $this->mailer->mustSend($email);
         } catch (MailerException $ex) {
-            $errorMessage = $this->translator->trans('log.payment.error.cant_send_email', [
+            $errorMessage = $this->translator->trans('error.cant_send_email', [
                 '%message%' => $ex->getMessage(),
-            ], 'admin');
+            ], 'payment_event');
 
             $this->logger->warning($errorMessage, ['payment' => $payment]);
         }
