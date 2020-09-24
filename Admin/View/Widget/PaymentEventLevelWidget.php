@@ -12,11 +12,12 @@ namespace Darvin\PaymentBundle\Admin\View\Widget;
 
 use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\AdminBundle\View\Widget\Widget\AbstractWidget;
+use Darvin\PaymentBundle\Entity\Event;
 
 /**
  * Event level admin view widget
  */
-class EventLevelWidget extends AbstractWidget
+class PaymentEventLevelWidget extends AbstractWidget
 {
     /**
      * {@inheritDoc}
@@ -31,7 +32,7 @@ class EventLevelWidget extends AbstractWidget
      */
     protected function getAllowedEntityClasses(): iterable
     {
-        yield \Darvin\PaymentBundle\Entity\Event::class;
+        yield Event::class;
     }
 
     /**

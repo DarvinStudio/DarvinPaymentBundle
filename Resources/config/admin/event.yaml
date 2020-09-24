@@ -20,7 +20,7 @@ view:
                 widget: datetime
             level:
                 size:   xs
-                widget: event_level
+                widget: payment_event_level
             message:
                 size:   free
 
