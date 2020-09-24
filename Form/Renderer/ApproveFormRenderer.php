@@ -19,7 +19,7 @@ use Darvin\PaymentBundle\Workflow\Transitions;
 class ApproveFormRenderer extends AbstractFormRenderer
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function renderForm(Payment $payment): string
     {

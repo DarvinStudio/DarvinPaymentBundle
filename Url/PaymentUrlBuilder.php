@@ -33,7 +33,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getPurchaseUrl(Payment $payment, string $gatewayName): string
     {
@@ -50,7 +50,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getCompleteUrl(Payment $payment): string
     {
@@ -64,7 +64,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getCaptureUrl(Payment $payment): string
     {
@@ -78,7 +78,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getRefundUrl(Payment $payment): string
     {
@@ -92,7 +92,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getNotifyUrl(Payment $payment): string
     {
@@ -100,7 +100,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getApproveUrl(Payment $payment): string
     {
@@ -114,7 +114,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getCancelUrl(Payment $payment): string
     {
@@ -128,7 +128,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getVoidUrl(Payment $payment): string
     {
@@ -142,7 +142,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSuccessUrl(Payment $payment): string
     {
@@ -156,7 +156,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getFailUrl(Payment $payment): string
     {
@@ -170,7 +170,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getErrorUrl(Payment $payment): string
     {

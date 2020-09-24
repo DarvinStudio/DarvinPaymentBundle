@@ -53,7 +53,7 @@ abstract class AbstractBridge implements BridgeInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function initializationParameters(): array
     {

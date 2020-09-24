@@ -19,7 +19,7 @@ use Omnipay\Common\Message\RedirectResponseInterface;
 class RedirectFactory implements RedirectFactoryInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function createRedirect(RedirectResponseInterface $response, int $sessionTimeout): Redirect
     {

@@ -40,7 +40,7 @@ class GatewayFactory implements GatewayFactoryInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function createGateway(string $name): GatewayInterface
     {
@@ -58,7 +58,7 @@ class GatewayFactory implements GatewayFactoryInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getBridge(string $name): BridgeInterface
     {

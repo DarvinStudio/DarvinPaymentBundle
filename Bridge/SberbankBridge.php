@@ -55,7 +55,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getGatewayClassName(): string
     {
@@ -63,7 +63,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getGatewayName(): string
     {
@@ -71,7 +71,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSessionTimeout(): int
     {
@@ -79,7 +79,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function authorizeParameters(Payment $payment): array
     {
@@ -87,7 +87,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function completeAuthorizeParameters(Payment $payment): array
     {
@@ -99,7 +99,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**x
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function purchaseParameters(Payment $payment): array
     {
@@ -120,7 +120,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function completePurchaseParameters(Payment $payment): array
     {
@@ -132,7 +132,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function voidParameters(Payment $payment): array
     {
@@ -143,7 +143,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function captureParameters(Payment $payment): array
     {
@@ -154,7 +154,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function refundParameters(Payment $payment): array
     {
@@ -165,7 +165,7 @@ class SberbankBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function acceptNotificationParameters(Payment $payment): array
     {

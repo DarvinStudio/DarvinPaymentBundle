@@ -18,7 +18,7 @@ use Darvin\PaymentBundle\Entity\Payment;
 class TelrBridge extends AbstractBridge
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getGatewayClassName(): string
     {
@@ -26,7 +26,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getGatewayName(): string
     {
@@ -34,7 +34,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSessionTimeout(): int
     {
@@ -42,7 +42,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function authorizeParameters(Payment $payment): array
     {
@@ -50,7 +50,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function captureParameters(Payment $payment): array
     {
@@ -58,7 +58,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function purchaseParameters(Payment $payment): array
     {
@@ -74,7 +74,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function completePurchaseParameters(Payment $payment): array
     {
@@ -84,7 +84,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function completeAuthorizeParameters(Payment $payment): array
     {
@@ -93,7 +93,7 @@ class TelrBridge extends AbstractBridge
 
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function refundParameters(Payment $payment): array
     {
@@ -101,7 +101,7 @@ class TelrBridge extends AbstractBridge
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function acceptNotificationParameters(Payment $payment): array
     {

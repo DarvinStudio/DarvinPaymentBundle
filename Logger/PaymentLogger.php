@@ -49,7 +49,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function emergency($message, array $context = []): void
     {
@@ -57,7 +57,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function alert($message, array $context = []): void
     {
@@ -65,7 +65,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function critical($message, array $context = []): void
     {
@@ -73,7 +73,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function error($message, array $context = []): void
     {
@@ -81,7 +81,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function warning($message, array $context = []): void
     {
@@ -89,7 +89,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function notice($message, array $context = []): void
     {
@@ -97,7 +97,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function info($message, array $context = []): void
     {
@@ -105,7 +105,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function debug($message, array $context = []): void
     {
@@ -113,7 +113,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function log($level, $message, array $context = []): void
     {

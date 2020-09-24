@@ -23,7 +23,7 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
     private $receiptFactories = [];
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function addFactory(ReceiptFactoryInterface $receiptFactory): void
     {
@@ -37,7 +37,7 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getFactory(Payment $payment): ReceiptFactoryInterface
     {
@@ -51,7 +51,7 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function hasFactory(Payment $payment): bool
     {

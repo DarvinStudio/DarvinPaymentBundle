@@ -64,7 +64,7 @@ class EmailFactory implements EmailFactoryInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function createPublicEmail(Payment $payment, State $state): Email
     {
@@ -87,7 +87,7 @@ class EmailFactory implements EmailFactoryInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function createServiceEmail(Payment $payment, State $state): Email
     {

@@ -19,7 +19,7 @@ use Darvin\PaymentBundle\Workflow\Transitions;
 class VoidFormRenderer extends AbstractFormRenderer
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function renderForm(Payment $payment): string
     {
