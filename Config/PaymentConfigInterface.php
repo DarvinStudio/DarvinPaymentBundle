@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Config;
 
 /**
- * Payment configuration interface
+ * Payment configuration
  */
 interface PaymentConfigInterface
 {

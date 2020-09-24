@@ -31,7 +31,7 @@ class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterf
     private $mailerEnabled;
 
     /**
-     * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Provider
+     * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Payment state provider
      * @param bool                                                        $mailerEnabled Is mailer enabled
      */
     public function __construct(StateProviderInterface $stateProvider, bool $mailerEnabled)
