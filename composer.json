@@ -1,6 +1,6 @@
 {
     "name":        "darvinstudio/darvin-payment-bundle",
-    "description": "This bundle provides basic payment logic for Symfony-based applications basic on Omnipay lib.",
+    "description": "This Omnipay-based bundle provides basic payment logic for Symfony applications.",
     "type":        "symfony-bundle",
     "license":     "MIT",
     "keywords": [
@@ -24,21 +24,21 @@
     ],
     "require": {
         "php": ">=7.2",
-        "symfony/validator": "*",
-        "symfony/workflow": "*",
-        "doctrine/orm": "*",
         "darvinstudio/darvin-utils-bundle": "*",
+        "doctrine/orm": "*",
         "fresh/doctrine-enum-bundle": "^6",
         "league/omnipay": "^3",
         "ramsey/uuid": "^3||^4",
+        "symfony/validator": "*",
+        "symfony/workflow": "*",
         "twig/twig": "*"
     },
     "suggest": {
         "darvinstudio/darvin-admin-bundle": "Allow admin CRUD operations",
         "darvinstudio/darvin-config-bundle": "Allow admin email notifications",
-        "monolog/monolog": "Allows more advanced logging of the application flow",
+        "darvinstudio/omnipay-sberbank": "Needed to support Sberbank payment",
         "darvinstudio/omnipay-telr": "Needed to support Telr payment",
-        "darvinstudio/omnipay-sberbank": "Needed to support Sberbank payment"
+        "monolog/monolog": "Allows more advanced logging of the application flow"
     },
     "autoload": {
         "psr-4": { "Darvin\\PaymentBundle\\": "" }
