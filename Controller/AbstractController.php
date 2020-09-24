@@ -105,7 +105,7 @@ abstract class AbstractController
      * @return \Darvin\PaymentBundle\Bridge\BridgeInterface
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    protected function getBridge(string $gatewayName): BridgeInterface
+    final protected function getBridge(string $gatewayName): BridgeInterface
     {
         try {
             return $this->gatewayFactory->getBridge($gatewayName);
@@ -120,7 +120,7 @@ abstract class AbstractController
      * @return \Omnipay\Common\GatewayInterface
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    protected function getGateway(string $gatewayName): GatewayInterface
+    final protected function getGateway(string $gatewayName): GatewayInterface
     {
         try {
             return $this->gatewayFactory->createGateway($gatewayName);
@@ -135,7 +135,7 @@ abstract class AbstractController
      * @return \Darvin\PaymentBundle\Entity\Payment
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    protected function getPaymentByToken(string $token): Payment
+    final protected function getPaymentByToken(string $token): Payment
     {
         $payment = $this->em
             ->getRepository(Payment::class)
@@ -154,7 +154,7 @@ abstract class AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    protected function validateGateway(GatewayInterface $gateway, string $method): void
+    final protected function validateGateway(GatewayInterface $gateway, string $method): void
     {
         if (!method_exists($gateway, $method)) {
             $errorMessage = $this->translator->trans('error.not_support_gateway_method', [
@@ -173,7 +173,7 @@ abstract class AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    protected function validatePayment(Payment $payment, string $transition, ?string $gatewayName = null): void
+    final protected function validatePayment(Payment $payment, string $transition, ?string $gatewayName = null): void
     {
         if (!$this->workflow->can($payment, $transition)) {
             $errorMessage = $this->translator->trans('error.not_available_operation', [
@@ -205,7 +205,7 @@ abstract class AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    protected function createErrorResponse(Payment $payment): RedirectResponse
+    final protected function createErrorResponse(Payment $payment): RedirectResponse
     {
         return new RedirectResponse($this->urlBuilder->getErrorUrl($payment));
     }
