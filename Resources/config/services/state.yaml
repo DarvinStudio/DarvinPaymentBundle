@@ -23,3 +23,5 @@ services:
 
     darvin_payment.state.provider:
         class: '%darvin_payment.state.provider.class%'
+        arguments:
+            - '%darvin_payment.mailer.states%'

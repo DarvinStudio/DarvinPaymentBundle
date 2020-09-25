@@ -13,12 +13,12 @@ namespace Darvin\PaymentBundle\State\Provider;
 use Darvin\PaymentBundle\State\Model\State;
 
 /**
- * Payment state provider interface
+ * Payment state provider
  */
 interface StateProviderInterface
 {
     /**
-     * @param string $name Type name
+     * @param string $name State name
      *
      * @return \Darvin\PaymentBundle\State\Model\State
      * @throws \InvalidArgumentException
@@ -26,19 +26,19 @@ interface StateProviderInterface
     public function getState(string $name): State;
 
     /**
-     * @param string|null $name Type name
+     * @param string|null $name State name
      *
      * @return bool
      */
     public function hasState(?string $name): bool;
 
     /**
-     * @return \Darvin\PaymentBundle\State\Model\State[]
-     */
-    public function getAllStates(): array;
-
-    /**
      * @return string[]
      */
     public function getAllStateNames(): array;
+
+    /**
+     * @return \Darvin\PaymentBundle\State\Model\State[]
+     */
+    public function getAllStates(): array;
 }
