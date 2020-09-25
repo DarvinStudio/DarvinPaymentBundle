@@ -89,7 +89,7 @@ trait OperationTrait
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
-    final protected function execute(string $method, string $transition, string $token, Request $request): Response
+    private function execute(string $method, string $transition, string $token, Request $request): Response
     {
         $payment = $this->getPaymentByToken($token);
 
