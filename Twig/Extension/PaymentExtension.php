@@ -12,14 +12,13 @@ namespace Darvin\PaymentBundle\Twig\Extension;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Repository\PaymentRepository;
-use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 /**
- * Payment twig extension
+ * Payment Twig extension
  */
 class PaymentExtension extends AbstractExtension
 {
@@ -29,31 +28,11 @@ class PaymentExtension extends AbstractExtension
     private $em;
 
     /**
-     * @var \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface
+     * @param \Doctrine\ORM\EntityManagerInterface $em Entity manager
      */
-    private $urlBuilder;
-
-    /**
-     * @var array
-     */
-    private $gatewayNames;
-
-    /**
-     * @param \Doctrine\ORM\EntityManagerInterface                 $em         Entity manager
-     * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder Url builder
-     */
-    public function __construct(EntityManagerInterface $em, PaymentUrlBuilderInterface $urlBuilder)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
-        $this->urlBuilder = $urlBuilder;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function addGatewayName(string $name): void
-    {
-        $this->gatewayNames[] = $name;
     }
 
     /**
@@ -64,9 +43,6 @@ class PaymentExtension extends AbstractExtension
         return [
             new TwigFunction('payment_purchase_widget', [$this, 'renderPurchaseWidget'], [
                 'needs_environment' => true,
-                'is_safe'           => ['html'],
-            ]),
-            new TwigFunction('payment_purchase_urls', [$this, 'getPurchaseUrls'], [
                 'is_safe'           => ['html'],
             ]),
         ];
@@ -101,22 +77,6 @@ class PaymentExtension extends AbstractExtension
         return $twig->render('@DarvinPayment/payment/purchase_widget.html.twig', [
             'payments' => $payments,
         ]);
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
-     *
-     * @return array
-     */
-    public function getPurchaseUrls(Payment $payment): array
-    {
-        $urls = [];
-
-        foreach ($this->gatewayNames as $gatewayName) {
-            $urls[$gatewayName] = $this->urlBuilder->getPurchaseUrl($payment, $gatewayName);
-        }
-
-        return $urls;
     }
 
     /**
