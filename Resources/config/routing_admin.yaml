@@ -1,15 +1,15 @@
 darvin_payment_admin_approve:
     path:     /approve/{token}
-    defaults: { _controller: darvin_payment.admin.controller.approve }
+    defaults: { _controller: darvin_payment.admin.approve.controller }
 
 darvin_payment_admin_capture:
     path:     /capture/{token}
-    defaults: { _controller: darvin_payment.admin.controller.capture }
+    defaults: { _controller: darvin_payment.admin.capture.controller }
 
 darvin_payment_admin_refund:
     path:     /refund/{token}
-    defaults: { _controller: darvin_payment.admin.controller.refund }
+    defaults: { _controller: darvin_payment.admin.refund.controller }
 
 darvin_payment_admin_void:
     path:     /void/{token}
-    defaults: { _controller: darvin_payment.admin.controller.void }
+    defaults: { _controller: darvin_payment.admin.void.controller }

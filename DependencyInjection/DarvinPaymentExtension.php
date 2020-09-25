@@ -41,34 +41,41 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         (new ConfigInjector($container))->inject($config, $this->getAlias());
 
         (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
-            'admin'  => ['bundle' => 'DarvinAdminBundle'],
-            'approve' => ['callback' => static function () use ($config): bool {
-                return !$config['auto_approval'];
-            }],
-            'config' => ['bundle' => 'DarvinConfigBundle'],
             'controller',
             'gateway',
             'logger',
-            'mailer' => ['callback' => static function () use ($config): bool {
-                return $config['mailer']['enabled'];
-            }],
             'payment',
-            'pre_authorize' => ['callback' => static function () use ($config): bool {
-                return $config['pre_authorize'];
-            }],
             'receipt',
             'redirect',
-            'refund' => ['callback' => static function () use ($config): bool {
-                return $config['refund'];
-            }],
             'state',
             'twig',
             'url',
-            'bridges/telr' => ['callback' => static function () use ($config): bool {
+
+            'admin/common' => ['bundle' => 'DarvinAdminBundle'],
+            'admin/approve' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
+                return !$config['auto_approval'];
+            }],
+            'admin/capture' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
+                return $config['pre_authorize'];
+            }],
+            'admin/refund' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
+                return $config['refund'];
+            }],
+            'admin/void' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
+                return $config['pre_authorize'];
+            }],
+
+            'bridge/sberbank' => ['callback' => static function () use ($config): bool {
+                return $config['bridges']['sberbank']['enabled'] ?? false;
+            }],
+            'bridge/telr' => ['callback' => static function () use ($config): bool {
                 return $config['bridges']['telr']['enabled'] ?? false;
             }],
-            'bridges/sberbank' => ['callback' => static function () use ($config): bool {
-                return $config['bridges']['sberbank']['enabled'] ?? false;
+
+            'config' => ['bundle' => 'DarvinConfigBundle'],
+
+            'mailer' => ['callback' => static function () use ($config): bool {
+                return $config['mailer']['enabled'];
             }],
         ]);
     }

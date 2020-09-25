@@ -1,0 +1,20 @@
+parameters:
+    darvin_payment.admin.refund.controller.class: Darvin\PaymentBundle\Controller\Admin\RefundController
+
+    darvin_payment.admin.refund.form.renderer.class: Darvin\PaymentBundle\Form\Renderer\RefundFormRenderer
+
+services:
+    darvin_payment.admin.refund.controller:
+        class:  '%darvin_payment.admin.refund.controller.class%'
+        parent: darvin_payment.controller.abstract
+        calls:
+            - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
+            - [ setAuthorizationChecker, [ '@security.authorization_checker' ] ]
+            - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
+            - [ setFormRenderer,         [ '@darvin_payment.admin.refund.form.renderer' ] ]
+        tags:
+            - { name: controller.service_arguments }
+
+    darvin_payment.admin.refund.form.renderer:
+        class:  '%darvin_payment.admin.refund.form.renderer.class%'
+        parent: darvin_payment.admin.form.renderer.abstract

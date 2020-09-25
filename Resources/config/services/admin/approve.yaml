@@ -1,10 +1,11 @@
 parameters:
-    darvin_payment.admin.controller.approve.class: Darvin\PaymentBundle\Controller\Admin\ApproveController
-    darvin_payment.admin.form.renderer.approve.class: Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer
+    darvin_payment.admin.approve.controller.class: Darvin\PaymentBundle\Controller\Admin\ApproveController
+
+    darvin_payment.admin.approve.form.renderer.class: Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer
 
 services:
-    darvin_payment.admin.controller.approve:
-        class: '%darvin_payment.admin.controller.approve.class%'
+    darvin_payment.admin.approve.controller:
+        class:  '%darvin_payment.admin.approve.controller.class%'
         parent: darvin_payment.controller.abstract
         calls:
             - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
@@ -13,6 +14,6 @@ services:
         tags:
             - { name: controller.service_arguments }
 
-    darvin_payment.admin.form.renderer.approve:
-        class: '%darvin_payment.admin.form.renderer.approve.class%'
+    darvin_payment.admin.approve.form.renderer:
+        class:  '%darvin_payment.admin.approve.form.renderer.class%'
         parent: darvin_payment.admin.form.renderer.abstract
