@@ -58,11 +58,11 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'admin/capture' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
                 return $config['pre_authorize'];
             }],
-            'admin/refund' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
-                return $config['refund'];
-            }],
             'admin/void' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
                 return $config['pre_authorize'];
+            }],
+            'admin/refund' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
+                return $config['refund'];
             }],
 
             'bridge/sberbank' => ['callback' => static function () use ($config): bool {
