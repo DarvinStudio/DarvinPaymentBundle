@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\EventListener\State\Changed;
+namespace Darvin\PaymentBundle\EventListener\Mailer;
 
 use Darvin\MailerBundle\Factory\Exception\CantCreateEmailException;
 use Darvin\MailerBundle\Mailer\Exception\MailerException;
@@ -25,7 +25,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * Payment events subscriber for sending emails about changed state
  */
-class SendEmailsSubscriber implements EventSubscriberInterface
+class EmailStateChangeSubscriber implements EventSubscriberInterface
 {
     /**
      * @var \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface
@@ -33,19 +33,19 @@ class SendEmailsSubscriber implements EventSubscriberInterface
     private $emailFactory;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var \Darvin\MailerBundle\Mailer\MailerInterface
      */
     private $mailer;
 
     /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * @var \Darvin\PaymentBundle\State\Provider\StateProviderInterface
      */
-    private $stateProvider;
+    private $paymentStateProvider;
 
     /**
      * @var \Symfony\Contracts\Translation\TranslatorInterface
@@ -53,23 +53,23 @@ class SendEmailsSubscriber implements EventSubscriberInterface
     private $translator;
 
     /**
-     * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface  $emailFactory  Payment email factory
-     * @param \Darvin\MailerBundle\Mailer\MailerInterface                 $mailer        Mailer
-     * @param \Psr\Log\LoggerInterface                                    $logger        Payment logger
-     * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Provider
-     * @param \Symfony\Contracts\Translation\TranslatorInterface          $translator    Translator
+     * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface  $emailFactory         Payment email factory
+     * @param \Psr\Log\LoggerInterface                                    $logger               Logger
+     * @param \Darvin\MailerBundle\Mailer\MailerInterface                 $mailer               Mailer
+     * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $paymentStateProvider Payment state provider
+     * @param \Symfony\Contracts\Translation\TranslatorInterface          $translator           Translator
      */
     public function __construct(
         EmailFactoryInterface $emailFactory,
-        MailerInterface $mailer,
         LoggerInterface $logger,
-        StateProviderInterface $stateProvider,
+        MailerInterface $mailer,
+        StateProviderInterface $paymentStateProvider,
         TranslatorInterface $translator
     ) {
         $this->emailFactory = $emailFactory;
-        $this->mailer = $mailer;
         $this->logger = $logger;
-        $this->stateProvider = $stateProvider;
+        $this->mailer = $mailer;
+        $this->paymentStateProvider = $paymentStateProvider;
         $this->translator = $translator;
     }
 
@@ -90,7 +90,7 @@ class SendEmailsSubscriber implements EventSubscriberInterface
     {
         $payment = $event->getPayment();
 
-        $state = $this->stateProvider->getState($payment->getState());
+        $state = $this->paymentStateProvider->getState($payment->getState());
 
         if ($state->getEmail()->getPublicEmail()->isEnabled()) {
             $publicEmail = null;
@@ -100,12 +100,10 @@ class SendEmailsSubscriber implements EventSubscriberInterface
             } catch (CantCreateEmailException $ex) {
                 $this->logger->warning($ex->getMessage(), ['payment' => $payment]);
             }
-
             if (null !== $publicEmail) {
-                $this->mustSend($publicEmail, $payment);
+                $this->send($publicEmail, $payment);
             }
         }
-
         if ($state->getEmail()->getServiceEmail()->isEnabled()) {
             $serviceEmail = null;
 
@@ -113,20 +111,18 @@ class SendEmailsSubscriber implements EventSubscriberInterface
                 $serviceEmail = $this->emailFactory->createServiceEmail($payment, $state);
             } catch (CantCreateEmailException $ex) {
                 $this->logger->warning($ex->getMessage(), ['payment' => $payment]);
-
             }
-
             if (null !== $serviceEmail) {
-                $this->mustSend($serviceEmail, $payment);
+                $this->send($serviceEmail, $payment);
             }
         }
     }
 
     /**
-     * @param \Darvin\MailerBundle\Model\Email     $email   Email model
+     * @param \Darvin\MailerBundle\Model\Email     $email   Email
      * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      */
-    private function mustSend(Email $email, Payment $payment): void
+    private function send(Email $email, Payment $payment): void
     {
         try {
             $this->mailer->mustSend($email);

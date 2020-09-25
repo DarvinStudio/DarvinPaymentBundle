@@ -1,8 +1,20 @@
 parameters:
+    darvin_payment.mailer.event_subscriber.email_state_change.class: Darvin\PaymentBundle\EventListener\Mailer\EmailStateChangeSubscriber
+
     darvin_payment.mailer.factory.class: Darvin\PaymentBundle\Mailer\Factory\EmailFactory
-    darvin_payment.subscriber.changed_state.send_emails.class: Darvin\PaymentBundle\EventListener\State\Changed\SendEmailsSubscriber
 
 services:
+    darvin_payment.mailer.event_subscriber.email_state_change:
+        class: '%darvin_payment.mailer.event_subscriber.email_state_change.class%'
+        arguments:
+            - '@darvin_payment.mailer.factory'
+            - '@darvin_payment.logger'
+            - '@darvin_mailer.mailer'
+            - '@darvin_payment.state.provider'
+            - '@translator'
+        tags:
+            - { name: kernel.event_subscriber }
+
     darvin_payment.mailer.factory:
         class: '%darvin_payment.mailer.factory.class%'
         arguments:
@@ -10,14 +22,3 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@darvin_payment.config'
             - '@translator'
-
-    darvin_payment.subscriber.changed_state.send_emails:
-        class: '%darvin_payment.subscriber.changed_state.send_emails.class%'
-        arguments:
-            - '@darvin_payment.mailer.factory'
-            - '@darvin_mailer.mailer'
-            - '@darvin_payment.logger'
-            - '@darvin_payment.state.provider'
-            - '@translator'
-        tags:
-            - { name: kernel.event_subscriber }
