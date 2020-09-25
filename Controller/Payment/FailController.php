@@ -24,29 +24,25 @@ class FailController extends AbstractController
      * @param string $token Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
         if (PaymentStateType::FAILED === $payment->getState()) {
-            return new Response(
-                $this->twig->render('@DarvinPayment/payment/fail.html.twig', [
-                    'payment' => $payment,
-                ])
-            );
+            return new Response($this->twig->render('@DarvinPayment/payment/fail.html.twig', [
+                'payment' => $payment,
+            ]));
         }
 
         $this->validatePayment($payment, Transitions::FAIL);
+
         $this->workflow->apply($payment, Transitions::FAIL);
+
         $this->em->flush();
 
-        return new Response(
-            $this->twig->render('@DarvinPayment/payment/fail.html.twig', [
-                'payment' => $payment,
-            ])
-        );
+        return new Response($this->twig->render('@DarvinPayment/payment/fail.html.twig', [
+            'payment' => $payment,
+        ]));
     }
 }

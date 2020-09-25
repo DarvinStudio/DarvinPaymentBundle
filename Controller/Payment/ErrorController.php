@@ -22,17 +22,13 @@ class ErrorController extends AbstractController
      * @param string $token Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
-        return new Response(
-            $this->twig->render('@DarvinPayment/payment/error.html.twig', [
-                'payment' => $payment,
-            ])
-        );
+        return new Response($this->twig->render('@DarvinPayment/payment/error.html.twig', [
+            'payment' => $payment,
+        ]));
     }
 }
