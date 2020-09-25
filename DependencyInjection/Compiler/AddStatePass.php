@@ -18,18 +18,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class AddStatePass implements CompilerPassInterface
 {
-    private const SERVICE_STATE_PROVIDER = 'darvin_payment.state.provider';
-
     /**
      * {@inheritDoc}
      */
     public function process(ContainerBuilder $container): void
     {
+        $stateProvider = $container->getDefinition('darvin_payment.state.provider');
+
         foreach ($container->getParameter('darvin_payment.mailer.states') as $name => $value) {
-            $container->getDefinition(self::SERVICE_STATE_PROVIDER)->addMethodCall('addConfig', [
-                $name,
-                $value,
-            ]);
+            $stateProvider->addMethodCall('addConfig', [$name, $value]);
         }
     }
 }

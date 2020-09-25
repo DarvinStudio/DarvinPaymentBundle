@@ -19,20 +19,16 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class AddBridgePass implements CompilerPassInterface
 {
-    private const GATEWAY_FACTORY = 'darvin_payment.gateway.factory';
-    private const PREFIX_BRIDGE   = 'darvin_payment.bridge.';
-
     /**
      * {@inheritDoc}
      */
     public function process(ContainerBuilder $container): void
     {
+        $gatewayFactory = $container->getDefinition('darvin_payment.gateway.factory');
+
         foreach ($container->getParameter('darvin_payment.bridges') as $name => $attr) {
             if ($attr['enabled']) {
-                $container->getDefinition(self::GATEWAY_FACTORY)->addMethodCall('addBridge', [
-                    $name,
-                    new Reference(self::PREFIX_BRIDGE.$name)
-                ]);
+                $gatewayFactory->addMethodCall('addBridge', [$name, new Reference(sprintf('darvin_payment.bridge.%s', $name))]);
             }
         }
     }
