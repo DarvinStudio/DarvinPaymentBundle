@@ -15,7 +15,7 @@ use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 /**
  * Workflow transitions
  */
-class Transitions
+final class Transitions
 {
     public const AUTHORIZE = 'authorize';
     public const APPROVE   = 'approve';
