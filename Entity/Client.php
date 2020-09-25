@@ -14,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * Client
+ *
  * @ORM\Embeddable
  */
 class Client
@@ -47,9 +49,7 @@ class Client
     protected $email;
 
     /**
-     * Redirect constructor.
-     *
-     * @param string|null $id    Id
+     * @param string|null $id    ID
      * @param string|null $class Entity class
      * @param string|null $email Email
      */
@@ -65,7 +65,7 @@ class Client
      */
     public function __toString(): string
     {
-        return $this->getId() ?? '';
+        return (string)$this->getId();
     }
 
     /**
