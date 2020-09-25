@@ -12,7 +12,6 @@ services:
             - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
             - [ setAuthorizationChecker, [ '@security.authorization_checker' ] ]
             - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
-            - [ setRequestStack,         [ '@request_stack' ] ]
             - [ setFormRenderer,         [ '@darvin_payment.admin.form.renderer.capture' ] ]
         tags:
             - { name: controller.service_arguments }
@@ -24,7 +23,6 @@ services:
             - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
             - [ setAuthorizationChecker, [ '@security.authorization_checker' ] ]
             - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
-            - [ setRequestStack,         [ '@request_stack' ] ]
             - [ setFormRenderer,         [ '@darvin_payment.admin.form.renderer.void' ] ]
         tags:
             - { name: controller.service_arguments }

@@ -18,14 +18,14 @@ use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\Flash\FlashNotifierInterface;
 use Darvin\Utils\HttpFoundation\AjaxResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * Approve controller
+ * Approve admin controller
  */
 class ApproveController extends AbstractController
 {
@@ -43,51 +43,6 @@ class ApproveController extends AbstractController
      * @var \Darvin\Utils\Flash\FlashNotifierInterface
      */
     private $flashNotifier;
-
-    /**
-     * @var \Symfony\Component\HttpFoundation\RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @param string $token Payment token
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
-     */
-    public function __invoke(string $token): Response
-    {
-        $payment = $this->getPaymentByToken($token);
-        $request = $this->requestStack->getCurrentRequest();
-
-        $this->validatePayment($payment, Transitions::APPROVE);
-
-        if (!$this->authorizationChecker->isGranted(Permission::EDIT, $payment)) {
-            throw new AccessDeniedException(
-                sprintf('You do not have "%s" permission on "%s" class objects.', Permission::EDIT, get_class($payment))
-            );
-        }
-
-        $referer = $request->headers->get(
-            'referer',
-            $this->adminRouter->generate($payment, Payment::class, AdminRouterInterface::TYPE_INDEX, [], UrlGeneratorInterface::ABSOLUTE_URL)
-        );
-
-        $this->workflow->apply($payment, Transitions::APPROVE);
-        $this->em->flush();
-
-        $successMessage = 'payment.action.approve.success';
-
-        if ($request->isXmlHttpRequest()) {
-            return new AjaxResponse(null, true, $successMessage, [], $referer);
-        }
-
-        $this->flashNotifier->success($successMessage);
-
-        return new RedirectResponse($referer);
-    }
 
     /**
      * @param \Darvin\AdminBundle\Route\AdminRouterInterface $adminRouter Admin router
@@ -114,10 +69,41 @@ class ApproveController extends AbstractController
     }
 
     /**
-     * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack Request stack
+     * @param \Symfony\Component\HttpFoundation\Request $request Request
+     * @param string                                    $token   Payment token
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
-    public function setRequestStack(RequestStack $requestStack): void
+    public function __invoke(Request $request, string $token): Response
     {
-        $this->requestStack = $requestStack;
+        $payment = $this->getPaymentByToken($token);
+
+        $this->validatePayment($payment, Transitions::APPROVE);
+
+        if (!$this->authorizationChecker->isGranted(Permission::EDIT, $payment)) {
+            throw new AccessDeniedException(
+                sprintf('You do not have "%s" permission on "%s" class objects.', Permission::EDIT, get_class($payment))
+            );
+        }
+
+        $referer = $request->headers->get(
+            'referer',
+            $this->adminRouter->generate($payment, Payment::class, AdminRouterInterface::TYPE_INDEX, [], UrlGeneratorInterface::ABSOLUTE_URL)
+        );
+
+        $this->workflow->apply($payment, Transitions::APPROVE);
+
+        $this->em->flush();
+
+        $successMessage = 'payment.action.approve.success';
+
+        if ($request->isXmlHttpRequest()) {
+            return new AjaxResponse(null, true, $successMessage, [], $referer);
+        }
+
+        $this->flashNotifier->success($successMessage);
+
+        return new RedirectResponse($referer);
     }
 }

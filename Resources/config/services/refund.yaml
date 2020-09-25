@@ -10,7 +10,6 @@ services:
             - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
             - [ setAuthorizationChecker, [ '@security.authorization_checker' ] ]
             - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
-            - [ setRequestStack,         [ '@request_stack' ] ]
             - [ setFormRenderer,         [ '@darvin_payment.admin.form.renderer.refund' ] ]
         tags:
             - { name: controller.service_arguments }
