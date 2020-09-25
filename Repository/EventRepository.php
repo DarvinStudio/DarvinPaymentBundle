@@ -25,27 +25,23 @@ class EventRepository extends EntityRepository
      */
     public function save(Event $event): void
     {
-        $className = (new \ReflectionClass($event))->getShortName();
-
         if (null === $event->getPayment()->getId()) {
             throw new \LogicException('Payment ID missing');
         }
 
         $this->getEntityManager()->getConnection()->executeUpdate('
-            INSERT INTO payment_event (payment_id, level, message, created_at, dtype) 
-            VALUES (:payment_id, :level, :message, :created_at, :dtype)',
+            INSERT INTO payment_event (payment_id, level, message, created_at) 
+            VALUES (:payment_id, :level, :message, :created_at)',
             [
                 'payment_id' => $event->getPayment()->getId(),
                 'level'      => $event->getLevel(),
                 'message'    => $event->getMessage(),
                 'created_at' => $event->getCreatedAt(),
-                'dtype'      => mb_strtolower($className),
             ], [
                 'payment_id' => \Doctrine\DBAL\Types\Types::INTEGER,
                 'level'      => \Doctrine\DBAL\Types\Types::STRING,
                 'message'    => \Doctrine\DBAL\Types\Types::TEXT,
                 'created_at' => \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE,
-                'dtype'      => \Doctrine\DBAL\Types\Types::STRING,
             ]
         );
     }
