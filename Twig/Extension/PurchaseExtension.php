@@ -12,7 +12,9 @@ namespace Darvin\PaymentBundle\Twig\Extension;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Repository\PaymentRepository;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\Mapping\MappingException;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -54,22 +56,24 @@ class PurchaseExtension extends AbstractExtension
      * @param string|null       $orderClass Order entity class
      *
      * @return string
-     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public function renderPurchaseWidget(Environment $twig, $order, ?string $orderClass = null): string
     {
-        if (is_scalar($order)) {
-            $orderId = (string)$order;
-        } elseif (is_object($order) && method_exists($order, 'getId') && null !== $order->getId()) {
-            $orderId = (string)$order->getId();
-        } else {
-            throw new \LogicException('Missing order id');
-        }
+        $orderId = $this->getOrderId($order);
 
-        if (null === $orderClass && is_object($order)) {
-            $orderClass = get_class($order);
-        } else {
-            throw new \LogicException('Missing order entity class');
+        if (null === $orderId) {
+            throw new \InvalidArgumentException('Unable to retrieve order ID.');
+        }
+        if (null === $orderClass) {
+            $orderClass = $this->getOrderClass($order);
+
+            if (null === $orderClass) {
+                throw new \InvalidArgumentException('Unable to retrieve order class.');
+            }
+        }
+        if (!class_exists($orderClass)) {
+            throw new \InvalidArgumentException(sprintf('Order class "%s" does not exist.', $orderClass));
         }
 
         $payments = $this->getPaymentRepository()->getForOrder($orderId, $orderClass);
@@ -85,5 +89,54 @@ class PurchaseExtension extends AbstractExtension
     private function getPaymentRepository(): PaymentRepository
     {
         return $this->em->getRepository(Payment::class);
+    }
+
+    /**
+     * @param mixed $order Order
+     *
+     * @return string|null
+     */
+    private function getOrderId($order): ?string
+    {
+        if (is_scalar($order)) {
+            return (string)$order;
+        }
+        if (is_object($order)) {
+            try {
+                $meta = $this->em->getClassMetadata(ClassUtils::getClass($order));
+            } catch (MappingException $ex) {
+                return null;
+            }
+
+            $ids = $meta->getIdentifierValues($order);
+
+            if (empty($ids)) {
+                return null;
+            }
+
+            $id = reset($ids);
+
+            if (null !== $id) {
+                $id = (string)$id;
+            }
+
+            return $id;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mixed $order Order
+     *
+     * @return string|null
+     */
+    private function getOrderClass($order): ?string
+    {
+        if (is_object($order)) {
+            return ClassUtils::getClass($order);
+        }
+
+        return null;
     }
 }
