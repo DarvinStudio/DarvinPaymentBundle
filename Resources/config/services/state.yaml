@@ -1,6 +1,8 @@
 parameters:
     darvin_payment.state.changed.event_subscriber.log.class: Darvin\PaymentBundle\EventListener\State\Changed\LogSubscriber
 
+    darvin_payment.state.changed.event_subscriber.trigger_event.class: Darvin\PaymentBundle\EventListener\State\Changed\TriggerEventSubscriber
+
     darvin_payment.state.provider.class: Darvin\PaymentBundle\State\Provider\StateProvider
 
 services:
@@ -11,6 +13,13 @@ services:
             - '@translator'
         tags:
             - { name: kernel.event_subscriber }
+
+    darvin_payment.state.changed.event_subscriber.trigger_event:
+        class: '%darvin_payment.state.changed.event_subscriber.trigger_event.class%'
+        arguments:
+            - '@event_dispatcher'
+        tags:
+            - { name: doctrine.event_subscriber }
 
     darvin_payment.state.provider:
         class: '%darvin_payment.state.provider.class%'

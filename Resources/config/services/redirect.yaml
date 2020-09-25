@@ -5,4 +5,4 @@ services:
     darvin_payment.redirect.factory:
         class: '%darvin_payment.redirect.factory.class%'
         arguments:
-            - '@Darvin\Utils\ORM\EntityResolverInterface'
+            - '@darvin_utils.orm.entity_resolver'

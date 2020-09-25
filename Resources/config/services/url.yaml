@@ -1,5 +1,5 @@
 parameters:
-    darvin_payment.url.builder.class: 'Darvin\PaymentBundle\Url\PaymentUrlBuilder'
+    darvin_payment.url.builder.class: Darvin\PaymentBundle\Url\PaymentUrlBuilder
 
 services:
     Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface: '@darvin_payment.url.builder'

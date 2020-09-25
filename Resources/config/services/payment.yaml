@@ -1,6 +1,5 @@
 parameters:
     darvin_payment.payment.factory.class: Darvin\PaymentBundle\Payment\PaymentFactory
-    darvin_payment.subscriber.updated_payment.event_dispatch.class: Darvin\PaymentBundle\EventListener\State\Changed\TriggerEventSubscriber
 
 services:
     Darvin\PaymentBundle\Payment\PaymentFactoryInterface: '@darvin_payment.payment.factory'
@@ -9,14 +8,7 @@ services:
         class: '%darvin_payment.payment.factory.class%'
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@Darvin\Utils\ORM\EntityResolverInterface'
+            - '@darvin_utils.orm.entity_resolver'
             - '@state_machine.payment'
             - '%darvin_payment.default_currency%'
             - '%darvin_payment.auto_approval%'
-
-    darvin_payment.subscriber.updated_payment.event_dispatch:
-        class: '%darvin_payment.subscriber.updated_payment.event_dispatch.class%'
-        arguments:
-            - '@event_dispatcher'
-        tags:
-            - { name: doctrine.event_subscriber }
