@@ -26,9 +26,8 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $builder = new TreeBuilder('darvin_payment');
-        $root = $builder->getRootNode();
 
-        $root
+        $builder->getRootNode()
             ->children()
                 ->scalarNode('default_currency')->defaultValue('RUB')->cannotBeEmpty()->end()
                 ->scalarNode('default_gateway')->defaultNull()->end()
@@ -38,9 +37,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('bridges')->useAttributeAsKey('name')
                     ->prototype('array')->canBeDisabled()
                         ->children()
-                            ->arrayNode('parameters')
-                                ->prototype('variable')->end()
-                            ->end()
+                            ->arrayNode('parameters')->prototype('variable')->end()->end()
                         ->end()
                     ->end()
                 ->end()
@@ -56,8 +53,7 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->arrayNode('service')->canBeDisabled()
                                         ->children()
-                                            ->scalarNode('template')->defaultValue('@DarvinPayment/email/service.html.twig')->cannotBeEmpty()
-        ;
+                                            ->scalarNode('template')->defaultValue('@DarvinPayment/email/service.html.twig')->cannotBeEmpty();
 
         return $builder;
     }
