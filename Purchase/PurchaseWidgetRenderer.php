@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 /**
- * @author    Darvin Studio <info@darvin-studio.ru>
- * @copyright Copyright (c) 2018-2020, Darvin Studio
+ * @author    Igor Nikolaev <igor.sv.n@gmail.com>
+ * @copyright Copyright (c) 2020, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Twig\Extension;
+namespace Darvin\PaymentBundle\Purchase;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Repository\PaymentRepository;
@@ -16,13 +16,11 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Mapping\MappingException;
 use Twig\Environment;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
 
 /**
- * Purchase Twig extension
+ * Purchase widget renderer
  */
-class PurchaseExtension extends AbstractExtension
+class PurchaseWidgetRenderer implements PurchaseWidgetRendererInterface
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -30,35 +28,24 @@ class PurchaseExtension extends AbstractExtension
     private $em;
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em Entity manager
+     * @var \Twig\Environment
      */
-    public function __construct(EntityManagerInterface $em)
+    private $twig;
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $em   Entity manager
+     * @param \Twig\Environment                    $twig Twig
+     */
+    public function __construct(EntityManagerInterface $em, Environment $twig)
     {
         $this->em = $em;
+        $this->twig = $twig;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('payment_purchase_widget', [$this, 'renderPurchaseWidget'], [
-                'needs_environment' => true,
-                'is_safe'           => ['html'],
-            ]),
-        ];
-    }
-
-    /**
-     * @param \Twig\Environment $twig       Twig
-     * @param mixed             $order      Order object
-     * @param string|null       $orderClass Order entity class
-     *
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    public function renderPurchaseWidget(Environment $twig, $order, ?string $orderClass = null): string
+    public function renderPurchaseWidget($order, ?string $orderClass = null): string
     {
         $orderId = $this->getOrderId($order);
 
@@ -78,17 +65,9 @@ class PurchaseExtension extends AbstractExtension
 
         $payments = $this->getPaymentRepository()->getForOrder($orderId, $orderClass);
 
-        return $twig->render('@DarvinPayment/payment/purchase_widget.html.twig', [
+        return $this->twig->render('@DarvinPayment/payment/purchase_widget.html.twig', [
             'payments' => $payments,
         ]);
-    }
-
-    /**
-     * @return \Darvin\PaymentBundle\Repository\PaymentRepository
-     */
-    private function getPaymentRepository(): PaymentRepository
-    {
-        return $this->em->getRepository(Payment::class);
     }
 
     /**
@@ -138,5 +117,13 @@ class PurchaseExtension extends AbstractExtension
         }
 
         return null;
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\Repository\PaymentRepository
+     */
+    private function getPaymentRepository(): PaymentRepository
+    {
+        return $this->em->getRepository(Payment::class);
     }
 }
