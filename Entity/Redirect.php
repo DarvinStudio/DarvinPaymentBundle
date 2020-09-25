@@ -13,65 +13,62 @@ namespace Darvin\PaymentBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="payment_redirect")
  * @ORM\Entity
- * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\Table(name="payment_redirect")
  */
 class Redirect
 {
     /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     *
      * @var int|null
+     *
+     * @ORM\Column(type="integer", unique=true)
+     * @ORM\GeneratedValue
+     * @ORM\Id
      */
-    protected $id;
+    private $id;
 
     /**
-     * @var \Darvin\PaymentBundle\Entity\Redirect
+     * @var \Darvin\PaymentBundle\Entity\Payment|null
      *
      * @ORM\OneToOne(targetEntity="Darvin\PaymentBundle\Entity\Payment", inversedBy="redirect")
      */
-    protected $payment;
+    private $payment;
 
     /**
      * @var string|null
      *
      * @ORM\Column(length=2048, nullable=true)
      */
-    protected $url;
+    private $url;
 
     /**
      * @var string|null
      *
      * @ORM\Column(length=10, nullable=true)
      */
-    protected $method;
+    private $method;
 
     /**
      * @var array|null
      *
      * @ORM\Column(type="json", nullable=true)
      */
-    protected $data;
+    private $data;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected $expiryDate;
+    private $expiryDate;
 
     /**
-     * Redirect constructor.
-     *
-     * @param string|null    $url        Url
+     * @param string|null    $url        URL
      * @param string|null    $method     Method
      * @param array|null     $data       Data
-     * @param \DateTime|null $expiryDate Expire Date
+     * @param \DateTime|null $expiryDate Expiry date
      */
-    public function __construct(?string $url, ?string $method, ?array $data, ?\DateTime $expiryDate)
+    public function __construct(?string $url = null, ?string $method = null, ?array $data = null, ?\DateTime $expiryDate = null)
     {
         $this->url = $url;
         $this->method = $method;
@@ -124,11 +121,11 @@ class Redirect
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment payment
      *
-     * @return self
+     * @return Redirect
      */
-    public function setPayment(Payment $payment): self
+    public function setPayment(Payment $payment): Redirect
     {
         $this->payment = $payment;
 
