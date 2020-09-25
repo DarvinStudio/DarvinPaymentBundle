@@ -13,61 +13,59 @@ namespace Darvin\PaymentBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="payment_event")
  * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\EventRepository")
- * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\Table(name="payment_event")
  */
 class Event
 {
     /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     *
      * @var int|null
-     */
-    protected $id;
-
-    /**
-     * @var string
      *
-     * @ORM\Column(length=10)
+     * @ORM\Column(type="integer", unique=true)
+     * @ORM\GeneratedValue
+     * @ORM\Id
      */
-    protected $level;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    protected $message;
+    private $id;
 
     /**
      * @var \Darvin\PaymentBundle\Entity\Payment
      *
      * @ORM\ManyToOne(targetEntity="Darvin\PaymentBundle\Entity\Payment", inversedBy="events")
      */
-    protected $payment;
+    private $payment;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(length=10)
+     */
+    private $level;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $message;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
      */
-    protected $createdAt;
+    private $createdAt;
 
     /**
-     * Event constructor.
-     *
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
-     * @param string                               $level
-     * @param string|null                          $message
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
+     * @param string                               $level   Level
+     * @param string|null                          $message Message
      */
-    public function __construct(Payment $payment, string $level, ?string $message)
+    public function __construct(Payment $payment, string $level, ?string $message = null)
     {
         $this->payment = $payment;
         $this->level = $level;
         $this->message = $message;
+
         $this->createdAt = new \DateTime();
     }
 
@@ -76,7 +74,7 @@ class Event
      */
     public function __toString(): string
     {
-        return $this->level ?? '';
+        return $this->level;
     }
 
     /**
@@ -85,6 +83,14 @@ class Event
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\Entity\Payment
+     */
+    public function getPayment(): Payment
+    {
+        return $this->payment;
     }
 
     /**
@@ -101,14 +107,6 @@ class Event
     public function getMessage(): ?string
     {
         return $this->message;
-    }
-
-    /**
-     * @return \Darvin\PaymentBundle\Entity\Payment
-     */
-    public function getPayment(): Payment
-    {
-        return $this->payment;
     }
 
     /**
