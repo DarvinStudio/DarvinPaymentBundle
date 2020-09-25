@@ -10,29 +10,40 @@
 
 namespace Darvin\PaymentBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Table
  * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\PaymentRepository")
  * @ORM\InheritanceType("SINGLE_TABLE")
- *
- * @HasLifecycleCallbacks
  */
 class Payment
 {
     /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     *
      * @var int|null
+     *
+     * @ORM\Column(type="integer", unique=true)
+     * @ORM\GeneratedValue
+     * @ORM\Id
      */
     protected $id;
+
+    /**
+     * @var \Darvin\PaymentBundle\Entity\Redirect|null
+     *
+     * @ORM\OneToOne(targetEntity="Darvin\PaymentBundle\Entity\Redirect", mappedBy="payment", cascade={"remove"})
+     */
+    protected $redirect;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|\Darvin\PaymentBundle\Entity\Event[]
+     *
+     * @ORM\OneToMany(targetEntity="Darvin\PaymentBundle\Entity\Event", mappedBy="payment", cascade={"remove"})
+     */
+    protected $events;
 
     /**
      * @var \Darvin\PaymentBundle\Entity\PaidOrder
@@ -51,20 +62,6 @@ class Payment
      * @Assert\Valid
      */
     protected $client;
-
-    /**
-     * @var \Darvin\PaymentBundle\Entity\Redirect|null
-     *
-     * @ORM\OneToOne(targetEntity="Darvin\PaymentBundle\Entity\Redirect", mappedBy="payment", cascade="remove")
-     */
-    protected $redirect;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection|\Darvin\PaymentBundle\Entity\Event[]
-     *
-     * @ORM\OneToMany(targetEntity="Darvin\PaymentBundle\Entity\Event", mappedBy="payment", cascade={"remove"})
-     */
-    protected $events;
 
     /**
      * @var string
@@ -89,6 +86,7 @@ class Payment
      * @var string|null
      *
      * @ORM\Column(type="PaymentStateType")
+     *
      * @DoctrineAssert\Enum(entity="Darvin\PaymentBundle\DBAL\Type\PaymentStateType")
      */
     protected $state;
@@ -134,21 +132,19 @@ class Payment
     protected $createdAt;
 
     /**
-     * Payment constructor.
-     *
      * @param \Darvin\PaymentBundle\Entity\PaidOrder $order    Order
-     * @param \Darvin\PaymentBundle\Entity\Client    $client   Client
      * @param string                                 $amount   Amount
-     * @param string                                 $currency Currency Code
+     * @param string                                 $currency Currency code
      */
-    public function __construct(PaidOrder $order, Client $client, string $amount, string $currency)
+    public function __construct(PaidOrder $order, string $amount, string $currency)
     {
         $this->order = $order;
-        $this->client = $client;
         $this->amount = $amount;
         $this->currency = $currency;
+
+        $this->events = new ArrayCollection();
+        $this->client = new Client();
         $this->createdAt = new \DateTime();
-        $this->events = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -156,7 +152,15 @@ class Payment
      */
     public function __toString(): string
     {
-        return (string) $this->getId();
+        return (string)$this->getId();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRedirect(): bool
+    {
+        return null !== $this->redirect;
     }
 
     /**
@@ -168,22 +172,6 @@ class Payment
     }
 
     /**
-     * @return \Darvin\PaymentBundle\Entity\PaidOrder
-     */
-    public function getOrder(): PaidOrder
-    {
-        return $this->order;
-    }
-
-    /**
-     * @return \Darvin\PaymentBundle\Entity\Client
-     */
-    public function getClient(): Client
-    {
-        return $this->client;
-    }
-
-    /**
      * @return \Darvin\PaymentBundle\Entity\Redirect|null
      */
     public function getRedirect(): ?Redirect
@@ -192,23 +180,15 @@ class Payment
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Redirect|null $redirect
+     * @param \Darvin\PaymentBundle\Entity\Redirect|null $redirect redirect
      *
-     * @return self
+     * @return Payment
      */
-    public function setRedirect(?Redirect $redirect): self
+    public function setRedirect(?Redirect $redirect): Payment
     {
         $this->redirect = $redirect;
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasRedirect(): bool
-    {
-        return null !== $this->redirect;
     }
 
     /**
@@ -222,9 +202,9 @@ class Payment
     /**
      * @param \Darvin\PaymentBundle\Entity\Event[]|\Doctrine\Common\Collections\Collection $events events
      *
-     * @return self
+     * @return Payment
      */
-    public function setEvents(Collection $events): self
+    public function setEvents(Collection $events): Payment
     {
         $this->events = $events;
 
@@ -234,13 +214,53 @@ class Payment
     /**
      * @param \Darvin\PaymentBundle\Entity\Event Event
      *
-     * @return self
+     * @return Payment
      */
-    public function addEvent(Event $event): self
+    public function addEvent(Event $event): Payment
     {
         if (!$this->events->contains($event)) {
             $this->events->add($event);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\Entity\PaidOrder
+     */
+    public function getOrder(): PaidOrder
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\PaidOrder $order order
+     *
+     * @return Payment
+     */
+    public function setOrder(PaidOrder $order): Payment
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\Entity\Client
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Client $client client
+     *
+     * @return Payment
+     */
+    public function setClient(Client $client): Payment
+    {
+        $this->client = $client;
 
         return $this;
     }
@@ -254,11 +274,11 @@ class Payment
     }
 
     /**
-     * @param string $amount
+     * @param string $amount amount
      *
-     * @return self
+     * @return Payment
      */
-    public function setAmount(string $amount): self
+    public function setAmount(string $amount): Payment
     {
         $this->amount = $amount;
 
@@ -274,13 +294,33 @@ class Payment
     }
 
     /**
-     * @param string $currency
+     * @param string $currency currency
      *
-     * @return self
+     * @return Payment
      */
-    public function setCurrency(string $currency): self
+    public function setCurrency(string $currency): Payment
     {
         $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param string|null $state state
+     *
+     * @return Payment
+     */
+    public function setState(?string $state): Payment
+    {
+        $this->state = $state;
 
         return $this;
     }
@@ -294,11 +334,11 @@ class Payment
     }
 
     /**
-     * @param string|null $transactionReference
+     * @param string|null $transactionReference transactionReference
      *
-     * @return self
+     * @return Payment
      */
-    public function setTransactionReference(?string $transactionReference): self
+    public function setTransactionReference(?string $transactionReference): Payment
     {
         $this->transactionReference = $transactionReference;
 
@@ -314,33 +354,13 @@ class Payment
     }
 
     /**
-     * @param string|null $description
+     * @param string|null $description description
      *
-     * @return self
+     * @return Payment
      */
-    public function setDescription(?string $description): self
+    public function setDescription(?string $description): Payment
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getState(): ?string
-    {
-        return $this->state;
-    }
-
-    /**
-     * @param $state
-     *
-     * @return self
-     */
-    public function setState($state): self
-    {
-        $this->state = $state;
 
         return $this;
     }
@@ -354,11 +374,11 @@ class Payment
     }
 
     /**
-     * @param string|null $token
+     * @param string|null $token token
      *
-     * @return self
+     * @return Payment
      */
-    public function setToken(?string $token): self
+    public function setToken(?string $token): Payment
     {
         $this->token = $token;
 
@@ -374,11 +394,11 @@ class Payment
     }
 
     /**
-     * @param string|null $gateway
+     * @param string|null $gateway gateway
      *
-     * @return self
+     * @return Payment
      */
-    public function setGateway(?string $gateway): self
+    public function setGateway(?string $gateway): Payment
     {
         $this->gateway = $gateway;
 
@@ -396,9 +416,9 @@ class Payment
     /**
      * @param \DateTime $createdAt createdAt
      *
-     * @return self
+     * @return Payment
      */
-    public function setCreatedAt(\DateTime $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): Payment
     {
         $this->createdAt = $createdAt;
 

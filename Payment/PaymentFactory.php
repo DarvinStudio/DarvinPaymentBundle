@@ -17,7 +17,7 @@ use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 /**
@@ -28,61 +28,74 @@ class PaymentFactory implements PaymentFactoryInterface
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
-    protected $entityManager;
+    private $entityManager;
 
     /**
      * @var \Darvin\Utils\ORM\EntityResolverInterface
      */
-    protected $entityResolver;
+    private $entityResolver;
+
+    /**
+     * @var \Symfony\Component\Validator\Validator\ValidatorInterface
+     */
+    private $validator;
 
     /**
      * @var \Symfony\Component\Workflow\WorkflowInterface
      */
-    protected $workflow;
-
-    /**
-     * @var string
-     */
-    protected $defaultCurrency;
+    private $workflow;
 
     /**
      * @var bool
      */
-    protected $autoApproval;
+    private $autoApproval;
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface      $entityManager   Entity manager
-     * @param \Darvin\Utils\ORM\EntityResolverInterface $entityResolver  Entity resolver
-     * @param WorkflowInterface                         $workflow        Workflow for payment state
-     * @param string                                    $defaultCurrency Currency by default
-     * @param bool                                      $autoApproval    Auto approval or need admin approval
+     * @var string
+     */
+    private $defaultCurrency;
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface                      $entityManager   Entity manager
+     * @param \Darvin\Utils\ORM\EntityResolverInterface                 $entityResolver  Entity resolver
+     * @param \Symfony\Component\Validator\Validator\ValidatorInterface $validator       Validator
+     * @param \Symfony\Component\Workflow\WorkflowInterface             $workflow        Workflow for payment state
+     * @param bool                                                      $autoApproval    Auto approval or need admin approval
+     * @param string                                                    $defaultCurrency Currency by default
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         EntityResolverInterface $entityResolver,
+        ValidatorInterface $validator,
         WorkflowInterface $workflow,
-        string $defaultCurrency,
-        bool $autoApproval
+        bool $autoApproval,
+        string $defaultCurrency
     ) {
         $this->entityManager = $entityManager;
         $this->entityResolver = $entityResolver;
+        $this->validator = $validator;
         $this->workflow = $workflow;
-        $this->defaultCurrency = $defaultCurrency;
         $this->autoApproval = $autoApproval;
+        $this->defaultCurrency = $defaultCurrency;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function createPayment(
-        PaidOrder $order,
-        Client $client,
-        string $amount,
-        ?string $currency = null
-    ): Payment {
+    public function createPayment(PaidOrder $order, string $amount, ?Client $client = null, ?string $currency = null): Payment
+    {
+        if (null === $currency) {
+            $currency = $this->defaultCurrency;
+        }
+
         $class = $this->entityResolver->resolve(Payment::class);
 
-        $payment = new $class($order, $client, $amount, $currency ?? $this->defaultCurrency);
+        /** @var \Darvin\PaymentBundle\Entity\Payment $payment */
+        $payment = new $class($order, $amount, $currency);
+
+        if (null !== $client) {
+            $payment->setClient($client);
+        }
 
         $this->workflow->getMarking($payment);
 
@@ -98,22 +111,23 @@ class PaymentFactory implements PaymentFactoryInterface
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @throws \InvalidArgumentException
      */
-    protected function validate(Payment $payment): void
+    private function validate(Payment $payment): void
     {
-        $violations = (Validation::createValidator())->validate($payment);
+        $violations = $this->validator->validate($payment);
 
-        if (0 !== count($violations)) {
+        if ($violations->count() > 0) {
             $errors = [];
 
+            /** @var \Symfony\Component\Validator\ConstraintViolationInterface $violation */
             foreach ($violations as $violation) {
-                $errors[] = $violation->getMessage();
+                $errors[] = implode(': ', [$violation->getPropertyPath(), $violation->getMessage()]);
             }
 
-            throw new \InvalidArgumentException(sprintf('Errors: %s', implode(', ', $errors)));
+            throw new \InvalidArgumentException(sprintf('Errors: "%s"', implode('", "', $errors)));
         }
     }
 }

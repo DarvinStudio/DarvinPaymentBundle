@@ -9,6 +9,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@darvin_utils.orm.entity_resolver'
+            - '@validator'
             - '@state_machine.payment'
-            - '%darvin_payment.default_currency%'
             - '%darvin_payment.auto_approval%'
+            - '%darvin_payment.default_currency%'

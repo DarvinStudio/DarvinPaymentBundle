@@ -32,7 +32,6 @@ class Client
      *
      * @ORM\Column(length=128, nullable=true)
      *
-     * @Assert\NotBlank
      * @Assert\Length(max=128)
      */
     protected $class;

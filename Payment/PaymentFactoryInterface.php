@@ -15,24 +15,18 @@ use Darvin\PaymentBundle\Entity\PaidOrder;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
- * Payment factory interface
+ * Payment factory
  */
 interface PaymentFactoryInterface
 {
     /**
-     * @param \Darvin\PaymentBundle\Entity\PaidOrder $order    Order
-     * @param \Darvin\PaymentBundle\Entity\Client    $client   Client
-     * @param string                                 $amount   Amount
-     * @param string|null                            $currency Currency code
+     * @param \Darvin\PaymentBundle\Entity\PaidOrder   $order    Order
+     * @param string                                   $amount   Amount
+     * @param \Darvin\PaymentBundle\Entity\Client|null $client   Client
+     * @param string|null                              $currency Currency code
      *
      * @return \Darvin\PaymentBundle\Entity\Payment
-     *
      * @throws \InvalidArgumentException
      */
-    public function createPayment(
-        PaidOrder $order,
-        Client $client,
-        string $amount,
-        ?string $currency = null
-    ): Payment;
+    public function createPayment(PaidOrder $order, string $amount, ?Client $client = null, ?string $currency = null): Payment;
 }
