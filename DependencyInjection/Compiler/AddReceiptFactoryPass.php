@@ -10,16 +10,17 @@
 
 namespace Darvin\PaymentBundle\DependencyInjection\Compiler;
 
-use Darvin\PaymentBundle\DependencyInjection\DarvinPaymentExtension;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Add receipt factory to pool compiler pass
+ * Add receipt factory to registry compiler pass
  */
 class AddReceiptFactoryPass implements CompilerPassInterface
 {
+    public const TAG_RECEIPT_FACTORY = 'darvin_payment.receipt_factory';
+
     /**
      * {@inheritDoc}
      */
@@ -27,7 +28,7 @@ class AddReceiptFactoryPass implements CompilerPassInterface
     {
         $registry = $container->getDefinition('darvin_payment.receipt.factory_registry');
 
-        foreach (array_keys($container->findTaggedServiceIds(DarvinPaymentExtension::TAG_RECEIPT_FACTORY)) as $id) {
+        foreach (array_keys($container->findTaggedServiceIds(self::TAG_RECEIPT_FACTORY)) as $id) {
             $registry->addMethodCall('addFactory', [new Reference($id)]);
         }
     }

@@ -11,6 +11,7 @@
 namespace Darvin\PaymentBundle\DependencyInjection;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
+use Darvin\PaymentBundle\DependencyInjection\Compiler\AddReceiptFactoryPass;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
 use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\DependencyInjection\ConfigInjector;
@@ -27,16 +28,15 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class DarvinPaymentExtension extends Extension implements PrependExtensionInterface
 {
-    public const TAG_RECEIPT_FACTORY = 'darvin_payment.receipt_factory';
 
     /**
      * {@inheritDoc}
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $config = $this->processConfiguration(new Configuration(), $configs);
+        $container->registerForAutoconfiguration(ReceiptFactoryInterface::class)->addTag(AddReceiptFactoryPass::TAG_RECEIPT_FACTORY);
 
-        $container->registerForAutoconfiguration(ReceiptFactoryInterface::class)->addTag(self::TAG_RECEIPT_FACTORY);
+        $config = $this->processConfiguration(new Configuration(), $configs);
 
         (new ConfigInjector($container))->inject($config, $this->getAlias());
 
@@ -89,18 +89,13 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'darvin_admin',
             'doctrine',
             'framework',
+            'monolog',
         ]);
-
-        $bundles = $container->getParameter('kernel.bundles');
-
-        if (isset($bundles['MonologBundle'])) {
-            (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('monolog');
-        }
 
         $container->prependExtensionConfig($this->getAlias(), [
             'mailer' => [
-                'enabled' => isset($bundles['DarvinMailerBundle']),
-                'states'  => $this->initPaymentStates(),
+                'enabled' => array_key_exists('DarvinMailerBundle', $container->getParameter('kernel.bundles')),
+                'states'  => $this->buildMailerStatesConfig(),
             ],
         ]);
 
@@ -109,7 +104,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                 'payment' => [
                     'initial_marking' => PaymentStateType::APPROVAL,
                     'places'          => array_values(PaymentStateType::getChoices()),
-                    'transitions'     => $this->initWorkflowTransitions(),
+                    'transitions'     => $this->buildWorkflowTransitions(),
                 ],
             ],
         ]);
@@ -118,12 +113,12 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     /**
      * @return array
      */
-    private function initPaymentStates(): array
+    private function buildMailerStatesConfig(): array
     {
-        $data = [];
+        $config = [];
 
-        foreach (PaymentStateType::getChoices() as $choice) {
-            $data[$choice] = [
+        foreach (PaymentStateType::getChoices() as $state) {
+            $config[$state] = [
                 'public' => [
                     'enabled' => false,
                 ],
@@ -133,7 +128,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             ];
         }
 
-        $data[PaymentStateType::COMPLETED] = [
+        $config[PaymentStateType::COMPLETED] = [
             'public' => [
                 'enabled' => true,
             ],
@@ -142,20 +137,20 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             ],
         ];
 
-        return $data;
+        return $config;
     }
 
     /**
      * @return array
      */
-    private function initWorkflowTransitions(): array
+    private function buildWorkflowTransitions(): array
     {
         $transitions = [];
 
-        foreach (Transitions::TRANSITIONS as $name => $data) {
+        foreach (Transitions::TRANSITIONS as $name => list($from, $to)) {
             $transitions[$name] = [
-                'from' => $data[0],
-                'to'   => $data[1],
+                'from' => $from,
+                'to'   => $to,
             ];
         }
 
