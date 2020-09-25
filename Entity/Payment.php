@@ -152,7 +152,7 @@ class Payment
      */
     public function __toString(): string
     {
-        return (string)$this->getId();
+        return (string)$this->id;
     }
 
     /**

@@ -84,7 +84,7 @@ class Redirect
      */
     public function __toString(): string
     {
-        return $this->getUrl() ?? 'Redirect data is empty';
+        return $this->url ?? 'Redirect data is empty';
     }
 
     /**
@@ -92,7 +92,7 @@ class Redirect
      */
     public function isEmpty(): bool
     {
-        return $this->getUrl() === null;
+        return $this->url === null;
     }
 
     /**
@@ -100,11 +100,11 @@ class Redirect
      */
     public function isExpired(): bool
     {
-        if ($this->getExpiryDate() === null) {
+        if ($this->expiryDate === null) {
             return false;
         }
 
-        return $this->getExpiryDate()->getTimestamp() < (new \DateTime)->getTimestamp();
+        return $this->expiryDate->getTimestamp() < (new \DateTime)->getTimestamp();
     }
 
     /**
