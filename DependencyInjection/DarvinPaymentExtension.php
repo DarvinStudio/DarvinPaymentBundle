@@ -45,10 +45,10 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'gateway',
             'logger',
             'payment',
+            'purchase',
             'receipt',
             'redirect',
             'state',
-            'twig',
             'url',
 
             'admin/common' => ['bundle' => 'DarvinAdminBundle'],

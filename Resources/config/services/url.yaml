@@ -1,7 +1,7 @@
 parameters:
     darvin_payment.url.builder.class: Darvin\PaymentBundle\Url\PaymentUrlBuilder
 
-    darvin_payment.url.builder.twig.extension.class: Darvin\PaymentBundle\Twig\Extension\Url\UrlBuilderExtension
+    darvin_payment.url.builder.twig.extension.class: Darvin\PaymentBundle\Twig\Extension\UrlBuilderExtension
 
 services:
     Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface: '@darvin_payment.url.builder'

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Twig\Extension\Url;
+namespace Darvin\PaymentBundle\Twig\Extension;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;

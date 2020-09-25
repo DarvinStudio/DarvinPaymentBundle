@@ -1,0 +1,10 @@
+parameters:
+    darvin_payment.purchase.twig.extension.class: Darvin\PaymentBundle\Twig\Extension\PurchaseExtension
+
+services:
+    darvin_payment.purchase.twig.extension:
+        class: '%darvin_payment.purchase.twig.extension.class%'
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: twig.extension }

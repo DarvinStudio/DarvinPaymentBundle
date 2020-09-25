@@ -18,9 +18,9 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 /**
- * Payment Twig extension
+ * Purchase Twig extension
  */
-class PaymentExtension extends AbstractExtension
+class PurchaseExtension extends AbstractExtension
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
