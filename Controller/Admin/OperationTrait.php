@@ -31,22 +31,22 @@ trait OperationTrait
     /**
      * @var \Darvin\AdminBundle\Route\AdminRouterInterface
      */
-    protected $adminRouter;
+    private $adminRouter;
 
     /**
      * @var \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
      */
-    protected $authorizationChecker;
+    private $authorizationChecker;
 
     /**
      * @var \Darvin\Utils\Flash\FlashNotifierInterface
      */
-    protected $flashNotifier;
+    private $flashNotifier;
 
     /**
      * @var \Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer
      */
-    protected $formRenderer;
+    private $formRenderer;
 
     /**
      * @param \Darvin\AdminBundle\Route\AdminRouterInterface $adminRouter Admin router
@@ -89,7 +89,7 @@ trait OperationTrait
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
-    public function execute(string $method, string $transition, string $token, Request $request): Response
+    final protected function execute(string $method, string $transition, string $token, Request $request): Response
     {
         $payment = $this->getPaymentByToken($token);
 
