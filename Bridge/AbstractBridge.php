@@ -38,6 +38,14 @@ abstract class AbstractBridge implements BridgeInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function initializationParameters(): array
+    {
+        return $this->gatewayConfig;
+    }
+
+    /**
      * @param array $gatewayConfig Gateway config
      */
     public function setGatewayConfig(array $gatewayConfig): void
@@ -51,16 +59,8 @@ abstract class AbstractBridge implements BridgeInterface
      *
      * @return mixed
      */
-    public function getGatewayParameter(string $name, $default = null)
+    final protected function getGatewayParameter(string $name, $default = null)
     {
         return $this->gatewayConfig[$name] ?? $default;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function initializationParameters(): array
-    {
-        return $this->gatewayConfig;
     }
 }
