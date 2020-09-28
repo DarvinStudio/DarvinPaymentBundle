@@ -61,6 +61,8 @@ class PurchaseController extends AbstractController
         $this->validateGateway($gateway, $method);
         $this->validatePayment($payment, $transition, $gatewayName);
 
+        $payment->setGateway($gatewayName);
+
         if ($payment->hasRedirect()) {
             return $this->createPaymentResponse($payment);
         }
@@ -75,8 +77,7 @@ class PurchaseController extends AbstractController
         }
 
         $payment
-            ->setTransactionReference($response->getTransactionReference())
-            ->setGateway($gatewayName);
+            ->setTransactionReference($response->getTransactionReference());
 
         $this->em->flush();
 
