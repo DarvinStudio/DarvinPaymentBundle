@@ -15,8 +15,8 @@ use Darvin\MailerBundle\Mailer\Exception\MailerException;
 use Darvin\MailerBundle\Mailer\MailerInterface;
 use Darvin\MailerBundle\Model\Email;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Event\State\ChangedEvent;
 use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
-use Darvin\PaymentBundle\State\Event\ChangedStateEvent;
 use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -79,14 +79,14 @@ class EmailStateChangeSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ChangedStateEvent::class => 'sendEmails',
+            ChangedEvent::class => 'sendEmails',
         ];
     }
 
     /**
-     * @param \Darvin\PaymentBundle\State\Event\ChangedStateEvent $event Event
+     * @param \Darvin\PaymentBundle\Event\State\ChangedEvent $event State changed event
      */
-    public function sendEmails(ChangedStateEvent $event): void
+    public function sendEmails(ChangedEvent $event): void
     {
         $payment = $event->getPayment();
 

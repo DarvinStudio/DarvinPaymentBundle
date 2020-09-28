@@ -1,22 +1,22 @@
 <?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2016-2019, Darvin Studio
+ * @copyright Copyright (c) 2020, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\State\Event;
+namespace Darvin\PaymentBundle\Event\State;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Changed state event
+ * State changed event
  */
-class ChangedStateEvent extends Event
+class ChangedEvent extends Event
 {
     /**
      * @var \Darvin\PaymentBundle\Entity\Payment

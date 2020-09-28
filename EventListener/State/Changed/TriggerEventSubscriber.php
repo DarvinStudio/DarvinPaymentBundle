@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\EventListener\State\Changed;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\State\Event\ChangedStateEvent;
+use Darvin\PaymentBundle\Event\State\ChangedEvent;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -28,7 +28,7 @@ class TriggerEventSubscriber implements EventSubscriber
     private $eventDispatcher;
 
     /**
-     * @var \Darvin\PaymentBundle\State\Event\ChangedStateEvent[]
+     * @var \Darvin\PaymentBundle\Event\State\ChangedEvent[]
      */
     private $events;
 
@@ -65,7 +65,7 @@ class TriggerEventSubscriber implements EventSubscriber
                 $changeSet = $uow->getEntityChangeSet($entity);
 
                 if (isset($changeSet['state'])) {
-                    $this->events[] = new ChangedStateEvent($entity);
+                    $this->events[] = new ChangedEvent($entity);
                 }
             }
         }
