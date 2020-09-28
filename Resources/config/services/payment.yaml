@@ -1,13 +1,12 @@
 parameters:
-    darvin_payment.payment.factory.class: Darvin\PaymentBundle\Payment\PaymentFactory
+    darvin_payment.payment.factory.class: Darvin\PaymentBundle\Payment\Factory\PaymentFactory
 
 services:
-    Darvin\PaymentBundle\Payment\PaymentFactoryInterface: '@darvin_payment.payment.factory'
+    Darvin\PaymentBundle\Payment\Factory\PaymentFactoryInterface: '@darvin_payment.payment.factory'
 
     darvin_payment.payment.factory:
         class: '%darvin_payment.payment.factory.class%'
         arguments:
-            - '@doctrine.orm.entity_manager'
             - '@darvin_utils.orm.entity_resolver'
             - '@validator'
             - '@state_machine.payment'

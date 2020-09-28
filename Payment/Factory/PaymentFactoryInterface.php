@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Payment;
+namespace Darvin\PaymentBundle\Payment\Factory;
 
 use Darvin\PaymentBundle\Entity\Client;
 use Darvin\PaymentBundle\Entity\PaidOrder;

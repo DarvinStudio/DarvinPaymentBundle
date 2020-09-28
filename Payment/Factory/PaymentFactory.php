@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Payment;
+namespace Darvin\PaymentBundle\Payment\Factory;
 
 use Darvin\PaymentBundle\Entity\Client;
 use Darvin\PaymentBundle\Entity\PaidOrder;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Payment\Operations;
 use Darvin\Utils\ORM\EntityResolverInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -24,11 +24,6 @@ use Symfony\Component\Workflow\WorkflowInterface;
  */
 class PaymentFactory implements PaymentFactoryInterface
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
-    private $entityManager;
-
     /**
      * @var \Darvin\Utils\ORM\EntityResolverInterface
      */
@@ -55,7 +50,6 @@ class PaymentFactory implements PaymentFactoryInterface
     private $defaultCurrency;
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface                      $entityManager   Entity manager
      * @param \Darvin\Utils\ORM\EntityResolverInterface                 $entityResolver  Entity resolver
      * @param \Symfony\Component\Validator\Validator\ValidatorInterface $validator       Validator
      * @param \Symfony\Component\Workflow\WorkflowInterface             $workflow        Workflow for payment state
@@ -63,14 +57,12 @@ class PaymentFactory implements PaymentFactoryInterface
      * @param string                                                    $defaultCurrency Currency by default
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
         EntityResolverInterface $entityResolver,
         ValidatorInterface $validator,
         WorkflowInterface $workflow,
         bool $autoApproval,
         string $defaultCurrency
     ) {
-        $this->entityManager = $entityManager;
         $this->entityResolver = $entityResolver;
         $this->validator = $validator;
         $this->workflow = $workflow;
