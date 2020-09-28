@@ -37,8 +37,6 @@ class StateProvider implements StateProviderInterface
     public function __construct(array $configs)
     {
         $this->configs = $configs;
-
-        $this->states = null;
     }
 
     /**

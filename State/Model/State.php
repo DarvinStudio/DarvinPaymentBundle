@@ -28,11 +28,6 @@ class State
     private $email;
 
     /**
-     * @var string
-     */
-    private $title;
-
-    /**
      * @param string                                         $name  Name
      * @param \Darvin\PaymentBundle\State\Model\Email\Email $email Email
      */
@@ -40,8 +35,6 @@ class State
     {
         $this->name = $name;
         $this->email = $email;
-
-        $this->title = sprintf('payment.state.%s', $name);
     }
 
     /**
@@ -65,6 +58,6 @@ class State
      */
     public function getTitle(): string
     {
-        return $this->title;
+        return sprintf('payment.state.%s', $this->name);
     }
 }

@@ -15,61 +15,14 @@ namespace Darvin\PaymentBundle\State\Model\Email;
  */
 class PublicEmail
 {
-    /**
-     * @var bool
-     */
-    private $enabled;
-
-    /**
-     * @var string
-     */
-    private $template;
-
-    /**
-     * @var string
-     */
-    private $subject;
-
-    /**
-     * @var string
-     */
-    private $content;
-
-    /**
-     * @param bool   $enabled   Is enabled
-     * @param string $template  Template
-     * @param string $stateName Subject
-     */
-    public function __construct(bool $enabled, string $template, string $stateName)
-    {
-        $this->enabled = $enabled;
-        $this->template = $template;
-        $this->subject = sprintf('payment.public.%s.subject', $stateName);
-        $this->content = sprintf('payment.public.%s.content', $stateName);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnabled(): bool
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTemplate(): string
-    {
-        return $this->template;
-    }
+    use EmailTrait;
 
     /**
      * @return string
      */
     public function getSubject(): string
     {
-        return $this->subject;
+        return sprintf('payment.public.%s.subject', $this->name);
     }
 
     /**
@@ -77,6 +30,6 @@ class PublicEmail
      */
     public function getContent(): string
     {
-        return $this->content;
+        return sprintf('payment.public.%s.content', $this->name);
     }
 }

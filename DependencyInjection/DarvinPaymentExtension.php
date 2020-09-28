@@ -95,8 +95,11 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         $container->prependExtensionConfig($this->getAlias(), [
             'mailer' => [
                 'enabled' => array_key_exists('DarvinMailerBundle', $container->getParameter('kernel.bundles')),
-                'states'  => $this->buildMailerStatesConfig(),
             ],
+        ]);
+
+        $container->prependExtensionConfig($this->getAlias(), [
+            'states'  => $this->buildMailerStatesConfig(),
         ]);
 
         $container->prependExtensionConfig('framework', [
@@ -147,7 +150,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     {
         $transitions = [];
 
-        foreach (Transitions::TRANSITIONS as $name => list($from, $to)) {
+        foreach (Transitions::TRANSITIONS as $name => [$from, $to]) {
             $transitions[$name] = [
                 'from' => $from,
                 'to'   => $to,
