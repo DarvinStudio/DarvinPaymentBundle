@@ -81,15 +81,15 @@ trait OperationTrait
     }
 
     /**
-     * @param string                                    $method     Payment method
-     * @param string                                    $transition Payment transition
-     * @param string                                    $token      Payment token
-     * @param \Symfony\Component\HttpFoundation\Request $request    Request
+     * @param string                                    $method    Payment method
+     * @param string                                    $operation Payment operation
+     * @param string                                    $token     Payment token
+     * @param \Symfony\Component\HttpFoundation\Request $request   Request
      *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
-    private function execute(string $method, string $transition, string $token, Request $request): Response
+    private function execute(string $method, string $operation, string $token, Request $request): Response
     {
         $payment = $this->getPaymentByToken($token);
 
@@ -107,14 +107,14 @@ trait OperationTrait
         $referer = $request->headers->get('referer', $redirectUrl);
 
         $this->validateGateway($gateway, $method);
-        $this->validatePayment($payment, $transition);
+        $this->validatePayment($payment, $operation);
 
         $parameters = $bridge->{sprintf('%sParameters', $method)}($payment);
 
         $response = $gateway->{$method}($parameters)->send();
 
         if ($response->isSuccessful()) {
-            $this->workflow->apply($payment, $transition);
+            $this->workflow->apply($payment, $operation);
 
             $this->em->flush();
 
@@ -149,7 +149,7 @@ trait OperationTrait
         $this->flashNotifier->error($errorMessage);
 
         if ($request->isXmlHttpRequest()) {
-            return new AjaxResponse($this->formRenderer->renderForm($payment, $transition), false, $errorMessage);
+            return new AjaxResponse($this->formRenderer->renderForm($payment, $operation), false, $errorMessage);
         }
 
         return new RedirectResponse($referer);

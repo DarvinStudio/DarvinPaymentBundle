@@ -168,16 +168,16 @@ abstract class AbstractController
 
     /**
      * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
-     * @param string                               $transition  Workflow transition
+     * @param string                               $operation   Workflow operation
      * @param string|null                          $gatewayName Current gateway Name
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    final protected function validatePayment(Payment $payment, string $transition, ?string $gatewayName = null): void
+    final protected function validatePayment(Payment $payment, string $operation, ?string $gatewayName = null): void
     {
-        if (!$this->workflow->can($payment, $transition)) {
+        if (!$this->workflow->can($payment, $operation)) {
             $errorMessage = $this->translator->trans('error.not_available_operation', [
-                '%transition%' => $transition,
+                '%operation%' => $operation,
             ], 'payment_event');
 
             $this->logger->error($errorMessage, ['payment' => $payment]);

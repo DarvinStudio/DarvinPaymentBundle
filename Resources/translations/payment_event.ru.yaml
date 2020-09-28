@@ -4,7 +4,7 @@ error:
     cant_send_email: "Проблема с отправкой email-уведомления: %message%"
     missing_public_email: "У клиента отсутствует email"
     missing_service_email: "У админа отсутствует email"
-    not_available_operation: "Операция «%transition%» не доступна"
+    not_available_operation: "Операция «%operation%» не доступна"
     not_support_gateway_method: "Платежный шлюз «%gateway%» не поддерживает «%method%» метод"
     wrong_gateway: "Данный платеж не может обрабатываться платежным шлюзом %gateway%. Необходим шлюз %paymentGateway%."
     success: "%method%: Страница успеха недоступна, так как заказ находится в статусе «%state%»"

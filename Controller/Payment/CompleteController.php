@@ -34,16 +34,16 @@ class CompleteController extends AbstractController
 
         if ($this->preAuthorize) {
             $method     = 'completeAuthorize';
-            $transition = Transitions::AUTHORIZE;
+            $operation  = Transitions::AUTHORIZE;
             $parameters = $bridge->completeAuthorizeParameters($payment);
         } else {
             $method     = 'completePurchase';
-            $transition = Transitions::PURCHASE;
+            $operation  = Transitions::PURCHASE;
             $parameters = $bridge->completePurchaseParameters($payment);
         }
 
         $this->validateGateway($gateway, $method);
-        $this->validatePayment($payment, $transition);
+        $this->validatePayment($payment, $operation);
 
         try {
             $response = $gateway->{$method}($parameters)->send();
@@ -53,7 +53,7 @@ class CompleteController extends AbstractController
             return $this->createErrorResponse($payment);
         }
         if ($response->isSuccessful()) {
-            $this->workflow->apply($payment, $transition);
+            $this->workflow->apply($payment, $operation);
 
             $this->em->flush();
 

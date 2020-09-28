@@ -64,16 +64,16 @@ class PurchaseController extends AbstractController
 
         if ($this->preAuthorize) {
             $method     = 'authorize';
-            $transition = Transitions::AUTHORIZE;
+            $operation  = Transitions::AUTHORIZE;
             $parameters = $bridge->authorizeParameters($payment);
         } else {
             $method     = 'purchase';
-            $transition = Transitions::PURCHASE;
+            $operation  = Transitions::PURCHASE;
             $parameters = $bridge->purchaseParameters($payment);
         }
 
         $this->validateGateway($gateway, $method);
-        $this->validatePayment($payment, $transition, $gatewayName);
+        $this->validatePayment($payment, $operation, $gatewayName);
 
         if ($payment->hasRedirect()) {
             return $this->createPaymentResponse($payment);
