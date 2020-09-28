@@ -12,7 +12,7 @@ namespace Darvin\PaymentBundle\Form\Renderer\Admin;
 
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Symfony\Component\Workflow\WorkflowInterface;
 use Twig\Environment;
 
@@ -22,10 +22,10 @@ use Twig\Environment;
 class OperationFormRenderer implements OperationFormRendererInterface
 {
     private const URL_GENERATORS = [
-        Transitions::APPROVE => 'getApproveUrl',
-        Transitions::CAPTURE => 'getCaptureUrl',
-        Transitions::REFUND  => 'getRefundUrl',
-        Transitions::VOID    => 'getVoidUrl',
+        Operations::APPROVE => 'getApproveUrl',
+        Operations::CAPTURE => 'getCaptureUrl',
+        Operations::REFUND  => 'getRefundUrl',
+        Operations::VOID    => 'getVoidUrl',
     ];
 
     /**

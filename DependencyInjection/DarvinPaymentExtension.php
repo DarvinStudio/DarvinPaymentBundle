@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\DependencyInjection;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\DependencyInjection\Compiler\AddReceiptFactoryPass;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Darvin\Utils\DependencyInjection\ConfigInjector;
 use Darvin\Utils\DependencyInjection\ConfigLoader;
 use Darvin\Utils\DependencyInjection\ExtensionConfigurator;
@@ -150,7 +150,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     {
         $transitions = [];
 
-        foreach (Transitions::TRANSITIONS as $name => [$from, $to]) {
+        foreach (Operations::OPERATIONS as $name => [$from, $to]) {
             $transitions[$name] = [
                 'from' => $from,
                 'to'   => $to,

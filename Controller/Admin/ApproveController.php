@@ -14,7 +14,7 @@ use Darvin\AdminBundle\Route\AdminRouterInterface;
 use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Darvin\Utils\Flash\FlashNotifierInterface;
 use Darvin\Utils\HttpFoundation\AjaxResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -79,7 +79,7 @@ class ApproveController extends AbstractController
     {
         $payment = $this->getPaymentByToken($token);
 
-        $this->validatePayment($payment, Transitions::APPROVE);
+        $this->validatePayment($payment, Operations::APPROVE);
 
         if (!$this->authorizationChecker->isGranted(Permission::EDIT, $payment)) {
             throw new AccessDeniedException(
@@ -92,7 +92,7 @@ class ApproveController extends AbstractController
             $this->adminRouter->generate($payment, Payment::class, AdminRouterInterface::TYPE_INDEX, [], UrlGeneratorInterface::ABSOLUTE_URL)
         );
 
-        $this->workflow->apply($payment, Transitions::APPROVE);
+        $this->workflow->apply($payment, Operations::APPROVE);
 
         $this->em->flush();
 

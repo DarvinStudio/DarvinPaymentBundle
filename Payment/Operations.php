@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\Workflow;
+namespace Darvin\PaymentBundle\Payment;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 
 /**
  * Workflow transitions
  */
-final class Transitions
+final class Operations
 {
     public const AUTHORIZE = 'authorize';
     public const APPROVE   = 'approve';
@@ -27,7 +27,7 @@ final class Transitions
     public const REFUND    = 'refund';
     public const FAIL      = 'fail';
 
-    public const TRANSITIONS = [
+    public const OPERATIONS = [
         self::APPROVE   => [PaymentStateType::APPROVAL, PaymentStateType::PENDING],
         self::AUTHORIZE => [PaymentStateType::PENDING, PaymentStateType::AUTHORIZED],
         self::PURCHASE  => [PaymentStateType::PENDING, PaymentStateType::COMPLETED],

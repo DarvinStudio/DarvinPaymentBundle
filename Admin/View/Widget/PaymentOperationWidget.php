@@ -14,7 +14,7 @@ use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\AdminBundle\View\Widget\Widget\AbstractWidget;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRendererInterface;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 
 /**
  * Operation admin view widget
@@ -43,7 +43,7 @@ class PaymentOperationWidget extends AbstractWidget
         $payment = $entity;
         $forms   = [];
 
-        foreach (array_keys(Transitions::TRANSITIONS) as $operation) {
+        foreach (array_keys(Operations::OPERATIONS) as $operation) {
             if ($this->formRenderer->canRenderForm($payment, $operation)) {
                 $forms[] = $this->formRenderer->renderForm($payment, $operation);
             }

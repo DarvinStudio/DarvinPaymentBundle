@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,11 +34,11 @@ class CompleteController extends AbstractController
 
         if ($this->preAuthorize) {
             $method     = 'completeAuthorize';
-            $operation  = Transitions::AUTHORIZE;
+            $operation  = Operations::AUTHORIZE;
             $parameters = $bridge->completeAuthorizeParameters($payment);
         } else {
             $method     = 'completePurchase';
-            $operation  = Transitions::PURCHASE;
+            $operation  = Operations::PURCHASE;
             $parameters = $bridge->completePurchaseParameters($payment);
         }
 

@@ -14,7 +14,7 @@ use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Redirect\RedirectFactoryInterface;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -64,11 +64,11 @@ class PurchaseController extends AbstractController
 
         if ($this->preAuthorize) {
             $method     = 'authorize';
-            $operation  = Transitions::AUTHORIZE;
+            $operation  = Operations::AUTHORIZE;
             $parameters = $bridge->authorizeParameters($payment);
         } else {
             $method     = 'purchase';
-            $operation  = Transitions::PURCHASE;
+            $operation  = Operations::PURCHASE;
             $parameters = $bridge->purchaseParameters($payment);
         }
 
@@ -139,7 +139,7 @@ class PurchaseController extends AbstractController
             throw new \LogicException('Redirect could not be empty');
         }
         if ($redirect->isExpired()) {
-            $this->workflow->apply($payment, Transitions::EXPIRE);
+            $this->workflow->apply($payment, Operations::EXPIRE);
 
             $this->em->flush();
 

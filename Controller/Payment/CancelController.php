@@ -12,7 +12,7 @@ namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -29,17 +29,13 @@ class CancelController extends AbstractController
     {
         $payment = $this->getPaymentByToken($token);
 
-        if (PaymentStateType::CANCELED === $payment->getState()) {
-            return new Response($this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
-                'payment' => $payment,
-            ]));
+        if (PaymentStateType::CANCELED !== $payment->getState()) {
+            $this->validatePayment($payment, Operations::CANCEL);
+
+            $this->workflow->apply($payment, Operations::CANCEL);
+
+            $this->em->flush();
         }
-
-        $this->validatePayment($payment, Transitions::CANCEL);
-
-        $this->workflow->apply($payment, Transitions::CANCEL);
-
-        $this->em->flush();
 
         return new Response($this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
             'payment' => $payment,

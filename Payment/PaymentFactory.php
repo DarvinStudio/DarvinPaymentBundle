@@ -13,7 +13,6 @@ namespace Darvin\PaymentBundle\Payment;
 use Darvin\PaymentBundle\Entity\Client;
 use Darvin\PaymentBundle\Entity\PaidOrder;
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Workflow\Transitions;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
@@ -104,7 +103,7 @@ class PaymentFactory implements PaymentFactoryInterface
         $this->validate($payment);
 
         if ($this->autoApproval) {
-            $this->workflow->apply($payment, Transitions::APPROVE);
+            $this->workflow->apply($payment, Operations::APPROVE);
         }
 
         return $payment;

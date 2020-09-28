@@ -12,7 +12,7 @@ namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -29,17 +29,13 @@ class FailController extends AbstractController
     {
         $payment = $this->getPaymentByToken($token);
 
-        if (PaymentStateType::FAILED === $payment->getState()) {
-            return new Response($this->twig->render('@DarvinPayment/payment/fail.html.twig', [
-                'payment' => $payment,
-            ]));
+        if (PaymentStateType::FAILED !== $payment->getState()) {
+            $this->validatePayment($payment, Operations::FAIL);
+
+            $this->workflow->apply($payment, Operations::FAIL);
+
+            $this->em->flush();
         }
-
-        $this->validatePayment($payment, Transitions::FAIL);
-
-        $this->workflow->apply($payment, Transitions::FAIL);
-
-        $this->em->flush();
 
         return new Response($this->twig->render('@DarvinPayment/payment/fail.html.twig', [
             'payment' => $payment,

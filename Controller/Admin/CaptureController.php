@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\Controller\Admin;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,6 +30,6 @@ class CaptureController extends AbstractController
      */
     public function __invoke(Request $request, string $token): Response
     {
-        return $this->execute('capture', Transitions::CAPTURE, $token, $request);
+        return $this->execute('capture', Operations::CAPTURE, $token, $request);
     }
 }
