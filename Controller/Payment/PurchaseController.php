@@ -47,6 +47,7 @@ class PurchaseController extends AbstractController
         $payment = $this->getPaymentByToken($token);
         $gateway = $this->getGateway($gatewayName);
         $bridge = $this->getBridge($gatewayName);
+        $payment->setGateway($gatewayName);
 
         if ($this->preAuthorize) {
             $method = 'authorize';
@@ -61,7 +62,6 @@ class PurchaseController extends AbstractController
         $this->validateGateway($gateway, $method);
         $this->validatePayment($payment, $transition, $gatewayName);
 
-        $payment->setGateway($gatewayName);
 
         if ($payment->hasRedirect()) {
             return $this->createPaymentResponse($payment);
