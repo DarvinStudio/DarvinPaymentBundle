@@ -118,7 +118,7 @@ class PaymentLogger implements LoggerInterface
     public function log($level, $message, array $context = []): void
     {
         if (isset($context['payment']) && $context['payment'] instanceof Payment) {
-            $this->getEventRepository()->save(new Event($context['payment'], $level, $message));
+            $this->getEventRepository()->add(new Event($context['payment'], $level, $message));
         }
         if (null !== $this->monolog) {
             $this->monolog->log($level, $message, $context);
