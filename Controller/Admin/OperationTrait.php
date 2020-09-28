@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Controller\Admin;
 use Darvin\AdminBundle\Route\AdminRouterInterface;
 use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer;
+use Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRendererInterface;
 use Darvin\Utils\Flash\FlashNotifierInterface;
 use Darvin\Utils\HttpFoundation\AjaxResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -44,7 +44,7 @@ trait OperationTrait
     private $flashNotifier;
 
     /**
-     * @var \Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer
+     * @var \Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRendererInterface
      */
     private $formRenderer;
 
@@ -73,9 +73,9 @@ trait OperationTrait
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer $formRenderer View widget pool
+     * @param \Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRendererInterface $formRenderer Operation admin form renderer
      */
-    public function setFormRenderer(AbstractFormRenderer $formRenderer): void
+    public function setFormRenderer(OperationFormRendererInterface $formRenderer): void
     {
         $this->formRenderer = $formRenderer;
     }
@@ -149,7 +149,7 @@ trait OperationTrait
         $this->flashNotifier->error($errorMessage);
 
         if ($request->isXmlHttpRequest()) {
-            return new AjaxResponse($this->formRenderer->renderForm($payment), false, $errorMessage);
+            return new AjaxResponse($this->formRenderer->renderForm($payment, $transition), false, $errorMessage);
         }
 
         return new RedirectResponse($referer);

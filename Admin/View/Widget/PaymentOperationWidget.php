@@ -13,12 +13,8 @@ namespace Darvin\PaymentBundle\Admin\View\Widget;
 use Darvin\AdminBundle\Security\Permissions\Permission;
 use Darvin\AdminBundle\View\Widget\Widget\AbstractWidget;
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer;
-use Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer;
-use Darvin\PaymentBundle\Form\Renderer\RefundFormRenderer;
-use Darvin\PaymentBundle\Form\Renderer\VoidFormRenderer;
+use Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRendererInterface;
 use Darvin\PaymentBundle\Workflow\Transitions;
-use Symfony\Component\Workflow\WorkflowInterface;
 
 /**
  * Operation admin view widget
@@ -26,68 +22,16 @@ use Symfony\Component\Workflow\WorkflowInterface;
 class PaymentOperationWidget extends AbstractWidget
 {
     /**
-     * @var \Symfony\Component\Workflow\WorkflowInterface
+     * @var \Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRendererInterface
      */
-    private $workflow;
+    private $formRenderer;
 
     /**
-     * @var \Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer|null
+     * @param \Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRendererInterface $formRenderer Operation admin form renderer
      */
-    private $approveFormRenderer;
-
-    /**
-     * @var \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer|null
-     */
-    private $captureFormRenderer;
-
-    /**
-     * @var \Darvin\PaymentBundle\Form\Renderer\RefundFormRenderer|null
-     */
-    private $refundFormRenderer;
-
-    /**
-     * @var \Darvin\PaymentBundle\Form\Renderer\VoidFormRenderer|null
-     */
-    private $voidFormRenderer;
-
-    /**
-     * @param \Symfony\Component\Workflow\WorkflowInterface $workflow Workflow for payment state
-     */
-    public function __construct(WorkflowInterface $workflow)
+    public function __construct(OperationFormRendererInterface $formRenderer)
     {
-        $this->workflow = $workflow;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer|null $approveFormRenderer Approve form renderer
-     */
-    public function setApproveFormRenderer(?ApproveFormRenderer $approveFormRenderer): void
-    {
-        $this->approveFormRenderer = $approveFormRenderer;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer|null $captureFormRenderer Capture form renderer
-     */
-    public function setCaptureFormRenderer(?CaptureFormRenderer $captureFormRenderer): void
-    {
-        $this->captureFormRenderer = $captureFormRenderer;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Form\Renderer\RefundFormRenderer|null $refundFormRenderer Refund form renderer
-     */
-    public function setRefundFormRenderer(?RefundFormRenderer $refundFormRenderer): void
-    {
-        $this->refundFormRenderer = $refundFormRenderer;
-    }
-
-    /**
-     * @param \Darvin\PaymentBundle\Form\Renderer\VoidFormRenderer|null $voidFormRenderer Void form renderer
-     */
-    public function setVoidFormRenderer(?VoidFormRenderer $voidFormRenderer): void
-    {
-        $this->voidFormRenderer = $voidFormRenderer;
+        $this->formRenderer = $formRenderer;
     }
 
     /**
@@ -95,19 +39,14 @@ class PaymentOperationWidget extends AbstractWidget
      */
     protected function createContent($entity, array $options): ?string
     {
-        $forms = [];
+        /** @var \Darvin\PaymentBundle\Entity\Payment $payment */
+        $payment = $entity;
+        $forms   = [];
 
-        if ($this->approveFormRenderer !== null && $this->workflow->can($entity, Transitions::APPROVE)) {
-            $forms[] = $this->approveFormRenderer->renderForm($entity);
-        }
-        if ($this->captureFormRenderer !== null && $this->workflow->can($entity, Transitions::CAPTURE)) {
-            $forms[] = $this->captureFormRenderer->renderForm($entity);
-        }
-        if ($this->voidFormRenderer !== null && $this->workflow->can($entity, Transitions::VOID)) {
-            $forms[] = $this->voidFormRenderer->renderForm($entity);
-        }
-        if ($this->refundFormRenderer !== null && $this->workflow->can($entity, Transitions::REFUND)) {
-            $forms[] = $this->refundFormRenderer->renderForm($entity);
+        foreach (array_keys(Transitions::TRANSITIONS) as $operation) {
+            if ($this->formRenderer->canRenderForm($payment, $operation)) {
+                $forms[] = $this->formRenderer->renderForm($payment, $operation);
+            }
         }
         if (empty($forms)) {
             return null;

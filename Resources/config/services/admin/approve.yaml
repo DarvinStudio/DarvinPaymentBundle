@@ -1,8 +1,6 @@
 parameters:
     darvin_payment.admin.approve.controller.class: Darvin\PaymentBundle\Controller\Admin\ApproveController
 
-    darvin_payment.admin.approve.form.renderer.class: Darvin\PaymentBundle\Form\Renderer\ApproveFormRenderer
-
 services:
     darvin_payment.admin.approve.controller:
         class:  '%darvin_payment.admin.approve.controller.class%'
@@ -13,7 +11,3 @@ services:
             - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
         tags:
             - { name: controller.service_arguments }
-
-    darvin_payment.admin.approve.form.renderer:
-        class:  '%darvin_payment.admin.approve.form.renderer.class%'
-        parent: darvin_payment.admin.form.renderer.abstract

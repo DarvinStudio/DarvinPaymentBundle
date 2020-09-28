@@ -1,5 +1,5 @@
 parameters:
-    darvin_payment.admin.form.renderer.abstract.class: Darvin\PaymentBundle\Form\Renderer\AbstractFormRenderer
+    darvin_payment.admin.form.renderer.operation.class: Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRenderer
 
     darvin_payment.admin.view.widget.payment_event_level.class: Darvin\PaymentBundle\Admin\View\Widget\PaymentEventLevelWidget
 
@@ -8,12 +8,11 @@ parameters:
     darvin_payment.admin.view.widget.payment_state.class: Darvin\PaymentBundle\Admin\View\Widget\PaymentStateWidget
 
 services:
-    darvin_payment.admin.form.renderer.abstract:
-        class:    '%darvin_payment.admin.form.renderer.abstract.class%'
-        abstract: true
+    darvin_payment.admin.form.renderer.operation:
+        class: '%darvin_payment.admin.form.renderer.operation.class%'
         arguments:
-            - '@darvin_payment.url.builder'
             - '@twig'
+            - '@darvin_payment.url.builder'
             - '@state_machine.payment'
 
     darvin_payment.admin.view.widget.payment_event_level:
@@ -28,12 +27,7 @@ services:
         class:  '%darvin_payment.admin.view.widget.payment_operation.class%'
         parent: darvin_admin.view.widget.abstract
         arguments:
-            - '@state_machine.payment'
-        calls:
-            - [ setApproveFormRenderer, [ '@?darvin_payment.admin.approve.form.renderer' ] ]
-            - [ setCaptureFormRenderer, [ '@?darvin_payment.admin.capture.form.renderer' ] ]
-            - [ setRefundFormRenderer,  [ '@?darvin_payment.admin.refund.form.renderer' ] ]
-            - [ setVoidFormRenderer,    [ '@?darvin_payment.admin.void.form.renderer' ] ]
+            - '@darvin_payment.admin.form.renderer.operation'
         tags:
             - { name: darvin_admin.view_widget }
 
