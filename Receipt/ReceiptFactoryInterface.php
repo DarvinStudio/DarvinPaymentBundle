@@ -18,22 +18,19 @@ use Darvin\PaymentBundle\Entity\Payment;
 interface ReceiptFactoryInterface
 {
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
-     * @param string                               $gatewayName Gateway name
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return array
      *
-     * @throws \Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException
      */
-    public function createReceipt(Payment $payment, string $gatewayName): array;
+    public function createReceipt(Payment $payment): array;
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
-     * @param string                               $gatewayName Gateway name
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return bool
      */
-    public function support(Payment $payment, string $gatewayName): bool;
+    public function support(Payment $payment): bool;
 
     /**
      * @return string
