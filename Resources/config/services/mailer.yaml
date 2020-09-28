@@ -1,7 +1,7 @@
 parameters:
     darvin_payment.mailer.event_subscriber.email_state_change.class: Darvin\PaymentBundle\EventListener\Mailer\EmailStateChangeSubscriber
 
-    darvin_payment.mailer.factory.class: Darvin\PaymentBundle\Mailer\Factory\EmailFactory
+    darvin_payment.mailer.factory.class: Darvin\PaymentBundle\Mailer\Factory\PaymentEmailFactory
 
 services:
     darvin_payment.mailer.event_subscriber.email_state_change:
@@ -18,7 +18,7 @@ services:
     darvin_payment.mailer.factory:
         class: '%darvin_payment.mailer.factory.class%'
         arguments:
-            - '@darvin_mailer.factory.template'
             - '@doctrine.orm.entity_manager'
+            - '@darvin_mailer.factory.template'
             - '@darvin_payment.config'
             - '@translator'

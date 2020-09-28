@@ -18,25 +18,19 @@ use Darvin\PaymentBundle\Entity\Payment;
 interface ReceiptFactoryRegistryInterface
 {
     /**
-     * @param \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface $receiptFactory Receipt Factory
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function addFactory(ReceiptFactoryInterface $receiptFactory): void;
-
-    /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
+     * @param string                               $gatewayName Gateway name
      *
      * @return \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface
-     *
      * @throws \InvalidArgumentException
      */
-    public function getFactory(Payment $payment): ReceiptFactoryInterface;
+    public function getFactory(Payment $payment, string $gatewayName): ReceiptFactoryInterface;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
+     * @param string                               $gatewayName Gateway name
      *
      * @return bool
      */
-    public function hasFactory(Payment $payment): bool;
+    public function hasFactory(Payment $payment, string $gatewayName): bool;
 }

@@ -14,13 +14,13 @@ use Darvin\PaymentBundle\Entity\Redirect;
 use Omnipay\Common\Message\RedirectResponseInterface;
 
 /**
- * Redirect manager interface
+ * Redirect factory
  */
 interface RedirectFactoryInterface
 {
     /**
      * @param \Omnipay\Common\Message\RedirectResponseInterface $response       Response
-     * @param int                                               $sessionTimeout Session Timeout
+     * @param int                                               $sessionTimeout Session timeout
      *
      * @return \Darvin\PaymentBundle\Entity\Redirect
      */
