@@ -1,8 +1,6 @@
 parameters:
     darvin_payment.admin.capture.controller.class: Darvin\PaymentBundle\Controller\Admin\CaptureController
 
-    darvin_payment.admin.capture.form.renderer.class: Darvin\PaymentBundle\Form\Renderer\CaptureFormRenderer
-
 services:
     darvin_payment.admin.capture.controller:
         class:  '%darvin_payment.admin.capture.controller.class%'
@@ -11,10 +9,6 @@ services:
             - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
             - [ setAuthorizationChecker, [ '@security.authorization_checker' ] ]
             - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
-            - [ setFormRenderer,         [ '@darvin_payment.admin.capture.form.renderer' ] ]
+            - [ setFormRenderer,         [ '@darvin_payment.admin.form.renderer.operation' ] ]
         tags:
             - { name: controller.service_arguments }
-
-    darvin_payment.admin.capture.form.renderer:
-        class:  '%darvin_payment.admin.capture.form.renderer.class%'
-        parent: darvin_payment.admin.form.renderer.abstract
