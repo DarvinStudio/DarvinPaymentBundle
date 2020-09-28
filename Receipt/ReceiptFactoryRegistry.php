@@ -18,45 +18,55 @@ use Darvin\PaymentBundle\Entity\Payment;
 class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
 {
     /**
-     * @var \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface[]|null
+     * @var \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface[]
      */
-    private $receiptFactories = [];
+    private $factories;
 
     /**
-     * {@inheritDoc}
+     * Receipt factory registry constructor.
      */
-    public function addFactory(ReceiptFactoryInterface $receiptFactory): void
+    public function __construct()
     {
-        $name = $receiptFactory->getName();
+        $this->factories = [];
+    }
 
-        if (isset($this->receiptFactories[$name])) {
+    /**
+     * @param \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface $factory Receipt factory
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function addFactory(ReceiptFactoryInterface $factory): void
+    {
+        $name = $factory->getName();
+
+        if (isset($this->factories[$name])) {
             throw new \InvalidArgumentException(sprintf('Receipt factory "%s" already exists.', $name));
         }
 
-        $this->receiptFactories[$name] = $receiptFactory;
+        $this->factories[$name] = $factory;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getFactory(Payment $payment): ReceiptFactoryInterface
+    public function getFactory(Payment $payment, string $gatewayName): ReceiptFactoryInterface
     {
-        foreach ($this->receiptFactories as $receiptFactory) {
-            if ($receiptFactory->support($payment)) {
-                return $receiptFactory;
+        foreach ($this->factories as $factory) {
+            if ($factory->supports($payment, $gatewayName)) {
+                return $factory;
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('Can\'t get receipt factory for payment №"%s".', $payment->getId()));
+        throw new \InvalidArgumentException(sprintf('Can\'t get receipt factory for payment "%s".', $payment->__toString()));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function hasFactory(Payment $payment): bool
+    public function hasFactory(Payment $payment, string $gatewayName): bool
     {
-        foreach ($this->receiptFactories as $receiptFactory) {
-            if ($receiptFactory->support($payment)) {
+        foreach ($this->factories as $factory) {
+            if ($factory->supports($payment, $gatewayName)) {
                 return true;
             }
         }

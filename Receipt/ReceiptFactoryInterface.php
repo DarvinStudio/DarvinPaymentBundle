@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Receipt;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
- * Receipt factory interface
+ * Receipt factory
  */
 interface ReceiptFactoryInterface
 {
@@ -22,7 +22,6 @@ interface ReceiptFactoryInterface
      * @param string                               $gatewayName Gateway name
      *
      * @return array
-     *
      * @throws \Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException
      */
     public function createReceipt(Payment $payment, string $gatewayName): array;
@@ -33,7 +32,7 @@ interface ReceiptFactoryInterface
      *
      * @return bool
      */
-    public function support(Payment $payment, string $gatewayName): bool;
+    public function supports(Payment $payment, string $gatewayName): bool;
 
     /**
      * @return string
