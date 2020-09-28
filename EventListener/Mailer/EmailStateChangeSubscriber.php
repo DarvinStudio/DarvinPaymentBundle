@@ -16,7 +16,7 @@ use Darvin\MailerBundle\Mailer\MailerInterface;
 use Darvin\MailerBundle\Model\Email;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Event\State\ChangedEvent;
-use Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface;
+use Darvin\PaymentBundle\Mailer\Factory\PaymentEmailFactoryInterface;
 use Darvin\PaymentBundle\State\Provider\StateProviderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -28,7 +28,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EmailStateChangeSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface
+     * @var \Darvin\PaymentBundle\Mailer\Factory\PaymentEmailFactoryInterface
      */
     private $emailFactory;
 
@@ -53,14 +53,14 @@ class EmailStateChangeSubscriber implements EventSubscriberInterface
     private $translator;
 
     /**
-     * @param \Darvin\PaymentBundle\Mailer\Factory\EmailFactoryInterface  $emailFactory         Payment email factory
-     * @param \Psr\Log\LoggerInterface                                    $logger               Logger
-     * @param \Darvin\MailerBundle\Mailer\MailerInterface                 $mailer               Mailer
-     * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $paymentStateProvider Payment state provider
-     * @param \Symfony\Contracts\Translation\TranslatorInterface          $translator           Translator
+     * @param \Darvin\PaymentBundle\Mailer\Factory\PaymentEmailFactoryInterface $emailFactory         Payment email factory
+     * @param \Psr\Log\LoggerInterface                                          $logger               Logger
+     * @param \Darvin\MailerBundle\Mailer\MailerInterface                       $mailer               Mailer
+     * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface       $paymentStateProvider Payment state provider
+     * @param \Symfony\Contracts\Translation\TranslatorInterface                $translator           Translator
      */
     public function __construct(
-        EmailFactoryInterface $emailFactory,
+        PaymentEmailFactoryInterface $emailFactory,
         LoggerInterface $logger,
         MailerInterface $mailer,
         StateProviderInterface $paymentStateProvider,

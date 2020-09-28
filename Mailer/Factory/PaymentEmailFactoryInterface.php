@@ -15,26 +15,24 @@ use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\State\Model\State;
 
 /**
- * Payment email factory interface
+ * Payment email factory
  */
-interface EmailFactoryInterface
+interface PaymentEmailFactoryInterface
 {
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment    $payment     Payment
-     * @param \Darvin\PaymentBundle\State\Model\State $state       Payment state model
+     * @param \Darvin\PaymentBundle\Entity\Payment    $payment Payment
+     * @param \Darvin\PaymentBundle\State\Model\State $state   Payment state
      *
      * @return \Darvin\MailerBundle\Model\Email
-     *
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
     public function createPublicEmail(Payment $payment, State $state): Email;
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment    $payment     Payment
-     * @param \Darvin\PaymentBundle\State\Model\State $state       Payment state model
+     * @param \Darvin\PaymentBundle\Entity\Payment    $payment Payment
+     * @param \Darvin\PaymentBundle\State\Model\State $state   Payment state
      *
      * @return \Darvin\MailerBundle\Model\Email
-     *
      * @throws \Darvin\MailerBundle\Factory\Exception\CantCreateEmailException
      */
     public function createServiceEmail(Payment $payment, State $state): Email;

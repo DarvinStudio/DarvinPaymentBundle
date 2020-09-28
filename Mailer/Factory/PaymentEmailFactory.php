@@ -21,19 +21,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Email factory
+ * Payment email factory
  */
-class EmailFactory implements EmailFactoryInterface
+class PaymentEmailFactory implements PaymentEmailFactoryInterface
 {
-    /**
-     * @var \Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface
-     */
-    private $genericFactory;
-
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
+
+    /**
+     * @var \Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface
+     */
+    private $genericFactory;
 
     /**
      * @var \Darvin\PaymentBundle\Config\PaymentConfigInterface
@@ -46,19 +46,19 @@ class EmailFactory implements EmailFactoryInterface
     private $translator;
 
     /**
+     * @param \Doctrine\ORM\EntityManagerInterface                       $em             Entity manager
      * @param \Darvin\MailerBundle\Factory\TemplateEmailFactoryInterface $genericFactory Generic template email factory
-     * @param \Doctrine\ORM\EntityManagerInterface                       $em             EntityManagerInterface
      * @param \Darvin\PaymentBundle\Config\PaymentConfigInterface        $paymentConfig  Payment configuration
      * @param \Symfony\Contracts\Translation\TranslatorInterface         $translator     Translator
      */
     public function __construct(
-        TemplateEmailFactoryInterface $genericFactory,
         EntityManagerInterface $em,
+        TemplateEmailFactoryInterface $genericFactory,
         PaymentConfigInterface $paymentConfig,
         TranslatorInterface $translator
     ) {
-        $this->genericFactory = $genericFactory;
         $this->em = $em;
+        $this->genericFactory = $genericFactory;
         $this->paymentConfig = $paymentConfig;
         $this->translator = $translator;
     }
@@ -68,7 +68,7 @@ class EmailFactory implements EmailFactoryInterface
      */
     public function createPublicEmail(Payment $payment, State $state): Email
     {
-        $emailData = $state->getEmail()->getPublicEmail();
+        $emailConfig = $state->getEmail()->getPublicEmail();
 
         if (null === $payment->getClient()->getEmail()) {
             throw new CantCreateEmailException($this->translator->trans('error.missing_public_email', [], 'payment_event'));
@@ -77,11 +77,11 @@ class EmailFactory implements EmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
             $payment->getClient()->getEmail(),
-            $this->translator->trans($emailData->getSubject(), ['%orderNumber%' => $payment->getOrder()->getNumber()], 'email'),
-            $emailData->getTemplate(),
+            $this->translator->trans($emailConfig->getSubject(), ['%orderNumber%' => $payment->getOrder()->getNumber()], 'email'),
+            $emailConfig->getTemplate(),
             [
                 'payment' => $payment,
-                'content' => $emailData->getContent(),
+                'content' => $emailConfig->getContent(),
             ]
         );
     }
@@ -93,28 +93,29 @@ class EmailFactory implements EmailFactoryInterface
     {
         $serviceEmails = $this->paymentConfig->getEmailsByStateName($state->getName());
 
-        if (0 === count($serviceEmails)) {
+        if (empty($serviceEmails)) {
             throw new CantCreateEmailException($this->translator->trans('error.missing_service_email', [], 'payment_event'));
         }
 
-        $emailData = $state->getEmail()->getServiceEmail();
-        $order = $this->getOrder($payment);
+        $emailConfig = $state->getEmail()->getServiceEmail();
 
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans($emailData->getSubject(), ['%orderNumber%' => $payment->getOrder()->getNumber()], 'email'),
-            $emailData->getTemplate(),
+            $this->translator->trans($emailConfig->getSubject(), ['%orderNumber%' => $payment->getOrder()->getNumber()], 'email'),
+            $emailConfig->getTemplate(),
             [
-                'order'   => $order,
                 'payment' => $payment,
-                'content' => $emailData->getContent()
+                'content' => $emailConfig->getContent(),
+                'order'   => $this->getOrder($payment),
             ]
         );
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
+     *
+     * @return object|null
      */
     private function getOrder(Payment $payment): ?object
     {
