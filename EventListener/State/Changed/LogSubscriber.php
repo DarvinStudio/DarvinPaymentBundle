@@ -24,12 +24,12 @@ class LogSubscriber implements EventSubscriberInterface
     /**
      * @var \Psr\Log\LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var \Symfony\Contracts\Translation\TranslatorInterface
      */
-    protected $translator;
+    private $translator;
 
     /**
      * @param \Psr\Log\LoggerInterface                           $logger     Logger
@@ -62,7 +62,9 @@ class LogSubscriber implements EventSubscriberInterface
 
         $this->logger->info(
             $this->translator->trans('info.changed_state', ['%state%' => $stateTitle], 'payment_event'),
-            ['payment' => $payment]
+            [
+                'payment' => $payment,
+            ]
         );
     }
 }
