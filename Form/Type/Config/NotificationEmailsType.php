@@ -35,11 +35,11 @@ class NotificationEmailsType extends AbstractType
     /**
      * @var \Symfony\Contracts\Translation\TranslatorInterface
      */
-    protected $translator;
+    private $translator;
 
     /**
      * @param \Darvin\PaymentBundle\State\Provider\StateProviderInterface $stateProvider Payment state provider
-     * @param \Symfony\Contracts\Translation\TranslatorInterface            $translator     Translator
+     * @param \Symfony\Contracts\Translation\TranslatorInterface          $translator    Translator
      */
     public function __construct(StateProviderInterface $stateProvider, TranslatorInterface $translator)
     {
@@ -53,7 +53,6 @@ class NotificationEmailsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
-
             foreach (array_keys($event->getData()) as $name) {
                 if (!$this->stateProvider->hasState($name)) {
                     continue;
