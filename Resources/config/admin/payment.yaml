@@ -88,7 +88,9 @@ form:
             createdAtFrom: ~
             createdAtTo:   ~
             state:
-                type: Darvin\PaymentBundle\Form\Type\Admin\PaymentStateFilterType
+                type: choice
+                options:
+                    choices: [ Darvin\PaymentBundle\DBAL\Type\PaymentStateType, getChoices ]
 
     edit:
         fields:
