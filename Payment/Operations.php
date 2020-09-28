@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\Payment;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 
 /**
- * Workflow transitions
+ * Workflow operation
  */
 final class Operations
 {
