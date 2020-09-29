@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\State\Model;
 use Darvin\PaymentBundle\State\Model\Email\Email;
 
 /**
- * Payment state model
+ * Payment state
  */
 class State
 {
@@ -28,13 +28,21 @@ class State
     private $email;
 
     /**
-     * @param string                                         $name  Name
+     * @param string                                        $name  Name
      * @param \Darvin\PaymentBundle\State\Model\Email\Email $email Email
      */
     public function __construct(string $name, Email $email)
     {
         $this->name = $name;
         $this->email = $email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return sprintf('payment.state.%s', $this->name);
     }
 
     /**
@@ -51,13 +59,5 @@ class State
     public function getEmail(): Email
     {
         return $this->email;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTitle(): string
-    {
-        return sprintf('payment.state.%s', $this->name);
     }
 }
