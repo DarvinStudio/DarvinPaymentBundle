@@ -99,7 +99,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
         ]);
 
         $container->prependExtensionConfig($this->getAlias(), [
-            'states'  => $this->buildMailerStatesConfig(),
+            'states' => $this->buildMailerStatesConfig(),
         ]);
 
         $container->prependExtensionConfig('framework', [
