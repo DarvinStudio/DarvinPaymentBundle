@@ -14,11 +14,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints as Doctrine;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * Payment
+ *
  * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\PaymentRepository")
  * @ORM\InheritanceType("SINGLE_TABLE")
+ *
+ * @Doctrine\UniqueEntity(fields={"token"})
  */
 class Payment implements PaymentInterface
 {
@@ -108,7 +113,10 @@ class Payment implements PaymentInterface
     /**
      * @var string|null
      *
-     * @ORM\Column(length=36, nullable=true)
+     * @ORM\Column(length=36, unique=true)
+     *
+     * @Assert\Length(max=36)
+     * @Assert\NotBlank
      */
     protected $token;
 
