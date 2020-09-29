@@ -92,16 +92,16 @@ class StateProvider implements StateProviderInterface
                 $states[$name] = new State(
                     $name,
                     new Email(
-                        $config['public']['enabled'],
-                        $config['public']['template'],
-                        sprintf('payment.public.%s.subject', $name),
-                        sprintf('payment.public.%s.content', $name)
+                        $config['emails']['public']['enabled'],
+                        $config['emails']['public']['template'],
+                        sprintf('email.payment.public.%s.subject', $name),
+                        sprintf('email.payment.public.%s.content', $name)
                     ),
                     new Email(
-                        $config['service']['enabled'],
-                        $config['service']['template'],
-                        sprintf('payment.service.%s.subject', $name),
-                        sprintf('payment.service.%s.content', $name)
+                        $config['emails']['service']['enabled'],
+                        $config['emails']['service']['template'],
+                        sprintf('email.payment.service.%s.subject', $name),
+                        sprintf('email.payment.service.%s.content', $name)
                     )
                 );
             }

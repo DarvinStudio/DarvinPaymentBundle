@@ -122,21 +122,25 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
 
         foreach (PaymentStateType::getChoices() as $state) {
             $config[$state] = [
-                'public' => [
-                    'enabled' => false,
-                ],
-                'service' => [
-                    'enabled' => true,
+                'emails' => [
+                    'public' => [
+                        'enabled' => false,
+                    ],
+                    'service' => [
+                        'enabled' => true,
+                    ],
                 ],
             ];
         }
 
         $config[PaymentStateType::COMPLETED] = [
-            'public' => [
-                'enabled' => true,
-            ],
-            'service' => [
-                'enabled' => true,
+            'emails' => [
+                'public' => [
+                    'enabled' => true,
+                ],
+                'service' => [
+                    'enabled' => true,
+                ],
             ],
         ];
 

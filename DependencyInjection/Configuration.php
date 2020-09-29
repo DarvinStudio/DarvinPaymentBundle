@@ -45,14 +45,16 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('states')->useAttributeAsKey('name')
                     ->prototype('array')
                         ->children()
-                            ->arrayNode('public')->canBeDisabled()
+                            ->arrayNode('emails')
                                 ->children()
-                                    ->scalarNode('template')->defaultValue('@DarvinPayment/email/public.html.twig')->cannotBeEmpty()->end()
-                                ->end()
-                            ->end()
-                            ->arrayNode('service')->canBeDisabled()
-                                ->children()
-                                    ->scalarNode('template')->defaultValue('@DarvinPayment/email/service.html.twig')->cannotBeEmpty();
+                                    ->arrayNode('public')->canBeDisabled()
+                                        ->children()
+                                            ->scalarNode('template')->defaultValue('@DarvinPayment/email/public.html.twig')->cannotBeEmpty()->end()
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('service')->canBeDisabled()
+                                        ->children()
+                                            ->scalarNode('template')->defaultValue('@DarvinPayment/email/service.html.twig')->cannotBeEmpty();
 
         return $builder;
     }
