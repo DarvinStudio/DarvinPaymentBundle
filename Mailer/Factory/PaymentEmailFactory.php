@@ -84,7 +84,7 @@ class PaymentEmailFactory implements PaymentEmailFactoryInterface
                 'content' => $emailConfig->getContent(),
             ],
             [
-                '%orderNumber%' => $payment->getOrder()->getNumber()
+                '%orderNumber%' => $payment->getOrder()->getNumber(),
             ]
         );
     }
