@@ -15,9 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Add bridge to gateway factory
+ * Add bridges to gateway factory
  */
-class AddBridgePass implements CompilerPassInterface
+class AddBridgesPass implements CompilerPassInterface
 {
     /**
      * {@inheritDoc}

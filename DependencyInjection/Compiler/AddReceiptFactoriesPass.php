@@ -15,9 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Add receipt factory to registry compiler pass
+ * Add receipt factories to registry compiler pass
  */
-class AddReceiptFactoryPass implements CompilerPassInterface
+class AddReceiptFactoriesPass implements CompilerPassInterface
 {
     public const TAG_RECEIPT_FACTORY = 'darvin_payment.receipt_factory';
 
