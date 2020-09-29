@@ -11,7 +11,7 @@
 namespace Darvin\PaymentBundle\DependencyInjection;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\DependencyInjection\Compiler\AddReceiptFactoryPass;
+use Darvin\PaymentBundle\DependencyInjection\Compiler\AddReceiptFactoriesPass;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
 use Darvin\PaymentBundle\Payment\Operations;
 use Darvin\Utils\DependencyInjection\ConfigInjector;
@@ -34,7 +34,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $container->registerForAutoconfiguration(ReceiptFactoryInterface::class)->addTag(AddReceiptFactoryPass::TAG_RECEIPT_FACTORY);
+        $container->registerForAutoconfiguration(ReceiptFactoryInterface::class)->addTag(AddReceiptFactoriesPass::TAG_RECEIPT_FACTORY);
 
         $config = $this->processConfiguration(new Configuration(), $configs);
 
