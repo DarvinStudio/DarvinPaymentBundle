@@ -63,7 +63,7 @@ class PurchaseWidgetRenderer implements PurchaseWidgetRendererInterface
             throw new \InvalidArgumentException(sprintf('Order class "%s" does not exist.', $orderClass));
         }
 
-        $payments = $this->getPaymentRepository()->getForOrder($orderId, $orderClass);
+        $payments = $this->getPaymentRepository()->getForOrder($orderClass, $orderId);
 
         return $this->twig->render('@DarvinPayment/payment/purchase_widget.html.twig', [
             'payments' => $payments,
