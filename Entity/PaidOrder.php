@@ -28,7 +28,7 @@ class PaidOrder
      * @Assert\NotBlank
      * @Assert\Length(max=32)
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
@@ -38,7 +38,7 @@ class PaidOrder
      * @Assert\NotBlank
      * @Assert\Length(max=128)
      */
-    protected $class;
+    private $class;
 
     /**
      * @var string
@@ -48,7 +48,7 @@ class PaidOrder
      * @Assert\NotBlank
      * @Assert\Length(max=64)
      */
-    protected $number;
+    private $number;
 
     /**
      * @param string $id     ID

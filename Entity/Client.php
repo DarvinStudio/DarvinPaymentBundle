@@ -27,7 +27,7 @@ class Client
      *
      * @Assert\Length(max=32)
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string|null
@@ -36,7 +36,7 @@ class Client
      *
      * @Assert\Length(max=128)
      */
-    protected $class;
+    private $class;
 
     /**
      * @var string|null
@@ -46,7 +46,7 @@ class Client
      * @Assert\Email
      * @Assert\Length(max=50)
      */
-    protected $email;
+    private $email;
 
     /**
      * @param string|null $id    ID

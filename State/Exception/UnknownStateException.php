@@ -18,7 +18,7 @@ class UnknownStateException extends \Exception
     /**
      * @var string
      */
-    protected $stateName;
+    private $stateName;
 
     /**
      * @param string $stateName State name
