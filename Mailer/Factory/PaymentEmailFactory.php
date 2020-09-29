@@ -77,11 +77,14 @@ class PaymentEmailFactory implements PaymentEmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
             $payment->getClient()->getEmail(),
-            $this->translator->trans($emailConfig->getSubject(), ['%orderNumber%' => $payment->getOrder()->getNumber()], 'email'),
+            $emailConfig->getSubject(),
             $emailConfig->getTemplate(),
             [
                 'payment' => $payment,
                 'content' => $emailConfig->getContent(),
+            ],
+            [
+                '%orderNumber%' => $payment->getOrder()->getNumber()
             ]
         );
     }
@@ -102,12 +105,15 @@ class PaymentEmailFactory implements PaymentEmailFactoryInterface
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,
             $serviceEmails,
-            $this->translator->trans($emailConfig->getSubject(), ['%orderNumber%' => $payment->getOrder()->getNumber()], 'email'),
+            $emailConfig->getSubject(),
             $emailConfig->getTemplate(),
             [
                 'payment' => $payment,
                 'content' => $emailConfig->getContent(),
                 'order'   => $this->getOrder($payment),
+            ],
+            [
+                '%orderNumber%' => $payment->getOrder()->getNumber(),
             ]
         );
     }
