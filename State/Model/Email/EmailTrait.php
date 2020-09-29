@@ -10,6 +10,8 @@
 
 namespace Darvin\PaymentBundle\State\Model\Email;
 
+use Darvin\Utils\Strings\StringsUtil;
+
 /**
  * Email trait
  */
@@ -28,18 +30,27 @@ trait EmailTrait
     /**
      * @var string
      */
-    private $name;
+    private $subject;
+
+    /**
+     * @var string
+     */
+    private $content;
 
     /**
      * @param bool   $enabled   Is enabled
      * @param string $template  Template
-     * @param string $stateName Subject
+     * @param string $stateName State
      */
     public function __construct(bool $enabled, string $template, string $stateName)
     {
         $this->enabled = $enabled;
         $this->template = $template;
-        $this->name = $stateName;
+
+        $transPrefix = sprintf('payment.%s', StringsUtil::toUnderscore(preg_replace('/^.*\\\\|Email$/', '', get_class($this))));
+
+        $this->subject = implode('.', [$transPrefix, $stateName, 'subject']);
+        $this->content = implode('.', [$transPrefix, $stateName, 'content']);
     }
 
     /**
@@ -61,10 +72,16 @@ trait EmailTrait
     /**
      * @return string
      */
-    abstract public function getSubject(): string;
+    public function getSubject(): string
+    {
+        return $this->subject;
+    }
 
     /**
      * @return string
      */
-    abstract public function getContent(): string;
+    public function getContent(): string
+    {
+        return $this->content;
+    }
 }

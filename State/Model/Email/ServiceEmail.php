@@ -16,20 +16,4 @@ namespace Darvin\PaymentBundle\State\Model\Email;
 class ServiceEmail
 {
     use EmailTrait;
-
-    /**
-     * @return string
-     */
-    public function getSubject(): string
-    {
-        return sprintf('payment.public.%s.subject', $this->name);
-    }
-
-    /**
-     * @return string
-     */
-    public function getContent(): string
-    {
-        return sprintf('payment.public.%s.content', $this->name);
-    }
 }
