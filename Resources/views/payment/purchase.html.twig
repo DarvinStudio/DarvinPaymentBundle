@@ -3,9 +3,9 @@
 {% block heading %}{% trans %}payment.purchase.title{% endtrans %}{% endblock %}
 
 {% block content %}
-    <p class="h2">{% trans %}payment.purchase.title{% endtrans %}</p>
-    {{ form(form) }}
-    <script>
+    <p class="h2">{{ block('heading') }}</p>
 
-    </script>
+    {{ form(form) }}
+
+    <script></script>
 {% endblock %}

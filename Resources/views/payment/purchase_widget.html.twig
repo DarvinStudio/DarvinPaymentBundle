@@ -1,8 +1,5 @@
 {% for payment in payments %}
-    {% set urls = payment_purchase_urls(payment) %}
-    {% for gatewayName, url in urls %}
-        <p>
-            <a href="{{ url }}" class="payment-url -{{ gatewayName }}">Online payment</a>
-        </p>
+    {% for gatewayName, url in payment_purchase_urls(payment) %}
+        <p><a href="{{ url }}" class="payment-url -{{ gatewayName }}">Online payment</a></p>
     {% endfor %}
 {% endfor %}

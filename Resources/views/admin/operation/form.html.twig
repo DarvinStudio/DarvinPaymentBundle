@@ -1,8 +1,8 @@
 {% trans_default_domain 'admin' %}
 
-{% set style = app.request.request.get('style') %}
-{% set title = ('payment.action.' ~ operation ~ '.submit')|trans %}
-{% set name  =  operation ~ '_' ~ id %}
+{% set style   = app.request.request.get('style') %}
+{% set title   = ('payment.action.' ~ operation ~ '.submit')|trans %}
+{% set name    = [operation, id]|join('_') %}
 {% set classes = {
     'default': 'table-row__btn-' ~ operation,
     'footer':  'page-footer__btn-' ~ operation,

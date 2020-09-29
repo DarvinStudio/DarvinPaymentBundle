@@ -2,6 +2,4 @@
 
 {% block heading %}{% trans with {'%orderNumber%': payment.order.number} %}payment.success.title{% endtrans %}{% endblock %}
 
-{% block content %}
-    <p class="h2">{% trans with {'%orderNumber%': payment.order.number} %}payment.success.title{% endtrans %}</p>
-{% endblock %}
+{% block content %}<p class="h2">{{ block('heading') }}</p>{% endblock %}
