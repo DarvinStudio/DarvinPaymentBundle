@@ -10,7 +10,7 @@
 
 namespace Darvin\PaymentBundle\Purchase;
 
-use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Repository\PaymentRepository;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
@@ -124,6 +124,6 @@ class PurchaseWidgetRenderer implements PurchaseWidgetRendererInterface
      */
     private function getPaymentRepository(): PaymentRepository
     {
-        return $this->em->getRepository(Payment::class);
+        return $this->em->getRepository(PaymentInterface::class);
     }
 }

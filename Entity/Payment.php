@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="Darvin\PaymentBundle\Repository\PaymentRepository")
  * @ORM\InheritanceType("SINGLE_TABLE")
  */
-class Payment
+class Payment implements PaymentInterface
 {
     /**
      * @var int|null

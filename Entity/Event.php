@@ -30,7 +30,7 @@ class Event
     /**
      * @var \Darvin\PaymentBundle\Entity\Payment
      *
-     * @ORM\ManyToOne(targetEntity="Darvin\PaymentBundle\Entity\Payment", inversedBy="events")
+     * @ORM\ManyToOne(targetEntity="Darvin\PaymentBundle\Entity\PaymentInterface", inversedBy="events")
      */
     private $payment;
 

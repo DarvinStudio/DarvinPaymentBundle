@@ -13,6 +13,7 @@ namespace Darvin\PaymentBundle\Payment\Factory;
 use Darvin\PaymentBundle\Entity\Client;
 use Darvin\PaymentBundle\Entity\PaidOrder;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Payment\Operations;
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Ramsey\Uuid\Uuid;
@@ -79,7 +80,7 @@ class PaymentFactory implements PaymentFactoryInterface
             $currency = $this->defaultCurrency;
         }
 
-        $class = $this->entityResolver->resolve(Payment::class);
+        $class = $this->entityResolver->resolve(PaymentInterface::class);
 
         /** @var \Darvin\PaymentBundle\Entity\Payment $payment */
         $payment = new $class($order, $amount, $currency);

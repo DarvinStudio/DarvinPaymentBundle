@@ -30,7 +30,7 @@ class Redirect
     /**
      * @var \Darvin\PaymentBundle\Entity\Payment|null
      *
-     * @ORM\OneToOne(targetEntity="Darvin\PaymentBundle\Entity\Payment", inversedBy="redirect")
+     * @ORM\OneToOne(targetEntity="Darvin\PaymentBundle\Entity\PaymentInterface", inversedBy="redirect")
      */
     private $payment;
 

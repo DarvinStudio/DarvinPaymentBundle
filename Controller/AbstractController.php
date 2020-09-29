@@ -13,6 +13,7 @@ namespace Darvin\PaymentBundle\Controller;
 use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -137,9 +138,7 @@ abstract class AbstractController
      */
     final protected function getPaymentByToken(string $token): Payment
     {
-        $payment = $this->em
-            ->getRepository(Payment::class)
-            ->findOneBy(['token' => $token]);
+        $payment = $this->em->getRepository(PaymentInterface::class)->findOneBy(['token' => $token]);
 
         if (null === $payment) {
             throw new NotFoundHttpException(sprintf('Unable to find payment with token %s', $token));
