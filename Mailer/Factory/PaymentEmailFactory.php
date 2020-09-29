@@ -68,11 +68,11 @@ class PaymentEmailFactory implements PaymentEmailFactoryInterface
      */
     public function createPublicEmail(Payment $payment, State $state): Email
     {
-        $emailConfig = $state->getEmail()->getPublicEmail();
-
         if (null === $payment->getClient()->getEmail()) {
             throw new CantCreateEmailException($this->translator->trans('error.missing_public_email', [], 'payment_event'));
         }
+
+        $emailConfig = $state->getPublicEmail();
 
         return $this->genericFactory->createEmail(
             EmailType::PUBLIC,
@@ -97,7 +97,7 @@ class PaymentEmailFactory implements PaymentEmailFactoryInterface
             throw new CantCreateEmailException($this->translator->trans('error.missing_service_email', [], 'payment_event'));
         }
 
-        $emailConfig = $state->getEmail()->getServiceEmail();
+        $emailConfig = $state->getServiceEmail();
 
         return $this->genericFactory->createEmail(
             EmailType::SERVICE,

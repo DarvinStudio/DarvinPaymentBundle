@@ -92,7 +92,7 @@ class EmailStateChangeSubscriber implements EventSubscriberInterface
 
         $state = $this->paymentStateProvider->getState($payment->getState());
 
-        if ($state->getEmail()->getPublicEmail()->isEnabled()) {
+        if ($state->getPublicEmail()->isEnabled()) {
             $publicEmail = null;
 
             try {
@@ -104,7 +104,7 @@ class EmailStateChangeSubscriber implements EventSubscriberInterface
                 $this->send($publicEmail, $payment);
             }
         }
-        if ($state->getEmail()->getServiceEmail()->isEnabled()) {
+        if ($state->getServiceEmail()->isEnabled()) {
             $serviceEmail = null;
 
             try {

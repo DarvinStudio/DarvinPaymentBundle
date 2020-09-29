@@ -10,8 +10,6 @@
 
 namespace Darvin\PaymentBundle\State\Model;
 
-use Darvin\PaymentBundle\State\Model\Email\Email;
-
 /**
  * Payment state
  */
@@ -23,26 +21,37 @@ class State
     private $name;
 
     /**
-     * @var \Darvin\PaymentBundle\State\Model\Email\Email
+     * @var \Darvin\PaymentBundle\State\Model\Email
      */
-    private $email;
+    private $publicEmail;
 
     /**
-     * @param string                                        $name  Name
-     * @param \Darvin\PaymentBundle\State\Model\Email\Email $email Email
+     * @var \Darvin\PaymentBundle\State\Model\Email
      */
-    public function __construct(string $name, Email $email)
+    private $serviceEmail;
+
+    /**
+     * @var string
+     */
+    private $title;
+
+    /**
+     * @param string                                  $name         Name
+     * @param \Darvin\PaymentBundle\State\Model\Email $publicEmail  Public email
+     * @param \Darvin\PaymentBundle\State\Model\Email $serviceEmail Service email
+     * @param string|null                             $title        Title
+     */
+    public function __construct(string $name, Email $publicEmail, Email $serviceEmail, ?string $title = null)
     {
         $this->name = $name;
-        $this->email = $email;
-    }
+        $this->publicEmail = $publicEmail;
+        $this->serviceEmail = $serviceEmail;
 
-    /**
-     * @return string
-     */
-    public function getTitle(): string
-    {
-        return sprintf('payment.state.%s', $this->name);
+        if (null === $title) {
+            $title = sprintf('payment.state.%s', $name);
+        }
+
+        $this->title = $title;
     }
 
     /**
@@ -54,10 +63,26 @@ class State
     }
 
     /**
-     * @return \Darvin\PaymentBundle\State\Model\Email\Email
+     * @return \Darvin\PaymentBundle\State\Model\Email
      */
-    public function getEmail(): Email
+    public function getPublicEmail(): Email
     {
-        return $this->email;
+        return $this->publicEmail;
+    }
+
+    /**
+     * @return \Darvin\PaymentBundle\State\Model\Email
+     */
+    public function getServiceEmail(): Email
+    {
+        return $this->serviceEmail;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
     }
 }

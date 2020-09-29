@@ -49,7 +49,7 @@ class PaymentConfig extends AbstractConfiguration implements PaymentConfigInterf
             $defaultNotificationEmails = [];
 
             foreach ($this->stateProvider->getAllStates() as $state) {
-                if ($state->getEmail()->getServiceEmail()->isEnabled()) {
+                if ($state->getServiceEmail()->isEnabled()) {
                     $defaultNotificationEmails[$state->getName()] = [];
                 }
             }

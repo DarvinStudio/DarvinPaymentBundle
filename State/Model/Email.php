@@ -8,14 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\PaymentBundle\State\Model\Email;
-
-use Darvin\Utils\Strings\StringsUtil;
+namespace Darvin\PaymentBundle\State\Model;
 
 /**
- * Email trait
+ * Email
  */
-trait EmailTrait
+class Email
 {
     /**
      * @var bool
@@ -38,19 +36,17 @@ trait EmailTrait
     private $content;
 
     /**
-     * @param bool   $enabled   Is enabled
-     * @param string $template  Template
-     * @param string $stateName State
+     * @param bool   $enabled  Is enabled
+     * @param string $template Template
+     * @param string $subject  Subject
+     * @param string $content  Content
      */
-    public function __construct(bool $enabled, string $template, string $stateName)
+    public function __construct(bool $enabled, string $template, string $subject, string $content)
     {
         $this->enabled = $enabled;
         $this->template = $template;
-
-        $transPrefix = sprintf('payment.%s', StringsUtil::toUnderscore(preg_replace('/^.*\\\\|Email$/', '', get_class($this))));
-
-        $this->subject = implode('.', [$transPrefix, $stateName, 'subject']);
-        $this->content = implode('.', [$transPrefix, $stateName, 'content']);
+        $this->subject = $subject;
+        $this->content = $content;
     }
 
     /**

@@ -11,9 +11,7 @@
 namespace Darvin\PaymentBundle\State\Provider;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\State\Model\Email\Email;
-use Darvin\PaymentBundle\State\Model\Email\PublicEmail;
-use Darvin\PaymentBundle\State\Model\Email\ServiceEmail;
+use Darvin\PaymentBundle\State\Model\Email;
 use Darvin\PaymentBundle\State\Model\State;
 
 /**
@@ -94,8 +92,16 @@ class StateProvider implements StateProviderInterface
                 $states[$name] = new State(
                     $name,
                     new Email(
-                        new PublicEmail($config['public']['enabled'], $config['public']['template'], $name),
-                        new ServiceEmail($config['service']['enabled'], $config['service']['template'], $name)
+                        $config['public']['enabled'],
+                        $config['public']['template'],
+                        sprintf('payment.public.%s.subject', $name),
+                        sprintf('payment.public.%s.content', $name)
+                    ),
+                    new Email(
+                        $config['service']['enabled'],
+                        $config['service']['template'],
+                        sprintf('payment.service.%s.subject', $name),
+                        sprintf('payment.service.%s.content', $name)
                     )
                 );
             }
