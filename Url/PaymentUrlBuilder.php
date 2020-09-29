@@ -11,11 +11,10 @@
 namespace Darvin\PaymentBundle\Url;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Url\Exception\ActionNotImplementedException;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * Payment url builder
+ * Payment URL builder
  */
 class PaymentUrlBuilder implements PaymentUrlBuilderInterface
 {
@@ -25,7 +24,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
     private $router;
 
     /**
-     * @param \Symfony\Component\Routing\RouterInterface $router
+     * @param \Symfony\Component\Routing\RouterInterface $router Router
      */
     public function __construct(RouterInterface $router)
     {
@@ -44,9 +43,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
         return $this->router->generate('darvin_payment_purchase', [
             'gatewayName' => $gatewayName,
             'token'       => $payment->getToken(),
-        ],
-            RouterInterface::ABSOLUTE_URL
-        );
+        ], RouterInterface::ABSOLUTE_URL);
     }
 
     /**
@@ -96,7 +93,7 @@ class PaymentUrlBuilder implements PaymentUrlBuilderInterface
      */
     public function getNotifyUrl(Payment $payment): string
     {
-        throw new ActionNotImplementedException('notify');
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
