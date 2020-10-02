@@ -28,6 +28,11 @@ abstract class AbstractBridge implements BridgeInterface
     protected $gatewayConfig;
 
     /**
+     * @var array
+     */
+    protected $receiptConfig;
+
+    /**
      * @param \Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface $urlBuilder URL Builder
      */
     public function __construct(PaymentUrlBuilderInterface $urlBuilder)
@@ -54,13 +59,26 @@ abstract class AbstractBridge implements BridgeInterface
     }
 
     /**
-     * @param string $name    Parameter name
-     * @param mixed  $default Default value
-     *
-     * @return mixed
+     * @param array $receiptConfig Receipt config
      */
-    final protected function getGatewayParameter(string $name, $default = null)
+    public function setReceiptConfig(array $receiptConfig): void
+    {
+        $this->receiptConfig = $receiptConfig;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getGatewayParameter(string $name, $default = null)
     {
         return $this->gatewayConfig[$name] ?? $default;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getReceiptParameter(string $name, $default = null)
+    {
+        return $this->receiptConfig[$name] ?? $default;
     }
 }

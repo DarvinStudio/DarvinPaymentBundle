@@ -39,6 +39,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')->canBeDisabled()
                         ->children()
                             ->arrayNode('parameters')->prototype('variable')->end()->end()
+                            ->arrayNode('receipt')->prototype('variable')->end()->end()
                         ->end()
                     ->end()
                 ->end()
