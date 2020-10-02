@@ -43,14 +43,6 @@ interface BridgeInterface
      *
      * @return mixed
      */
-    public function getGatewayParameter(string $name, $default = null);
-
-    /**
-     * @param string $name    Parameter name
-     * @param mixed  $default Default value
-     *
-     * @return mixed
-     */
     public function getReceiptParameter(string $name, $default = null);
 
     /**

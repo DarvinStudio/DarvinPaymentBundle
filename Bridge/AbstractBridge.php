@@ -69,16 +69,19 @@ abstract class AbstractBridge implements BridgeInterface
     /**
      * {@inheritDoc}
      */
-    public function getGatewayParameter(string $name, $default = null)
-    {
-        return $this->gatewayConfig[$name] ?? $default;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getReceiptParameter(string $name, $default = null)
     {
         return $this->receiptConfig[$name] ?? $default;
+    }
+
+    /**
+     * @param string $name    Parameter name
+     * @param mixed  $default Default value
+     *
+     * @return mixed
+     */
+    final protected function getGatewayParameter(string $name, $default = null)
+    {
+        return $this->gatewayConfig[$name] ?? $default;
     }
 }

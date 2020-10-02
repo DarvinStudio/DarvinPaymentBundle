@@ -10,5 +10,5 @@ services:
             - '@darvin_payment.logger'
             - '@translator'
         calls:
-            - [ setGatewayConfig, [ '%darvin_payment.bridges.sberbank.parameters%' ] ]
-            - [ setReceiptConfig, [ '%darvin_payment.bridges.sberbank.receipt%' ] ]
+            - [ setGatewayConfig, [ '%darvin_payment.bridges.sberbank.parameters.gateway%' ] ]
+            - [ setReceiptConfig, [ '%darvin_payment.bridges.sberbank.parameters.receipt%' ] ]
