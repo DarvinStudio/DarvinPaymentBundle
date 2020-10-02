@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle\Receipt;
 
+use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
@@ -49,10 +50,10 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
     /**
      * {@inheritDoc}
      */
-    public function getFactory(Payment $payment, string $gatewayName): ReceiptFactoryInterface
+    public function getFactory(Payment $payment, BridgeInterface $bridge): ReceiptFactoryInterface
     {
         foreach ($this->factories as $factory) {
-            if ($factory->supports($payment, $gatewayName)) {
+            if ($factory->supports($payment, $bridge)) {
                 return $factory;
             }
         }
@@ -63,10 +64,10 @@ class ReceiptFactoryRegistry implements ReceiptFactoryRegistryInterface
     /**
      * {@inheritDoc}
      */
-    public function hasFactory(Payment $payment, string $gatewayName): bool
+    public function hasFactory(Payment $payment, BridgeInterface $bridge): bool
     {
         foreach ($this->factories as $factory) {
-            if ($factory->supports($payment, $gatewayName)) {
+            if ($factory->supports($payment, $bridge)) {
                 return true;
             }
         }

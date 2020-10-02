@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle\Receipt;
 
+use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
@@ -18,21 +19,21 @@ use Darvin\PaymentBundle\Entity\Payment;
 interface ReceiptFactoryInterface
 {
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
-     * @param string                               $gatewayName Gateway name
+     * @param \Darvin\PaymentBundle\Entity\Payment         $payment Payment
+     * @param \Darvin\PaymentBundle\Bridge\BridgeInterface $bridge  Bridge
      *
      * @return array
      * @throws \Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException
      */
-    public function createReceipt(Payment $payment, string $gatewayName): array;
+    public function createReceipt(Payment $payment, BridgeInterface $bridge): array;
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
-     * @param string                               $gatewayName Gateway name
+     * @param \Darvin\PaymentBundle\Entity\Payment         $payment Payment
+     * @param \Darvin\PaymentBundle\Bridge\BridgeInterface $bridge  Bridge
      *
      * @return bool
      */
-    public function supports(Payment $payment, string $gatewayName): bool;
+    public function supports(Payment $payment, BridgeInterface $bridge): bool;
 
     /**
      * @return string
