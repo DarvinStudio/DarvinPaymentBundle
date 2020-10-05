@@ -11,10 +11,11 @@
 namespace Darvin\PaymentBundle\Repository;
 
 use Darvin\PaymentBundle\Entity\Event;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Event Repository
+ * Event entity repository
  */
 class EventRepository extends EntityRepository
 {
@@ -23,29 +24,30 @@ class EventRepository extends EntityRepository
      *
      * @throws \LogicException
      */
-    public function save(Event $event): void
+    public function add(Event $event): void
     {
-        $className = (new \ReflectionClass($event))->getShortName();
-
         if (null === $event->getPayment()->getId()) {
             throw new \LogicException('Payment ID missing');
         }
 
-        $this->getEntityManager()->getConnection()->executeUpdate('
-            INSERT INTO payment_event (payment_id, level, message, created_at, dtype) 
-            VALUES (:payment_id, :level, :message, :created_at, :dtype)',
+        $table = $this->getClassMetadata()->getTableName();
+
+        $this->getEntityManager()->getConnection()->executeUpdate(<<<UPDATE
+INSERT INTO $table (payment_id, level, message, created_at)
+VALUES (:payment_id, :level, :message, :created_at)
+UPDATE
+            ,
             [
                 'payment_id' => $event->getPayment()->getId(),
                 'level'      => $event->getLevel(),
                 'message'    => $event->getMessage(),
                 'created_at' => $event->getCreatedAt(),
-                'dtype'      => mb_strtolower($className),
-            ], [
-                'payment_id' => \Doctrine\DBAL\Types\Types::INTEGER,
-                'level'      => \Doctrine\DBAL\Types\Types::STRING,
-                'message'    => \Doctrine\DBAL\Types\Types::TEXT,
-                'created_at' => \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE,
-                'dtype'      => \Doctrine\DBAL\Types\Types::STRING,
+            ],
+            [
+                'payment_id' => Types::INTEGER,
+                'level'      => Types::STRING,
+                'message'    => Types::TEXT,
+                'created_at' => Types::DATETIME_MUTABLE,
             ]
         );
     }

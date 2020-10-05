@@ -24,42 +24,39 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class GatewayRedirectType extends AbstractType
 {
     /**
-     * @param FormBuilderInterface $builder Form Builder
-     * @param array                $options Options
+     * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, static function (FormEvent $event){
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
             $data = $event->getData();
             $form = $event->getForm();
 
-            foreach ($form as $key => $child) {
-                $form->remove($key);
+            foreach ($form as $name => $child) {
+                $form->remove($name);
             }
-
-            foreach ($data as $key => $val) {
-                $form->add($key, HiddenType::class);
+            foreach (array_keys($data) as $name) {
+                $form->add($name, HiddenType::class);
             }
 
             $form->add('__payment_submit', SubmitType::class, [
-                'label' => 'payment.purchase.form.submit'
+                'label' => 'payment.purchase.form.submit',
             ]);
         });
     }
 
     /**
-     * @param OptionsResolver $resolver Options resolver
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setRequired('action')
-            ->setDefault('csrf_protection', false)
-        ;
+            ->setDefault('csrf_protection', false);
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getBlockPrefix(): string
     {

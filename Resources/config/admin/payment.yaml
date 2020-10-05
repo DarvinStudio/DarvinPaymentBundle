@@ -88,19 +88,12 @@ form:
             createdAtFrom: ~
             createdAtTo:   ~
             state:
-                type: Darvin\PaymentBundle\Form\Type\Admin\PaymentStateFilterType
+                type: choice
+                options:
+                    choices: [ Darvin\PaymentBundle\DBAL\Type\PaymentStateType, getChoices ]
 
     edit:
         fields:
-            order.id: ~
-            order.entityClass: ~
-            order.number: ~
-            transactionReference: ~
             amount: ~
             currency: ~
-            client.id: ~
-            client.class: ~
-            client.email: ~
             description: ~
-            state: ~
-            token: ~

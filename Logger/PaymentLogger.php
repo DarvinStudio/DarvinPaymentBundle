@@ -33,7 +33,7 @@ class PaymentLogger implements LoggerInterface
     private $monolog;
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em Redirect factory
+     * @param \Doctrine\ORM\EntityManagerInterface $em Entity manager
      */
     public function __construct(EntityManagerInterface $em)
     {
@@ -41,7 +41,7 @@ class PaymentLogger implements LoggerInterface
     }
 
     /**
-     * @param \Psr\Log\LoggerInterface|null $monolog
+     * @param \Psr\Log\LoggerInterface|null $monolog Monolog
      */
     public function setMonolog(?LoggerInterface $monolog): void
     {
@@ -117,14 +117,9 @@ class PaymentLogger implements LoggerInterface
      */
     public function log($level, $message, array $context = []): void
     {
-        $payment = $context['payment'] ?? null;
-
-        if ($payment instanceof Payment) {
-            $event = new Event($payment, $level, $message);
-
-            $this->getEventRepository()->save($event);
+        if (isset($context['payment']) && $context['payment'] instanceof Payment) {
+            $this->getEventRepository()->add(new Event($context['payment'], $level, $message));
         }
-
         if (null !== $this->monolog) {
             $this->monolog->log($level, $message, $context);
         }

@@ -11,16 +11,15 @@
 namespace Darvin\PaymentBundle\Url;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\Url\Exception\ActionNotImplementedException;
 
 /**
- * Payment url builder interface
+ * Payment URL builder
  */
 interface PaymentUrlBuilderInterface
 {
     /**
-     * @param Payment $payment     Payment
-     * @param string  $gatewayName Gateway name
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
+     * @param string                               $gatewayName Gateway name
      *
      * @return string
      * @throws \LogicException
@@ -28,7 +27,7 @@ interface PaymentUrlBuilderInterface
     public function getPurchaseUrl(Payment $payment, string $gatewayName): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException
@@ -36,7 +35,7 @@ interface PaymentUrlBuilderInterface
     public function getCompleteUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException
@@ -44,7 +43,7 @@ interface PaymentUrlBuilderInterface
     public function getCaptureUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException
@@ -52,14 +51,14 @@ interface PaymentUrlBuilderInterface
     public function getRefundUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      */
     public function getNotifyUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException
@@ -67,7 +66,7 @@ interface PaymentUrlBuilderInterface
     public function getApproveUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException
@@ -75,7 +74,7 @@ interface PaymentUrlBuilderInterface
     public function getCancelUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException
@@ -83,7 +82,7 @@ interface PaymentUrlBuilderInterface
     public function getVoidUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException
@@ -91,7 +90,7 @@ interface PaymentUrlBuilderInterface
     public function getSuccessUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException
@@ -99,7 +98,7 @@ interface PaymentUrlBuilderInterface
     public function getFailUrl(Payment $payment): string;
 
     /**
-     * @param Payment $payment Payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      *
      * @return string
      * @throws \LogicException

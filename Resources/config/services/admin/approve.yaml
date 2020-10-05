@@ -1,0 +1,13 @@
+parameters:
+    darvin_payment.admin.approve.controller.class: Darvin\PaymentBundle\Controller\Admin\ApproveController
+
+services:
+    darvin_payment.admin.approve.controller:
+        class:  '%darvin_payment.admin.approve.controller.class%'
+        parent: darvin_payment.controller.abstract
+        calls:
+            - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
+            - [ setAuthorizationChecker, [ '@security.authorization_checker' ] ]
+            - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
+        tags:
+            - { name: controller.service_arguments }

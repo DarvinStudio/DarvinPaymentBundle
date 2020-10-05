@@ -1,0 +1,14 @@
+parameters:
+    darvin_payment.admin.void.controller.class: Darvin\PaymentBundle\Controller\Admin\VoidController
+
+services:
+    darvin_payment.admin.void.controller:
+        class:  '%darvin_payment.admin.void.controller.class%'
+        parent: darvin_payment.controller.abstract
+        calls:
+            - [ setAdminRouter,          [ '@darvin_admin.router' ] ]
+            - [ setAuthorizationChecker, [ '@security.authorization_checker' ] ]
+            - [ setFlashNotifier,        [ '@darvin_utils.flash.notifier' ] ]
+            - [ setFormRenderer,         [ '@darvin_payment.admin.form.renderer.operation' ] ]
+        tags:
+            - { name: controller.service_arguments }

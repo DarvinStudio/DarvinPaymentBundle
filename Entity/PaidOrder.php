@@ -14,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * Paid order
+ *
  * @ORM\Embeddable
  */
 class PaidOrder
@@ -26,7 +28,7 @@ class PaidOrder
      * @Assert\NotBlank
      * @Assert\Length(max=32)
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
@@ -36,7 +38,7 @@ class PaidOrder
      * @Assert\NotBlank
      * @Assert\Length(max=128)
      */
-    protected $class;
+    private $class;
 
     /**
      * @var string
@@ -46,12 +48,10 @@ class PaidOrder
      * @Assert\NotBlank
      * @Assert\Length(max=64)
      */
-    protected $number;
+    private $number;
 
     /**
-     * Redirect constructor.
-     *
-     * @param string $id     Id
+     * @param string $id     ID
      * @param string $class  Entity class
      * @param string $number Number
      */
@@ -67,7 +67,7 @@ class PaidOrder
      */
     public function __toString(): string
     {
-        return $this->getId();
+        return $this->id;
     }
 
     /**

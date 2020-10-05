@@ -13,6 +13,7 @@ namespace Darvin\PaymentBundle\Controller;
 use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Entity\PaymentInterface;
 use Darvin\PaymentBundle\Gateway\Factory\GatewayFactoryInterface;
 use Darvin\PaymentBundle\Url\PaymentUrlBuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -137,9 +138,7 @@ abstract class AbstractController
      */
     final protected function getPaymentByToken(string $token): Payment
     {
-        $payment = $this->em
-            ->getRepository(Payment::class)
-            ->findOneBy(['token' => $token]);
+        $payment = $this->em->getRepository(PaymentInterface::class)->findOneBy(['token' => $token]);
 
         if (null === $payment) {
             throw new NotFoundHttpException(sprintf('Unable to find payment with token %s', $token));
@@ -168,16 +167,16 @@ abstract class AbstractController
 
     /**
      * @param \Darvin\PaymentBundle\Entity\Payment $payment     Payment
-     * @param string                               $transition  Workflow transition
+     * @param string                               $operation   Workflow operation
      * @param string|null                          $gatewayName Current gateway Name
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    final protected function validatePayment(Payment $payment, string $transition, ?string $gatewayName = null): void
+    final protected function validatePayment(Payment $payment, string $operation, ?string $gatewayName = null): void
     {
-        if (!$this->workflow->can($payment, $transition)) {
+        if (!$this->workflow->can($payment, $operation)) {
             $errorMessage = $this->translator->trans('error.not_available_operation', [
-                '%transition%' => $transition,
+                '%operation%' => $operation,
             ], 'payment_event');
 
             $this->logger->error($errorMessage, ['payment' => $payment]);

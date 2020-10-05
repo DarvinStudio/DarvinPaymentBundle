@@ -11,26 +11,25 @@
 namespace Darvin\PaymentBundle\Controller\Admin;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Void controller
+ * Void admin controller
  */
 class VoidController extends AbstractController
 {
     use OperationTrait;
 
     /**
-     * @param string $token Payment token
+     * @param \Symfony\Component\HttpFoundation\Request $request Request
+     * @param string                                    $token   Payment token
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function __invoke(string $token): Response
+    public function __invoke(Request $request, string $token): Response
     {
-        return $this->execute('void', Transitions::VOID, $token);
+        return $this->execute('void', Operations::VOID, $token, $request);
     }
 }

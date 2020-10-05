@@ -12,11 +12,11 @@ namespace Darvin\PaymentBundle\Controller\Payment;
 
 use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Controller for the canceling payment
+ * Cancel payment controller
  */
 class CancelController extends AbstractController
 {
@@ -24,29 +24,21 @@ class CancelController extends AbstractController
      * @param string $token Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
-        if (PaymentStateType::CANCELED === $payment->getState()) {
-            return new Response(
-                $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
-                    'payment' => $payment,
-                ])
-            );
+        if (PaymentStateType::CANCELED !== $payment->getState()) {
+            $this->validatePayment($payment, Operations::CANCEL);
+
+            $this->workflow->apply($payment, Operations::CANCEL);
+
+            $this->em->flush();
         }
 
-        $this->validatePayment($payment, Transitions::CANCEL);
-        $this->workflow->apply($payment, Transitions::CANCEL);
-        $this->em->flush();
-
-        return new Response(
-            $this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
-                'payment' => $payment,
-            ])
-        );
+        return new Response($this->twig->render('@DarvinPayment/payment/cancel.html.twig', [
+            'payment' => $payment,
+        ]));
     }
 }

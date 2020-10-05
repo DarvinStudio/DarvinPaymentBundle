@@ -24,32 +24,28 @@ class SuccessController extends AbstractController
      * @param string $token Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function __invoke(string $token): Response
     {
         $payment = $this->getPaymentByToken($token);
 
-        if (!in_array($payment->getState(),[
-            PaymentStateType::COMPLETED,
-            PaymentStateType::AUTHORIZED
-        ], true)) {
+        if (!in_array($payment->getState(), [PaymentStateType::AUTHORIZED, PaymentStateType::COMPLETED])) {
             $this->logger->error(
                 $this->translator->trans('error.success', [
                     '%method%' => __METHOD__,
                     '%state%'  => $payment->getState(),
                 ], 'payment_event'),
-                ['payment' => $payment]
+                [
+                    'payment' => $payment,
+                ]
             );
 
             throw new NotFoundHttpException();
         }
 
-        return new Response(
-            $this->twig->render('@DarvinPayment/payment/success.html.twig', [
-                'payment' => $payment,
-            ])
-        );
+        return new Response($this->twig->render('@DarvinPayment/payment/success.html.twig', [
+            'payment' => $payment,
+        ]));
     }
 }

@@ -13,7 +13,7 @@ namespace Darvin\PaymentBundle\DBAL\Type;
 use Fresh\DoctrineEnumBundle\DBAL\Types\AbstractEnumType;
 
 /**
- * Payment state types
+ * Payment state enum
  */
 final class PaymentStateType extends AbstractEnumType
 {
@@ -26,6 +26,9 @@ final class PaymentStateType extends AbstractEnumType
     public const REFUNDED   = 'refunded';
     public const PENDING    = 'pending';
 
+    /**
+     * {@inheritDoc}
+     */
     protected static $choices = [
         self::APPROVAL   => 'payment.state.approval',
         self::AUTHORIZED => 'payment.state.authorized',

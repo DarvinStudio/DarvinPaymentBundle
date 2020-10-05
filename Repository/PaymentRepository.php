@@ -14,18 +14,18 @@ use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Payment Repository
+ * Payment entity repository
  */
 class PaymentRepository extends EntityRepository
 {
     /**
-     * @param string $orderId    Order ID
      * @param string $orderClass Order class
-     * @param string $state      State
+     * @param string $orderId    Order ID
+     * @param string $state      Payment state
      *
-     * @return array
+     * @return \Darvin\PaymentBundle\Entity\Payment[]
      */
-    public function getForOrder(string $orderId, string $orderClass, string $state = PaymentStateType::PENDING): array
+    public function getForOrder(string $orderClass, string $orderId, string $state = PaymentStateType::PENDING): array
     {
         return $this->findBy([
             'order.id'    => $orderId,

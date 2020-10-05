@@ -14,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * Client
+ *
  * @ORM\Embeddable
  */
 class Client
@@ -25,17 +27,16 @@ class Client
      *
      * @Assert\Length(max=32)
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string|null
      *
      * @ORM\Column(length=128, nullable=true)
      *
-     * @Assert\NotBlank
      * @Assert\Length(max=128)
      */
-    protected $class;
+    private $class;
 
     /**
      * @var string|null
@@ -45,12 +46,10 @@ class Client
      * @Assert\Email
      * @Assert\Length(max=50)
      */
-    protected $email;
+    private $email;
 
     /**
-     * Redirect constructor.
-     *
-     * @param string|null $id    Id
+     * @param string|null $id    ID
      * @param string|null $class Entity class
      * @param string|null $email Email
      */
@@ -66,7 +65,7 @@ class Client
      */
     public function __toString(): string
     {
-        return $this->getId() ?? '';
+        return (string)$this->id;
     }
 
     /**

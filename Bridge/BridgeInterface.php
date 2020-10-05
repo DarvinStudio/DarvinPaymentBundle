@@ -38,6 +38,14 @@ interface BridgeInterface
     public function getSessionTimeout(): int;
 
     /**
+     * @param string $name    Parameter name
+     * @param mixed  $default Default value
+     *
+     * @return mixed
+     */
+    public function getReceiptParameter(string $name, $default = null);
+
+    /**
      * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
      * @return array

@@ -18,13 +18,13 @@ use Darvin\PaymentBundle\Entity\Payment;
 class CantCreateReceiptException extends \Exception
 {
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
      */
     public function __construct(Payment $payment)
     {
         parent::__construct(sprintf(
-            'Can\'t create receipt for order №%s',
-            $payment->getOrder()->getNumber()
+            'Can\'t create receipt for order #%s.',
+            null !== $payment->getOrder() ? $payment->getOrder()->getNumber() : ''
         ));
     }
 }

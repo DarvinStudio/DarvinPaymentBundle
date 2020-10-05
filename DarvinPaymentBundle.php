@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle;
 
+use Darvin\PaymentBundle\DependencyInjection\Compiler\AddBridgesPass;
 use Darvin\PaymentBundle\DependencyInjection\Compiler\AddBridgePass;
 use Darvin\PaymentBundle\DependencyInjection\Compiler\AddGatewayNamePass;
 use Darvin\PaymentBundle\DependencyInjection\Compiler\AddReceiptFactoryPass;
@@ -29,6 +30,7 @@ class DarvinPaymentBundle extends Bundle
     {
         parent::build($container);
 
+        $container->addCompilerPass(new AddBridgesPass());
         $container->addCompilerPass(new AddBridgePass());
         $container->addCompilerPass(new AddGatewayNamePass());
         $container->addCompilerPass(new AddStatePass());

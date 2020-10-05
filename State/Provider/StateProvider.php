@@ -11,9 +11,7 @@
 namespace Darvin\PaymentBundle\State\Provider;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
-use Darvin\PaymentBundle\State\Model\Email\Email;
-use Darvin\PaymentBundle\State\Model\Email\PublicEmail;
-use Darvin\PaymentBundle\State\Model\Email\ServiceEmail;
+use Darvin\PaymentBundle\State\Model\Email;
 use Darvin\PaymentBundle\State\Model\State;
 
 /**
@@ -22,63 +20,21 @@ use Darvin\PaymentBundle\State\Model\State;
 class StateProvider implements StateProviderInterface
 {
     /**
+     * @var array
+     */
+    private $configs;
+
+    /**
      * @var \Darvin\PaymentBundle\State\Model\State[]|null
      */
     private $states;
 
     /**
-     * @var array
+     * @param array $configs Configs
      */
-    private $configs;
-
-    public function __construct()
+    public function __construct(array $configs)
     {
-        $this->configs = [];
-        $this->states = [];
-    }
-
-    /**
-     * @param string $name   State name
-     * @param array  $config Config of state
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function addConfig(string $name, array $config): void
-    {
-        if (!PaymentStateType::isValueExist($name)) {
-            throw new \InvalidArgumentException(sprintf('State "%s" is not exist', $name));
-        }
-
-        $this->configs[$name] = $config;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getAllStates(): array
-    {
-        if (0 === count($this->states)) {
-            foreach ($this->configs as $name => $config) {
-
-                $this->states[$name] = new State(
-                    $name,
-                    new Email(
-                        new PublicEmail(
-                            $config['public']['enabled'],
-                            $config['public']['template'],
-                            $name
-                        ),
-                        new ServiceEmail(
-                            $config['service']['enabled'],
-                            $config['service']['template'],
-                            $name
-                        )
-                    )
-                );
-            }
-        }
-
-        return $this->states;
+        $this->configs = $configs;
     }
 
     /**
@@ -92,7 +48,7 @@ class StateProvider implements StateProviderInterface
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('Unknown state  "%s"', $name));
+        throw new \InvalidArgumentException(sprintf('Unknown state "%s".', $name));
     }
 
     /**
@@ -103,9 +59,8 @@ class StateProvider implements StateProviderInterface
         if (null === $name) {
             return false;
         }
-
-        foreach ($this->getAllStates() as $type) {
-            if ($type->getName() === $name) {
+        foreach ($this->getAllStates() as $state) {
+            if ($state->getName() === $name) {
                 return true;
             }
         }
@@ -119,5 +74,41 @@ class StateProvider implements StateProviderInterface
     public function getAllStateNames(): array
     {
         return array_keys($this->getAllStates());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAllStates(): array
+    {
+        if (null === $this->states) {
+            $states = [];
+
+            foreach ($this->configs as $name => $config) {
+                if (!PaymentStateType::isValueExist($name)) {
+                    throw new \InvalidArgumentException(sprintf('State "%s" does not exist.', $name));
+                }
+
+                $states[$name] = new State(
+                    $name,
+                    new Email(
+                        $config['emails']['public']['enabled'],
+                        $config['emails']['public']['template'],
+                        sprintf('email.payment.public.%s.subject', $name),
+                        sprintf('email.payment.public.%s.content', $name)
+                    ),
+                    new Email(
+                        $config['emails']['service']['enabled'],
+                        $config['emails']['service']['template'],
+                        sprintf('email.payment.service.%s.subject', $name),
+                        sprintf('email.payment.service.%s.content', $name)
+                    )
+                );
+            }
+
+            $this->states = $states;
+        }
+
+        return $this->states;
     }
 }

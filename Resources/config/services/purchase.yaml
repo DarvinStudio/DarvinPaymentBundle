@@ -1,0 +1,18 @@
+parameters:
+    darvin_payment.purchase.widget.renderer.class: Darvin\PaymentBundle\Purchase\PurchaseWidgetRenderer
+
+    darvin_payment.purchase.widget.twig.extension.class: Darvin\PaymentBundle\Twig\Extension\Purchase\WidgetExtension
+
+services:
+    darvin_payment.purchase.widget.renderer:
+        class: '%darvin_payment.purchase.widget.renderer.class%'
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@twig'
+
+    darvin_payment.purchase.widget.twig.extension:
+        class: '%darvin_payment.purchase.widget.twig.extension.class%'
+        arguments:
+            - '@darvin_payment.purchase.widget.renderer'
+        tags:
+            - { name: twig.extension }

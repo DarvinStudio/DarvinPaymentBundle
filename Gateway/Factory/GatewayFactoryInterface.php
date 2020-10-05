@@ -11,7 +11,6 @@
 namespace Darvin\PaymentBundle\Gateway\Factory;
 
 use Darvin\PaymentBundle\Bridge\BridgeInterface;
-use Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException;
 use Omnipay\Common\GatewayInterface;
 
 /**
@@ -22,18 +21,16 @@ interface GatewayFactoryInterface
     /**
      * @param string $name Bridge name
      *
-     * @return GatewayInterface
-     *
-     * @throws BridgeNotExistsException
+     * @return \Omnipay\Common\GatewayInterface
+     * @throws \Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException
      */
     public function createGateway(string $name): GatewayInterface;
 
     /**
      * @param string $name Bridge name
      *
-     * @return BridgeInterface
-     *
-     * @throws BridgeNotExistsException
+     * @return \Darvin\PaymentBundle\Bridge\BridgeInterface
+     * @throws \Darvin\PaymentBundle\Bridge\Exception\BridgeNotExistsException
      */
     public function getBridge(string $name): BridgeInterface;
 }

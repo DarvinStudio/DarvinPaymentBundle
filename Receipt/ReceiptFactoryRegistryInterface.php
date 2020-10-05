@@ -10,6 +10,7 @@
 
 namespace Darvin\PaymentBundle\Receipt;
 
+use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
@@ -18,25 +19,19 @@ use Darvin\PaymentBundle\Entity\Payment;
 interface ReceiptFactoryRegistryInterface
 {
     /**
-     * @param \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface $receiptFactory Receipt Factory
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function addFactory(ReceiptFactoryInterface $receiptFactory): void;
-
-    /**
-     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment         $payment Payment
+     * @param \Darvin\PaymentBundle\Bridge\BridgeInterface $bridge  Bridge
      *
      * @return \Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface
-     *
      * @throws \InvalidArgumentException
      */
-    public function getFactory(Payment $payment): ReceiptFactoryInterface;
+    public function getFactory(Payment $payment, BridgeInterface $bridge): ReceiptFactoryInterface;
 
     /**
-     * @param Payment $payment
+     * @param \Darvin\PaymentBundle\Entity\Payment         $payment Payment
+     * @param \Darvin\PaymentBundle\Bridge\BridgeInterface $bridge  Bridge
      *
      * @return bool
      */
-    public function hasFactory(Payment $payment): bool;
+    public function hasFactory(Payment $payment, BridgeInterface $bridge): bool;
 }

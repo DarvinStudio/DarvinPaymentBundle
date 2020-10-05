@@ -11,10 +11,9 @@
 namespace Darvin\PaymentBundle\EventListener\State\Changed;
 
 use Darvin\PaymentBundle\Entity\Payment;
-use Darvin\PaymentBundle\State\Event\ChangedStateEvent;
+use Darvin\PaymentBundle\Event\State\ChangedEvent;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\OnFlushEventArgs;
-use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -29,16 +28,17 @@ class TriggerEventSubscriber implements EventSubscriber
     private $eventDispatcher;
 
     /**
-     * @var array
+     * @var \Darvin\PaymentBundle\Event\State\ChangedEvent[]
      */
     private $events;
 
     /**
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher Event dispatcher
      */
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
+
         $this->events = [];
     }
 
@@ -54,7 +54,7 @@ class TriggerEventSubscriber implements EventSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\Event\OnFlushEventArgs $args
+     * @param \Doctrine\ORM\Event\OnFlushEventArgs $args Event arguments
      */
     public function onFlush(OnFlushEventArgs $args): void
     {
@@ -65,19 +65,17 @@ class TriggerEventSubscriber implements EventSubscriber
                 $changeSet = $uow->getEntityChangeSet($entity);
 
                 if (isset($changeSet['state'])) {
-                    $this->events[] = new ChangedStateEvent($entity);
+                    $this->events[] = new ChangedEvent($entity);
                 }
             }
         }
     }
 
-    /**
-     * @param \Doctrine\ORM\Event\PostFlushEventArgs $args
-     */
-    public function postFlush(PostFlushEventArgs $args): void
+    public function postFlush(): void
     {
         foreach ($this->events as $key => $event) {
             $this->eventDispatcher->dispatch($event);
+
             unset($this->events[$key]);
         }
     }

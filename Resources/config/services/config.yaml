@@ -1,5 +1,6 @@
 parameters:
     darvin_payment.config.class: Darvin\PaymentBundle\Config\PaymentConfig
+
     darvin_payment.config.form.type.notification_emails.class: Darvin\PaymentBundle\Form\Type\Config\NotificationEmailsType
 
 services:

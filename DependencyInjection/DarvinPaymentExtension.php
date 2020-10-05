@@ -11,8 +11,9 @@
 namespace Darvin\PaymentBundle\DependencyInjection;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
+use Darvin\PaymentBundle\DependencyInjection\Compiler\AddReceiptFactoriesPass;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
-use Darvin\PaymentBundle\Workflow\Transitions;
+use Darvin\PaymentBundle\Payment\Operations;
 use Darvin\Utils\DependencyInjection\ConfigInjector;
 use Darvin\Utils\DependencyInjection\ConfigLoader;
 use Darvin\Utils\DependencyInjection\ExtensionConfigurator;
@@ -27,48 +28,54 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class DarvinPaymentExtension extends Extension implements PrependExtensionInterface
 {
-    public const TAG_RECEIPT_FACTORY = 'darvin_payment.receipt_factory';
 
     /**
      * {@inheritDoc}
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $config = $this->processConfiguration(new Configuration(), $configs);
+        $container->registerForAutoconfiguration(ReceiptFactoryInterface::class)->addTag(AddReceiptFactoriesPass::TAG_RECEIPT_FACTORY);
 
-        $container->registerForAutoconfiguration(ReceiptFactoryInterface::class)->addTag(self::TAG_RECEIPT_FACTORY);
+        $config = $this->processConfiguration(new Configuration(), $configs);
 
         (new ConfigInjector($container))->inject($config, $this->getAlias());
 
         (new ConfigLoader($container, __DIR__.'/../Resources/config/services'))->load([
-            'admin'  => ['bundle' => 'DarvinAdminBundle'],
-            'approve' => ['callback' => static function () use ($config): bool {
-                return !$config['auto_approval'];
-            }],
-            'config' => ['bundle' => 'DarvinConfigBundle'],
             'controller',
             'gateway',
             'logger',
-            'mailer' => ['callback' => static function () use ($config): bool {
-                return $config['mailer']['enabled'];
-            }],
             'payment',
-            'pre_authorize' => ['callback' => static function () use ($config): bool {
-                return $config['pre_authorize'];
-            }],
+            'purchase',
             'receipt',
             'redirect',
-            'refund' => ['callback' => static function () use ($config): bool {
+            'state',
+            'url',
+
+            'admin/common' => ['bundle' => 'DarvinAdminBundle'],
+            'admin/approve' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
+                return !$config['auto_approval'];
+            }],
+            'admin/capture' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
+                return $config['pre_authorize'];
+            }],
+            'admin/void' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
+                return $config['pre_authorize'];
+            }],
+            'admin/refund' => ['bundle' => 'DarvinAdminBundle', 'callback' => static function () use ($config): bool {
                 return $config['refund'];
             }],
-            'state',
-            'twig',
-            'url',
-            'bridges/telr' => ['callback' => static function () use ($config): bool {
+
+            'bridge/sberbank' => ['callback' => static function () use ($config): bool {
+                return $config['bridges']['sberbank']['enabled'] ?? false;
+            }],
+            'bridge/telr' => ['callback' => static function () use ($config): bool {
                 return $config['bridges']['telr']['enabled'] ?? false;
             }],
-            'bridges/sberbank' => ['callback' => static function () use ($config): bool {
-                return $config['bridges']['sberbank']['enabled'] ?? false;
+
+            'config' => ['bundle' => 'DarvinConfigBundle'],
+
+            'mailer' => ['callback' => static function () use ($config): bool {
+                return $config['mailer']['enabled'];
             }],
         ]);
     }
@@ -82,19 +89,17 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'darvin_admin',
             'doctrine',
             'framework',
+            'monolog',
         ]);
-
-        $bundles = $container->getParameter('kernel.bundles');
-
-        if (isset($bundles['MonologBundle'])) {
-            (new ExtensionConfigurator($container, __DIR__.'/../Resources/config/app'))->configure('monolog');
-        }
 
         $container->prependExtensionConfig($this->getAlias(), [
             'mailer' => [
-                'enabled' => isset($bundles['DarvinMailerBundle']),
-                'states'  => $this->initPaymentStates(),
+                'enabled' => array_key_exists('DarvinMailerBundle', $container->getParameter('kernel.bundles')),
             ],
+        ]);
+
+        $container->prependExtensionConfig($this->getAlias(), [
+            'states' => $this->buildStatesConfig(),
         ]);
 
         $container->prependExtensionConfig('framework', [
@@ -102,7 +107,7 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                 'payment' => [
                     'initial_marking' => PaymentStateType::APPROVAL,
                     'places'          => array_values(PaymentStateType::getChoices()),
-                    'transitions'     => $this->initWorkflowTransitions(),
+                    'transitions'     => $this->buildWorkflowTransitions(),
                 ],
             ],
         ]);
@@ -111,44 +116,48 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     /**
      * @return array
      */
-    private function initPaymentStates(): array
+    private function buildStatesConfig(): array
     {
-        $data = [];
+        $config = [];
 
-        foreach (PaymentStateType::getChoices() as $choice) {
-            $data[$choice] = [
-                'public' => [
-                    'enabled' => false,
-                ],
-                'service' => [
-                    'enabled' => true,
+        foreach (PaymentStateType::getChoices() as $state) {
+            $config[$state] = [
+                'emails' => [
+                    'public' => [
+                        'enabled' => false,
+                    ],
+                    'service' => [
+                        'enabled' => true,
+                    ],
                 ],
             ];
         }
 
-        $data[PaymentStateType::COMPLETED] = [
-            'public' => [
-                'enabled' => true,
-            ],
-            'service' => [
-                'enabled' => true,
+        $config[PaymentStateType::COMPLETED] = [
+            'emails' => [
+                'public' => [
+                    'enabled' => true,
+                ],
+                'service' => [
+                    'enabled' => true,
+                ],
             ],
         ];
 
-        return $data;
+        return $config;
     }
 
     /**
      * @return array
      */
-    private function initWorkflowTransitions(): array
+    private function buildWorkflowTransitions(): array
     {
         $transitions = [];
 
-        foreach (Transitions::TRANSITIONS as $name => $data) {
+        foreach (Operations::OPERATIONS as $name => [$from, $to]) {
             $transitions[$name] = [
-                'from' => $data[0],
-                'to'   => $data[1],
+                'from' => $from,
+                'to'   => $to,
             ];
         }
 

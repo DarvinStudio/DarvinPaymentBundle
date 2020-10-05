@@ -22,21 +22,32 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class GatewayFactory implements GatewayFactoryInterface
 {
     /**
-     * @var array|BridgeInterface[]
+     * @var \Symfony\Component\HttpFoundation\RequestStack
      */
-    protected $bridges = [];
+    private $requestStack;
 
     /**
-     * @var RequestStack
+     * @var \Darvin\PaymentBundle\Bridge\BridgeInterface[]
      */
-    protected $requestStack;
+    private $bridges;
 
     /**
-     * @param RequestStack $requestStack
+     * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack Request stack
      */
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
+
+        $this->bridges = [];
+    }
+
+    /**
+     * @param string                                       $name   Bridge name
+     * @param \Darvin\PaymentBundle\Bridge\BridgeInterface $bridge Bridge
+     */
+    public function addBridge(string $name, BridgeInterface $bridge): void
+    {
+        $this->bridges[$name] = $bridge;
     }
 
     /**
@@ -45,13 +56,14 @@ class GatewayFactory implements GatewayFactoryInterface
     public function createGateway(string $name): GatewayInterface
     {
         $bridge = $this->getBridge($name);
+
         $className = $bridge->getGatewayClassName();
+
         if ($className[0] !== '\\') {
             $className = '\\'.$className;
         }
 
         $gateway = Omnipay::create($className, null, $this->requestStack->getMasterRequest());
-
         $gateway->initialize($bridge->initializationParameters());
 
         return $gateway;
@@ -67,14 +79,5 @@ class GatewayFactory implements GatewayFactoryInterface
         }
 
         return $this->bridges[$name];
-    }
-
-    /**
-     * @param string          $name
-     * @param BridgeInterface $bridge
-     */
-    public function addBridge(string $name, BridgeInterface $bridge): void
-    {
-        $this->bridges[$name] = $bridge;
     }
 }

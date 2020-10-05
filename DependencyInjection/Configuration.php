@@ -26,28 +26,31 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $builder = new TreeBuilder('darvin_payment');
-        $root = $builder->getRootNode();
 
-        $root
+        $builder->getRootNode()
             ->children()
                 ->scalarNode('default_currency')->defaultValue('RUB')->cannotBeEmpty()->end()
                 ->scalarNode('default_gateway')->defaultNull()->end()
                 ->booleanNode('auto_approval')->defaultTrue()->end()
                 ->booleanNode('pre_authorize')->defaultFalse()->end()
                 ->booleanNode('refund')->defaultFalse()->end()
+                ->arrayNode('mailer')->canBeDisabled()->end()
                 ->arrayNode('bridges')->useAttributeAsKey('name')
                     ->prototype('array')->canBeDisabled()
                         ->children()
                             ->arrayNode('parameters')
-                                ->prototype('variable')->end()
+                                ->children()
+                                    ->arrayNode('gateway')->prototype('variable')->end()->end()
+                                    ->arrayNode('receipt')->prototype('variable')->end()->end()
+                                ->end()
                             ->end()
                         ->end()
                     ->end()
                 ->end()
-                ->arrayNode('mailer')->canBeDisabled()
-                    ->children()
-                        ->arrayNode('states')->useAttributeAsKey('name')
-                            ->prototype('array')
+                ->arrayNode('states')->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->children()
+                            ->arrayNode('emails')
                                 ->children()
                                     ->arrayNode('public')->canBeDisabled()
                                         ->children()
@@ -56,8 +59,7 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->arrayNode('service')->canBeDisabled()
                                         ->children()
-                                            ->scalarNode('template')->defaultValue('@DarvinPayment/email/service.html.twig')->cannotBeEmpty()
-        ;
+                                            ->scalarNode('template')->defaultValue('@DarvinPayment/email/service.html.twig')->cannotBeEmpty();
 
         return $builder;
     }
