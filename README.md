@@ -24,7 +24,7 @@ Scheme of payment state changes:
     composer require darvinstudio/darvin-payment-bundle
 ```
 
-## Creating Payment:
+## How to create Payment
 ```php
     /** @var $paymentFactory \Darvin\PaymentBundle\Payment\Factory\PaymentFactoryInterface */
     $payment = $paymentFactory->createPayment(
@@ -43,8 +43,12 @@ Scheme of payment state changes:
     );
 ```
 
-## Show available payment links
-PaymentBundle has twig function for show every available payment methods of order. It can use for success page, email notify or for show in personal account.
+## How to get payment's link in twig
+```twig
+    {{ payment_purchase_urls(payment) }}
+```
+
+## How to get all available payment's links for order
 ```twig
     {{ payment_purchase_widget(order) }}
 ```
