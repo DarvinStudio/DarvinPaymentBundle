@@ -183,14 +183,14 @@ class SberbankBridge extends AbstractBridge
      */
     private function getReceipt(Payment $payment): ?string
     {
-        if (!$this->receiptFactoryRegistry->hasFactory($payment, $this->getGatewayName())) {
+        if (!$this->receiptFactoryRegistry->hasFactory($payment, $this)) {
             return null;
         }
 
-        $factory = $this->receiptFactoryRegistry->getFactory($payment, $this->getGatewayName());
+        $factory = $this->receiptFactoryRegistry->getFactory($payment, $this);
 
         try {
-            return json_encode($factory->createReceipt($payment, $this->getGatewayName()));
+            return json_encode($factory->createReceipt($payment, $this));
         } catch (CantCreateReceiptException $ex) {
             $this->logger->warning(
                 $this->translator->trans('error.cant_create_receipt', [], 'payment_event'),
