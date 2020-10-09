@@ -3,3 +3,5 @@
 6.1.0: Full refactoring and redesign structure. Main changes: Entity rename Log -> Event, added Redirect Entity, changed admin services, payment factory, the creating event about changed payment state.
 
 6.1.1: Changed the interface for receipt factory and added readme.
+
+6.1.2: Fixed receipt factory
