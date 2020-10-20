@@ -9,11 +9,11 @@ payment:
     action:
         approve:
             confirm: Confirm payment approval
-            submit:  Approve payment
+            submit:  Approve
             success: Payment succesfully approved!
         capture:
             confirm: Confirm payment сompletion
-            submit:  Complete payment
+            submit:  Complete
             success: Payment succesfully completed!
         delete:
             confirm: Confirm payment removal
@@ -28,7 +28,7 @@ payment:
             title:   Payments
         refund:
             confirm: Confirm payment refund
-            submit:  Refund payment
+            submit:  Refund
             success: Payment succesfully refunded!
         new:
             link:    Add payment
@@ -39,7 +39,7 @@ payment:
             title:   Payment №«%entity%»
         void:
             confirm: Confirm payment cancel
-            submit:  Cancel payment
+            submit:  Cancel
             success: Payment succesfully canceled!
     entity:
         token:           Token

@@ -102,12 +102,17 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             'states' => $this->buildStatesConfig(),
         ]);
 
+        $config = $this->processConfiguration(
+            new Configuration(),
+            $container->getParameterBag()->resolveValue($container->getExtensionConfig($this->getAlias()))
+        );
+
         $container->prependExtensionConfig('framework', [
             'workflows' => [
                 'payment' => [
                     'initial_marking' => PaymentStateType::APPROVAL,
                     'places'          => array_values(PaymentStateType::getChoices()),
-                    'transitions'     => $this->buildWorkflowTransitions(),
+                    'transitions'     => $this->buildWorkflowTransitions($config),
                 ],
             ],
         ]);
@@ -148,9 +153,11 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
     }
 
     /**
+     * @param array $config Config
+     *
      * @return array
      */
-    private function buildWorkflowTransitions(): array
+    private function buildWorkflowTransitions(array $config): array
     {
         $transitions = [];
 
@@ -159,6 +166,18 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
                 'from' => $from,
                 'to'   => $to,
             ];
+        }
+
+        if (!$config['pre_authorize']) {
+            unset(
+                $transitions[Operations::AUTHORIZE],
+                $transitions[Operations::VOID],
+                $transitions[Operations::CAPTURE]
+            );
+        }
+
+        if (!$config['refund']) {
+            unset($transitions[Operations::REFUND]);
         }
 
         return $transitions;

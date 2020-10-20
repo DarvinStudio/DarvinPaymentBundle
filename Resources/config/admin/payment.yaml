@@ -40,7 +40,7 @@ view:
                 widget: payment_state
 
             operation:
-                size: md
+                size: free
                 widget:
                     payment_operation: ~
             events:

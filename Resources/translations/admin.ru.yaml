@@ -9,11 +9,11 @@ payment:
     action:
         approve:
             confirm: Подтвердите операцию
-            submit:  Одобрить платёж
+            submit:  Одобрить
             success: Платёж одобрен!
         capture:
             confirm: Подтвердите операцию
-            submit:  Завершить платёж
+            submit:  Завершить
             success: Платёж успешно завершён!
         delete:
             confirm: Подтвердите удаление платёжа
@@ -28,7 +28,7 @@ payment:
             title:   Платежи
         refund:
             confirm: Подтвердите операцию возврата денег
-            submit:  Возврат денег
+            submit:  Возврат
             success: Заявка на возврат успешно отправлена
         new:
             link:    Добавить платёж
@@ -39,7 +39,7 @@ payment:
             title:   Платёж №«%entity%»
         void:
             confirm: Подтвердите операцию отмены оплаты
-            submit:  Отменить платёж
+            submit:  Отменить
             success: Платёж успешно отменен
 
     entity:
