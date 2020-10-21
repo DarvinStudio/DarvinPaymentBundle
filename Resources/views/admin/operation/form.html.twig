@@ -9,19 +9,17 @@
     'header':  'page-header__btn-' ~ operation,
     'show':    'modal-actions__btn-' ~ operation,
 } %}
-<div class="payment-actions">
-    <form name="{{ name }}" action="{{ url }}" method="post" class="js-form" data-reload-page="1">
-        {% for input_name, input_value in {
-            (name ~ '[id]'): id,
-            'style':         style,
-        } %}
-            <input name="{{ input_name }}" type="hidden" value="{{ input_value }}">
-        {% endfor %}
-        <button type="submit"
-                class="payment-actions__btn"
-                title="{{ title|e('html_attr') }}"
-                onclick="return confirm('{{ ('payment.action.' ~ operation ~ '.confirm')|trans|e('js') }}');">
-            {{ title }}
-        </button>
-    </form>
-</div>
+<form name="{{ name }}" action="{{ url }}" method="post" class="js-form" data-reload-page="1">
+    {% for input_name, input_value in {
+        (name ~ '[id]'): id,
+        'style':         style,
+    } %}
+        <input name="{{ input_name }}" type="hidden" value="{{ input_value }}">
+    {% endfor %}
+    <button type="submit"
+            class="payment-actions__btn"
+            title="{{ title|e('html_attr') }}"
+            onclick="return confirm('{{ ('payment.action.' ~ operation ~ '.confirm')|trans|e('js') }}');">
+        {{ title }}
+    </button>
+</form>

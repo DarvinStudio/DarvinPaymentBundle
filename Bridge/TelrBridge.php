@@ -39,7 +39,7 @@ class TelrBridge extends AbstractBridge
      */
     public function getSessionTimeout(): int
     {
-        return 86400;
+        return $this->getGatewayParameter('sessionTimeoutSecs', 86400);
     }
 
     /**
@@ -67,7 +67,7 @@ class TelrBridge extends AbstractBridge
         return [
             'ivp_amount'   => $payment->getAmount(),
             'ivp_currency' => $payment->getCurrency(),
-            'ivp_cart'     => $payment->getId(),
+            'ivp_cart'     => $payment->getOrder()->getNumber(),
             'ivp_desc'     => $payment->getDescription(),
             'return_auth'  => $this->urlBuilder->getCompleteUrl($payment),
             'return_decl'  => $this->urlBuilder->getFailUrl($payment),

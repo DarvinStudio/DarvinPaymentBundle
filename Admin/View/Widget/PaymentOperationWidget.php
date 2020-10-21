@@ -52,7 +52,7 @@ class PaymentOperationWidget extends AbstractWidget
             return null;
         }
 
-        return implode('', $forms);
+        return sprintf('<div class="payment-actions">%s</div>', implode('', $forms));
     }
 
     /**

@@ -96,7 +96,7 @@ class SberbankBridge extends AbstractBridge
     {
         return [
             'orderId'     => $payment->getTransactionReference(),
-            'orderNumber' => $payment->getOrder()->getId(),
+            'orderNumber' => $payment->getOrder()->getNumber(),
             'amount'      => $payment->getAmount(),
         ];
     }
@@ -107,7 +107,7 @@ class SberbankBridge extends AbstractBridge
     public function purchaseParameters(Payment $payment): array
     {
         return [
-            'orderNumber'        => $payment->getId(),
+            'orderNumber'        => $payment->getOrder()->getNumber(),
             'amount'             => $payment->getAmount(),
             'currency'           => $payment->getCurrency(),
             'description'        => $payment->getDescription(),
@@ -129,7 +129,7 @@ class SberbankBridge extends AbstractBridge
     {
         return [
             'orderId'     => $payment->getTransactionReference(),
-            'orderNumber' => $payment->getOrder()->getId(),
+            'orderNumber' => $payment->getOrder()->getNumber(),
             'amount'      => $payment->getAmount(),
         ];
     }
