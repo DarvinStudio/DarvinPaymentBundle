@@ -8,6 +8,8 @@ parameters:
     darvin_payment.admin.view.widget.payment_state.class: Darvin\PaymentBundle\Admin\View\Widget\PaymentStateWidget
 
 services:
+    Darvin\PaymentBundle\Form\Renderer\Admin\OperationFormRendererInterface: '@darvin_payment.admin.form.renderer.operation'
+
     darvin_payment.admin.form.renderer.operation:
         class: '%darvin_payment.admin.form.renderer.operation.class%'
         arguments:

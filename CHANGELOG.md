@@ -7,3 +7,5 @@
 6.1.2: Fixed receipt factory
 
 6.1.3: Fixes and changes by admin operation widget. SberbankBridge: changed paymentId to orderNumber.
+
+6.1.4: Fixed admin config. Made it possible to use OperationFormRendererInterface.

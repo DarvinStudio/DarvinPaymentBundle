@@ -56,31 +56,11 @@ view:
             createdAt:
                 type:   date
                 widget: datetime
-            order.number: ~
             amount: ~
             currency: ~
-            order.id: ~
-            order.entityClass: ~
-            clientId: ~
-            clientEmail:
-                size:   md
-                type:   email
-                widget: email_link
-            description:
-                size: sm
-                widget:
-                    text:
-                        length: 24
-                        rows: 1
-                        trans: true
-            state:
-                widget:
-                    text:
-                        property: state
-            transactionReference:
-                size: free
-            token:
-                size: free
+            description: ~
+            transactionReference: ~
+            token: ~
 
 form:
     filter:
