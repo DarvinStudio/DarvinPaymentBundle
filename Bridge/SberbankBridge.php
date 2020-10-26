@@ -96,7 +96,7 @@ class SberbankBridge extends AbstractBridge
     {
         return [
             'orderId'     => $payment->getTransactionReference(),
-            'orderNumber' => $payment->getOrder()->getNumber(),
+            'orderNumber' => $this->renderOrderNumber($payment),
             'amount'      => $payment->getAmount(),
         ];
     }
@@ -107,13 +107,16 @@ class SberbankBridge extends AbstractBridge
     public function purchaseParameters(Payment $payment): array
     {
         return [
-            'orderNumber'        => $payment->getOrder()->getNumber(),
+            'orderNumber'        => $this->renderOrderNumber($payment),
             'amount'             => $payment->getAmount(),
             'currency'           => $payment->getCurrency(),
             'description'        => $payment->getDescription(),
             'returnUrl'          => $this->urlBuilder->getCompleteUrl($payment),
             'failUrl'            => $this->urlBuilder->getFailUrl($payment),
-            'jsonParams'         => json_encode(['Order ID' => $payment->getOrder()->getNumber()]),
+            'jsonParams'         => json_encode([
+                'Order ID'       => $payment->getOrder()->getNumber(),
+                'Payment ID'     => $payment->getId(),
+            ]),
             'sessionTimeoutSecs' => $this->getSessionTimeout(),
             'clientId'           => $payment->getClient()->getId(),
             'email'              => $payment->getClient()->getEmail(),
@@ -129,7 +132,7 @@ class SberbankBridge extends AbstractBridge
     {
         return [
             'orderId'     => $payment->getTransactionReference(),
-            'orderNumber' => $payment->getOrder()->getNumber(),
+            'orderNumber' => $this->renderOrderNumber($payment),
             'amount'      => $payment->getAmount(),
         ];
     }
@@ -201,5 +204,15 @@ class SberbankBridge extends AbstractBridge
         }
 
         return null;
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Entity\Payment $payment
+     *
+     * @return string
+     */
+    private function renderOrderNumber(Payment $payment): string
+    {
+        return sprintf('%sx%s', $payment->getOrder()->getNumber(), $payment->getId());
     }
 }
