@@ -1,15 +1,3 @@
-darvin_payment_admin_approve:
-    path:     /approve/{token}
-    defaults: { _controller: darvin_payment.admin.approve.controller }
-
-darvin_payment_admin_capture:
-    path:     /capture/{token}
-    defaults: { _controller: darvin_payment.admin.capture.controller }
-
-darvin_payment_admin_refund:
-    path:     /refund/{token}
-    defaults: { _controller: darvin_payment.admin.refund.controller }
-
-darvin_payment_admin_void:
-    path:     /void/{token}
-    defaults: { _controller: darvin_payment.admin.void.controller }
+darvin_payment_import_admin:
+    resource: '@DarvinPaymentBundle/Resources/config/routing/admin.yaml'
+    prefix:   /payment

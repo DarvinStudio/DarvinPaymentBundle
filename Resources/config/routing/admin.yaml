@@ -1,0 +1,23 @@
+darvin_payment_admin_approve:
+    path:         /{token}/approve
+    defaults:     { _controller: darvin_payment.admin.approve.controller }
+    requirements: { token: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}' } # UUID
+    methods:      [ post ]
+
+darvin_payment_admin_capture:
+    path:         /{token}/capture
+    defaults:     { _controller: darvin_payment.admin.capture.controller }
+    requirements: { token: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}' } # UUID
+    methods:      [ post ]
+
+darvin_payment_admin_refund:
+    path:         /{token}/refund
+    defaults:     { _controller: darvin_payment.admin.refund.controller }
+    requirements: { token: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}' } # UUID
+    methods:      [ post ]
+
+darvin_payment_admin_void:
+    path:         /{token}/void
+    defaults:     { _controller: darvin_payment.admin.void.controller }
+    requirements: { token: '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}' } # UUID
+    methods:      [ post ]

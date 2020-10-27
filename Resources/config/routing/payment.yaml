@@ -2,13 +2,13 @@ darvin_payment_purchase:
     path:     /{gatewayName}/purchase/{token}
     defaults: { _controller: darvin_payment.controller.payment.purchase }
 
-darvin_payment_complete:
-    path:     /complete/{token}
-    defaults: { _controller: darvin_payment.controller.payment.complete }
-
 darvin_payment_cancel:
     path:     /cancel/{token}
     defaults: { _controller: darvin_payment.controller.payment.cancel }
+
+darvin_payment_complete:
+    path:     /complete/{token}
+    defaults: { _controller: darvin_payment.controller.payment.complete }
 
 darvin_payment_error:
     path:     /error/{token}
