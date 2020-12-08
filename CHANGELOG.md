@@ -10,4 +10,8 @@
 
 6.1.4: Fixed admin config. Made it possible to use OperationFormRendererInterface.
 
-6.1.5: Reorganize routing.
+6.1.5:
+
+- Reorganize routing.
+
+- Allow "fresh/doctrine-enum-bundle" ^7.
