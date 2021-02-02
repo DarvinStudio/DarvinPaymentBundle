@@ -39,6 +39,9 @@ email:
             completed:
                 subject: 'Заказ №%orderNumber%: Платёж произведен'
                 content: 'Заказ №%orderNumber% успешно оплачен.'
+            expired:
+                subject: 'Заказ №%orderNumber%: Платёж просрочен'
+                content: 'Оплата заказа №%orderNumber% просрочена.'
             failed:
                 subject: 'Заказ №%orderNumber%: Ошибка при оплате'
                 content: 'При оплате заказа №%orderNumber% произошла ошибка.'
