@@ -15,3 +15,5 @@
 - Reorganize routing.
 
 - Allow "fresh/doctrine-enum-bundle" ^7.
+
+6.1.7: Sberbank bridge: change session timeout from 1 day to 7 days.

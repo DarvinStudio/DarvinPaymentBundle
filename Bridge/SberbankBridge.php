@@ -78,7 +78,7 @@ class SberbankBridge extends AbstractBridge
      */
     public function getSessionTimeout(): int
     {
-        return $this->getGatewayParameter('sessionTimeoutSecs', 86400);
+        return $this->getGatewayParameter('sessionTimeoutSecs', 60 * 60 * 24 * 7);
     }
 
     /**
