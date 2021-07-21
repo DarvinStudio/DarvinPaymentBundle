@@ -12,8 +12,8 @@ namespace Darvin\PaymentBundle\DependencyInjection;
 
 use Darvin\PaymentBundle\DBAL\Type\PaymentStateType;
 use Darvin\PaymentBundle\DependencyInjection\Compiler\AddReceiptFactoriesPass;
-use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
 use Darvin\PaymentBundle\Payment\Operations;
+use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
 use Darvin\Utils\DependencyInjection\ConfigInjector;
 use Darvin\Utils\DependencyInjection\ConfigLoader;
 use Darvin\Utils\DependencyInjection\ExtensionConfigurator;
@@ -70,6 +70,9 @@ class DarvinPaymentExtension extends Extension implements PrependExtensionInterf
             }],
             'bridge/telr' => ['callback' => static function () use ($config): bool {
                 return $config['bridges']['telr']['enabled'] ?? false;
+            }],
+            'bridge/yookassa' => ['callback' => static function () use ($config): bool {
+                return $config['bridges']['yookassa']['enabled'] ?? false;
             }],
 
             'config' => ['bundle' => 'DarvinConfigBundle'],

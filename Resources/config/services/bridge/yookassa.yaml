@@ -1,0 +1,8 @@
+parameters:
+    darvin_payment.bridge.yookassa.class: Darvin\PaymentBundle\Bridge\YookassaBridge
+
+services:
+    darvin_payment.bridge.yookassa:
+        class: '%darvin_payment.bridge.yookassa.class%'
+        arguments:
+            - '@darvin_payment.url.builder'

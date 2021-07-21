@@ -13,9 +13,9 @@ namespace Darvin\PaymentBundle\Bridge;
 use Darvin\PaymentBundle\Entity\Payment;
 
 /**
- * YooMoney Bridge
+ * YooKassa bridge
  */
-class YoomoneyBridge extends AbstractBridge
+class YookassaBridge extends AbstractBridge
 {
     /**
      * {@inheritDoc}
