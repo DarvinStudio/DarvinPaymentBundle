@@ -11,6 +11,7 @@
 namespace Darvin\PaymentBundle\Bridge;
 
 use Darvin\PaymentBundle\Entity\Payment;
+use Omnipay\YooKassa\Gateway;
 
 /**
  * YooKassa bridge
@@ -22,7 +23,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function getGatewayClassName(): string
     {
-        // TODO: Implement getGatewayClassName() method.
+        return Gateway::class;
     }
 
     /**
@@ -30,7 +31,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function getGatewayName(): string
     {
-        // TODO: Implement getGatewayName() method.
+        return 'yookassa';
     }
 
     /**
