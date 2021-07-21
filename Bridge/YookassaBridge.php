@@ -39,7 +39,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function getSessionTimeout(): int
     {
-        // TODO: Implement getSessionTimeout() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -47,7 +47,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function authorizeParameters(Payment $payment): array
     {
-        // TODO: Implement authorizeParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -55,7 +55,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function completeAuthorizeParameters(Payment $payment): array
     {
-        // TODO: Implement completeAuthorizeParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -63,7 +63,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function captureParameters(Payment $payment): array
     {
-        // TODO: Implement captureParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -71,7 +71,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function purchaseParameters(Payment $payment): array
     {
-        // TODO: Implement purchaseParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -79,7 +79,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function completePurchaseParameters(Payment $payment): array
     {
-        // TODO: Implement completePurchaseParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -87,7 +87,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function voidParameters(Payment $payment): array
     {
-        // TODO: Implement voidParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -95,7 +95,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function refundParameters(Payment $payment): array
     {
-        // TODO: Implement refundParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 
     /**
@@ -103,6 +103,6 @@ class YookassaBridge extends AbstractBridge
      */
     public function acceptNotificationParameters(Payment $payment): array
     {
-        // TODO: Implement acceptNotificationParameters() method.
+        throw new \RuntimeException('Not implemented.');
     }
 }
