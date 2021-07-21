@@ -39,6 +39,7 @@
         "darvinstudio/darvin-config-bundle": "Allow admin email notifications",
         "darvinstudio/omnipay-sberbank": "Needed to support Sberbank payment",
         "darvinstudio/omnipay-telr": "Needed to support Telr payment",
+        "igor-tv/omnipay-yookassa": "Needed to support YooKassa payment",
         "monolog/monolog": "Allows more advanced logging of the application flow"
     },
     "autoload": {
