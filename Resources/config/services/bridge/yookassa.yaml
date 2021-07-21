@@ -6,3 +6,5 @@ services:
         class: '%darvin_payment.bridge.yookassa.class%'
         arguments:
             - '@darvin_payment.url.builder'
+        calls:
+            - [ setGatewayConfig, [ '%darvin_payment.bridges.yookassa.parameters.gateway%' ] ]
