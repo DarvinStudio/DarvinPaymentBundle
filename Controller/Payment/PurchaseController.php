@@ -13,11 +13,11 @@ namespace Darvin\PaymentBundle\Controller\Payment;
 use Darvin\PaymentBundle\Controller\AbstractController;
 use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
-use Darvin\PaymentBundle\Redirect\RedirectFactoryInterface;
 use Darvin\PaymentBundle\Payment\Operations;
+use Darvin\PaymentBundle\Redirect\RedirectFactoryInterface;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormFactoryInterface;
 
 /**
  * Purchase payment controller
@@ -82,6 +82,10 @@ class PurchaseController extends AbstractController
             $response = $gateway->{$method}($parameters)->send();
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
+
+            if ($this->debug) {
+                throw $ex;
+            }
 
             return $this->createErrorResponse($payment);
         }

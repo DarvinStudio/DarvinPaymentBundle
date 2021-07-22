@@ -25,6 +25,7 @@ services:
             - '@darvin_payment.url.builder'
             - '@translator'
             - '@state_machine.payment'
+            - '%kernel.debug%'
             - '%darvin_payment.pre_authorize%'
 
     darvin_payment.controller.payment.cancel:

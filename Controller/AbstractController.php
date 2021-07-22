@@ -68,6 +68,11 @@ abstract class AbstractController
     /**
      * @var bool
      */
+    protected $debug;
+
+    /**
+     * @var bool
+     */
     protected $preAuthorize;
 
     /**
@@ -78,6 +83,7 @@ abstract class AbstractController
      * @param \Symfony\Contracts\Translation\TranslatorInterface            $translator      Translator
      * @param \Twig\Environment                                             $twig            Twig
      * @param \Symfony\Component\Workflow\WorkflowInterface                 $workflow        Workflow
+     * @param bool                                                          $debug           Is debug
      * @param bool                                                          $preAuthorize    Pre-authorize payment enable
      */
     public function __construct(
@@ -88,6 +94,7 @@ abstract class AbstractController
         PaymentUrlBuilderInterface $urlBuilder,
         TranslatorInterface $translator,
         WorkflowInterface $workflow,
+        bool $debug,
         bool $preAuthorize
     ) {
         $this->gatewayFactory = $gatewayFactory;
@@ -97,6 +104,7 @@ abstract class AbstractController
         $this->translator = $translator;
         $this->twig = $twig;
         $this->workflow = $workflow;
+        $this->debug = $debug;
         $this->preAuthorize = $preAuthorize;
     }
 

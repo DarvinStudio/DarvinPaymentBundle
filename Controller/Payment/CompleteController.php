@@ -50,6 +50,10 @@ class CompleteController extends AbstractController
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 
+            if ($this->debug) {
+                throw $ex;
+            }
+
             return $this->createErrorResponse($payment);
         }
         if ($response->isSuccessful()) {
