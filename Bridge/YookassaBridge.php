@@ -72,14 +72,13 @@ class YookassaBridge extends AbstractBridge
     public function purchaseParameters(Payment $payment): array
     {
         return [
-            'shopId'        => $this->getGatewayParameter('shopId'),
-            'secret'        => $this->getGatewayParameter('secret'),
             'amount'        => $payment->getAmount(),
             'currency'      => $payment->getCurrency(),
             'returnUrl'     => $this->urlBuilder->getCompleteUrl($payment),
             'transactionId' => implode('x', [$payment->getOrder()->getNumber(), $payment->getId()]),
             'description'   => (string)$payment->getDescription(),
             'capture'       => true,
+            'receipt'       => [],
         ];
     }
 
