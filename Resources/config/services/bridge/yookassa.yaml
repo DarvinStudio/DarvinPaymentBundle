@@ -1,10 +1,20 @@
 parameters:
     darvin_payment.bridge.yookassa.class: Darvin\PaymentBundle\Bridge\YookassaBridge
 
+    darvin_payment.receipt.factory.yookassa.class: Darvin\PaymentBundle\Receipt\Factory\YooKassa\YooKassaReceiptFactory
+
 services:
     darvin_payment.bridge.yookassa:
         class: '%darvin_payment.bridge.yookassa.class%'
         arguments:
             - '@darvin_payment.url.builder'
+            - '@darvin_payment.logger'
+            - '@darvin_payment.receipt.factory_registry'
+            - '@translator'
         calls:
             - [ setGatewayConfig, [ '%darvin_payment.bridges.yookassa.parameters.gateway%' ] ]
+
+    darvin_payment.receipt.factory.yookassa:
+        class: '%darvin_payment.receipt.factory.yookassa.class%'
+        tags:
+            - { name: darvin_payment.receipt_factory }
