@@ -159,7 +159,7 @@ abstract class AbstractController
      * @param \Omnipay\Common\GatewayInterface $gateway Gateway
      * @param string                           $method  Name of gateway method
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws \RuntimeException
      */
     final protected function validateGateway(GatewayInterface $gateway, string $method): void
     {
@@ -169,7 +169,7 @@ abstract class AbstractController
                 '%method%'  => $method,
             ], 'payment_event');
 
-            throw new NotFoundHttpException($errorMessage);
+            throw new \RuntimeException($errorMessage);
         }
     }
 

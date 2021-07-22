@@ -19,6 +19,7 @@ use Omnipay\YooKassa\Message\PurchaseResponse;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Purchase payment controller
@@ -56,6 +57,7 @@ class PurchaseController extends AbstractController
      * @param string $token       Payment token
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function __invoke(string $gatewayName, string $token): Response
     {
@@ -72,8 +74,12 @@ class PurchaseController extends AbstractController
             $operation  = Operations::PURCHASE;
             $parameters = $bridge->purchaseParameters($payment);
         }
+        try {
+            $this->validateGateway($gateway, $method);
+        } catch (\RuntimeException $ex) {
+            throw new NotFoundHttpException($ex->getMessage(), $ex);
+        }
 
-        $this->validateGateway($gateway, $method);
         $this->validatePayment($payment, $operation, $gatewayName);
 
         if ($payment->hasRedirect()) {

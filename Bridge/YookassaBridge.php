@@ -79,6 +79,7 @@ class YookassaBridge extends AbstractBridge
             'returnUrl'     => $this->urlBuilder->getCompleteUrl($payment),
             'transactionId' => implode('x', [$payment->getOrder()->getNumber(), $payment->getId()]),
             'description'   => (string)$payment->getDescription(),
+            'capture'       => true,
         ];
     }
 
@@ -87,7 +88,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function completePurchaseParameters(Payment $payment): array
     {
-        throw new \RuntimeException('Not implemented.');
+        return [];
     }
 
     /**
