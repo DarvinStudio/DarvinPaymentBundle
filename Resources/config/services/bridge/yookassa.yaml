@@ -11,3 +11,4 @@ services:
             - '@translator'
         calls:
             - [ setGatewayConfig, [ '%darvin_payment.bridges.yookassa.parameters.gateway%' ] ]
+            - [ setReceiptConfig, [ '%darvin_payment.bridges.yookassa.parameters.receipt%' ] ]
