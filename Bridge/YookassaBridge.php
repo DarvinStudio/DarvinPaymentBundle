@@ -78,7 +78,7 @@ class YookassaBridge extends AbstractBridge
             'currency'      => $payment->getCurrency(),
             'returnUrl'     => $this->urlBuilder->getCompleteUrl($payment),
             'transactionId' => implode('x', [$payment->getOrder()->getNumber(), $payment->getId()]),
-            'description'   => null !== $payment->getDescription() ? $payment->getDescription() : (string)$payment->getId(),
+            'description'   => (string)$payment->getDescription(),
         ];
     }
 
