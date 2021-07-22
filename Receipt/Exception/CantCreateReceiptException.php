@@ -19,12 +19,14 @@ class CantCreateReceiptException extends \Exception
 {
     /**
      * @param \Darvin\PaymentBundle\Entity\Payment $payment Payment
+     * @param string                               $message Message
      */
-    public function __construct(Payment $payment)
+    public function __construct(Payment $payment, string $message = '')
     {
         parent::__construct(sprintf(
-            'Can\'t create receipt for order #%s.',
-            null !== $payment->getOrder() ? $payment->getOrder()->getNumber() : ''
+            'Can\'t create receipt for order #%s: "%s".',
+            null !== $payment->getOrder() ? $payment->getOrder()->getNumber() : '',
+            $message
         ));
     }
 }

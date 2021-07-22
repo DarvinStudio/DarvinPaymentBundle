@@ -13,7 +13,11 @@ namespace Darvin\PaymentBundle\Receipt\Factory\YooKassa;
 use Darvin\PaymentBundle\Bridge\BridgeInterface;
 use Darvin\PaymentBundle\Bridge\YookassaBridge;
 use Darvin\PaymentBundle\Entity\Payment;
+use Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException;
+use Darvin\PaymentBundle\Receipt\Model\YooKassa\Receipt;
 use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
+use Symfony\Component\Validator\ConstraintViolationInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * YooKassa receipt factory
@@ -21,11 +25,28 @@ use Darvin\PaymentBundle\Receipt\ReceiptFactoryInterface;
 class YooKassaReceiptFactory implements ReceiptFactoryInterface
 {
     /**
+     * @var \Symfony\Component\Validator\Validator\ValidatorInterface
+     */
+    private $validator;
+
+    /**
+     * @param \Symfony\Component\Validator\Validator\ValidatorInterface $validator
+     */
+    public function __construct(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function createReceipt(Payment $payment, BridgeInterface $bridge): array
     {
-        return [];
+        $receipt = new Receipt();
+
+        $this->validate($receipt, $payment);
+
+        return $receipt->getData();
     }
 
     /**
@@ -42,5 +63,24 @@ class YooKassaReceiptFactory implements ReceiptFactoryInterface
     public function getName(): string
     {
         return 'yookassa';
+    }
+
+    /**
+     * @param \Darvin\PaymentBundle\Receipt\Model\YooKassa\Receipt $receipt
+     * @param \Darvin\PaymentBundle\Entity\Payment                 $payment
+     *
+     * @throws \Darvin\PaymentBundle\Receipt\Exception\CantCreateReceiptException
+     */
+    private function validate(Receipt $receipt, Payment $payment): void
+    {
+        $errors = $this->validator->validate($receipt);
+
+        if ($errors->count() > 0) {
+            $message = implode(' ', array_map(function (ConstraintViolationInterface $error): string {
+                return implode(': ', [$error->getPropertyPath(), $error->getMessage()]);
+            }, iterator_to_array($errors)));
+
+            throw new CantCreateReceiptException($payment, $message);
+        }
     }
 }

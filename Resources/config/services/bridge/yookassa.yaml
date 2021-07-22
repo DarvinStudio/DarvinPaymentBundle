@@ -16,5 +16,7 @@ services:
 
     darvin_payment.receipt.factory.yookassa:
         class: '%darvin_payment.receipt.factory.yookassa.class%'
+        arguments:
+            - '@validator'
         tags:
             - { name: darvin_payment.receipt_factory }
