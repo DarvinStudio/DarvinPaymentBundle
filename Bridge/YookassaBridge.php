@@ -39,7 +39,7 @@ class YookassaBridge extends AbstractBridge
      */
     public function getSessionTimeout(): int
     {
-        throw new \RuntimeException('Not implemented.');
+        return $this->getGatewayParameter('sessionTimeoutSecs', 60 * 60 * 24 * 7);
     }
 
     /**
