@@ -15,6 +15,7 @@ use Darvin\PaymentBundle\Entity\Payment;
 use Darvin\PaymentBundle\Form\Type\GatewayRedirectType;
 use Darvin\PaymentBundle\Payment\Operations;
 use Darvin\PaymentBundle\Redirect\RedirectFactoryInterface;
+use Omnipay\YooKassa\Message\PurchaseResponse;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -96,7 +97,7 @@ class PurchaseController extends AbstractController
 
         $this->em->flush();
 
-        if ($response->isSuccessful() && $response->isRedirect()) {
+        if (($response->isSuccessful() || $response instanceof PurchaseResponse) && $response->isRedirect()) {
             $redirect = $this->redirectFactory->createRedirect($response, $bridge->getSessionTimeout());
             $redirect->setPayment($payment);
 
