@@ -17,3 +17,11 @@
 - Allow "fresh/doctrine-enum-bundle" ^7.
 
 6.1.7: Sberbank bridge: change session timeout from 1 day to 7 days.
+
+6.2.0:
+
+- Add YooKassa gateway.
+
+- Throw exceptions in controllers in debug mode.
+
+- Make purchase completion optional.
