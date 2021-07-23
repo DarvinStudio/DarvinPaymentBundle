@@ -196,7 +196,7 @@ class SberbankBridge extends AbstractBridge
             return json_encode($factory->createReceipt($payment, $this));
         } catch (CantCreateReceiptException $ex) {
             $this->logger->warning(
-                $this->translator->trans('error.cant_create_receipt', [], 'payment_event'),
+                $this->translator->trans('error.cant_create_receipt', ['%message%' => $ex->getMessage()], 'payment_event'),
                 [
                     'payment' => $payment,
                 ]

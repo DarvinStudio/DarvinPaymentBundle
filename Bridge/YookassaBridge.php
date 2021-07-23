@@ -170,12 +170,12 @@ class YookassaBridge extends AbstractBridge
     /**
      * @param \Darvin\PaymentBundle\Entity\Payment $payment
      *
-     * @return array
+     * @return array|null
      */
-    private function getReceipt(Payment $payment): array
+    private function getReceipt(Payment $payment): ?array
     {
         if (!$this->receiptFactoryRegistry->hasFactory($payment, $this)) {
-            return [];
+            return null;
         }
 
         $factory = $this->receiptFactoryRegistry->getFactory($payment, $this);
@@ -184,13 +184,13 @@ class YookassaBridge extends AbstractBridge
             return $factory->createReceipt($payment, $this);
         } catch (CantCreateReceiptException $ex) {
             $this->logger->warning(
-                $this->translator->trans('error.cant_create_receipt', [], 'payment_event'),
+                $this->translator->trans('error.cant_create_receipt', ['%message%' => $ex->getMessage()], 'payment_event'),
                 [
                     'payment' => $payment,
                 ]
             );
         }
 
-        return [];
+        return null;
     }
 }

@@ -1,6 +1,6 @@
 error:
     bad_response: "%method%: Can't handle response. Response code: %code%. Response message: %message%"
-    cant_create_receipt: "%method%: Can't create receipt"
+    cant_create_receipt: "%method%: Can't create receipt: %message%"
     cant_send_email: "Some troubles with sending email: %message%"
     missing_public_email: "Missing client email"
     missing_service_email: "Missing service email"

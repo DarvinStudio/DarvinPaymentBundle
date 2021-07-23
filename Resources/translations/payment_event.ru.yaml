@@ -1,6 +1,6 @@
 error:
     bad_response: "%method%: Невозможно обработать ответ платежного шлюза. Response code: %code%. Response message: %message%"
-    cant_create_receipt: "%method%: Проблемы с генерацией чека"
+    cant_create_receipt: "%method%: Проблемы с генерацией чека: %message%"
     cant_send_email: "Проблема с отправкой email-уведомления: %message%"
     missing_public_email: "У клиента отсутствует email"
     missing_service_email: "У админа отсутствует email"
