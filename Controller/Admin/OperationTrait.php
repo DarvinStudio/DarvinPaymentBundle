@@ -19,7 +19,6 @@ use Darvin\Utils\HttpFoundation\AjaxResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -88,7 +87,6 @@ trait OperationTrait
      * @param \Symfony\Component\HttpFoundation\Request $request   Request
      *
      * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
     private function execute(string $method, string $operation, string $token, Request $request): Response
@@ -108,12 +106,7 @@ trait OperationTrait
 
         $referer = $request->headers->get('referer', $redirectUrl);
 
-        try {
-            $this->validateGateway($gateway, $method);
-        } catch (\RuntimeException $ex) {
-            throw new NotFoundHttpException($ex->getMessage(), $ex);
-        }
-
+        $this->validateGateway($gateway, $method);
         $this->validatePayment($payment, $operation);
 
         $parameters = $bridge->{sprintf('%sParameters', $method)}($payment);

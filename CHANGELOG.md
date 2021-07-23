@@ -23,5 +23,3 @@
 - Add YooKassa gateway.
 
 - Throw exceptions in controllers in debug mode.
-
-- Make purchase completion optional.

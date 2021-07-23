@@ -42,32 +42,21 @@ class CompleteController extends AbstractController
             $parameters = $bridge->completePurchaseParameters($payment);
         }
 
+        $this->validateGateway($gateway, $method);
         $this->validatePayment($payment, $operation);
 
-        $supported = true;
-
         try {
-            $this->validateGateway($gateway, $method);
-        } catch (\RuntimeException $ex) {
-            $supported = false;
-        }
+            $response = $gateway->{$method}($parameters)->send();
+        } catch (\Exception $ex) {
+            $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 
-        $response = null;
-
-        if ($supported) {
-            try {
-                $response = $gateway->{$method}($parameters)->send();
-            } catch (\Exception $ex) {
-                $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
-
-                if ($this->debug) {
-                    throw $ex;
-                }
-
-                return $this->createErrorResponse($payment);
+            if ($this->debug) {
+                throw $ex;
             }
+
+            return $this->createErrorResponse($payment);
         }
-        if (null === $response || $response->isSuccessful()) {
+        if ($response->isSuccessful()) {
             $this->workflow->apply($payment, $operation);
 
             $this->em->flush();
