@@ -73,14 +73,14 @@ class PurchaseController extends AbstractController
             $parameters = $bridge->purchaseParameters($payment);
         }
 
-        $this->validateGateway($gateway, $method);
+        $this->validateGateway($gateway, $bridge->resolveGatewayMethod($method));
         $this->validatePayment($payment, $operation, $gatewayName);
 
         if ($payment->hasRedirect()) {
             return $this->createPaymentResponse($payment);
         }
         try {
-            $response = $gateway->{$method}($parameters)->send();
+            $response = $gateway->{$bridge->resolveGatewayMethod($method)}($parameters)->send();
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 

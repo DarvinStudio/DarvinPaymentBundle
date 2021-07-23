@@ -75,6 +75,14 @@ abstract class AbstractBridge implements BridgeInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function resolveGatewayMethod(string $method): string
+    {
+        return $method;
+    }
+
+    /**
      * @param string $name    Parameter name
      * @param mixed  $default Default value
      *

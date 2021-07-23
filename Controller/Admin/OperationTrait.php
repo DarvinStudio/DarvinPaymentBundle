@@ -106,12 +106,12 @@ trait OperationTrait
 
         $referer = $request->headers->get('referer', $redirectUrl);
 
-        $this->validateGateway($gateway, $method);
+        $this->validateGateway($gateway, $bridge->resolveGatewayMethod($method));
         $this->validatePayment($payment, $operation);
 
         $parameters = $bridge->{sprintf('%sParameters', $method)}($payment);
 
-        $response = $gateway->{$method}($parameters)->send();
+        $response = $gateway->{$bridge->resolveGatewayMethod($method)}($parameters)->send();
 
         if ($response->isSuccessful()) {
             $this->workflow->apply($payment, $operation);

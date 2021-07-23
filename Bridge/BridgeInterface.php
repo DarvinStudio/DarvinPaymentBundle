@@ -100,4 +100,11 @@ interface BridgeInterface
      * @return array
      */
     public function acceptNotificationParameters(Payment $payment): array;
+
+    /**
+     * @param string $method
+     *
+     * @return string
+     */
+    public function resolveGatewayMethod(string $method): string;
 }

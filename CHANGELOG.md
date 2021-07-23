@@ -23,3 +23,5 @@
 - Add YooKassa gateway.
 
 - Throw exceptions in controllers in debug mode.
+
+6.2.1: Allow bridge to resolve gateway method.

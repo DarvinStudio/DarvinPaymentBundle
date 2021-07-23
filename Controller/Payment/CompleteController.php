@@ -42,11 +42,11 @@ class CompleteController extends AbstractController
             $parameters = $bridge->completePurchaseParameters($payment);
         }
 
-        $this->validateGateway($gateway, $method);
+        $this->validateGateway($gateway, $bridge->resolveGatewayMethod($method));
         $this->validatePayment($payment, $operation);
 
         try {
-            $response = $gateway->{$method}($parameters)->send();
+            $response = $gateway->{$bridge->resolveGatewayMethod($method)}($parameters)->send();
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf('%s: %s', __METHOD__, $ex->getMessage()), ['payment' => $payment]);
 

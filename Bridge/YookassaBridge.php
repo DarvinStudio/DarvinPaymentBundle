@@ -23,6 +23,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class YookassaBridge extends AbstractBridge
 {
+    private const METHOD_MAP = [
+        'completePurchase' => 'fetchTransaction',
+    ];
+
     /**
      * @var \Psr\Log\LoggerInterface
      */
@@ -126,7 +130,9 @@ class YookassaBridge extends AbstractBridge
      */
     public function completePurchaseParameters(Payment $payment): array
     {
-        return [];
+        return [
+            'transactionReference' => $payment->getTransactionReference(),
+        ];
     }
 
     /**
@@ -151,6 +157,14 @@ class YookassaBridge extends AbstractBridge
     public function acceptNotificationParameters(Payment $payment): array
     {
         throw new \RuntimeException('Not implemented.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function resolveGatewayMethod(string $method): string
+    {
+        return self::METHOD_MAP[$method] ?? parent::resolveGatewayMethod($method);
     }
 
     /**
