@@ -34,6 +34,11 @@
         "symfony/workflow": "*",
         "twig/twig": "*"
     },
+    "require-dev": {
+        "darvinstudio/omnipay-sberbank": "*",
+        "darvinstudio/omnipay-telr": "*",
+        "smdmphd/omnipay-yookassa": "*"
+    },
     "suggest": {
         "darvinstudio/darvin-admin-bundle": "Allow admin CRUD operations",
         "darvinstudio/darvin-config-bundle": "Allow admin email notifications",

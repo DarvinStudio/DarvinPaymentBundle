@@ -220,7 +220,7 @@ class Payment implements PaymentInterface
     }
 
     /**
-     * @param \Darvin\PaymentBundle\Entity\Event Event
+     * @param \Darvin\PaymentBundle\Entity\Event $event Event
      *
      * @return Payment
      */

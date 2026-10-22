@@ -130,6 +130,9 @@ class PaymentLogger implements LoggerInterface
      */
     private function getEventRepository(): EventRepository
     {
-        return $this->em->getRepository(Event::class);
+        /** @var \Darvin\PaymentBundle\Repository\EventRepository $repository */
+        $repository = $this->em->getRepository(Event::class);
+
+        return $repository;
     }
 }
