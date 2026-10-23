@@ -63,7 +63,12 @@ class GatewayFactory implements GatewayFactoryInterface
             $className = '\\'.$className;
         }
 
-        $gateway = Omnipay::create($className, null, $this->requestStack->getMasterRequest());
+        // RequestStack::getMasterRequest() is deprecated since Symfony 5.3 and removed in 6.0
+        $request = method_exists($this->requestStack, 'getMainRequest')
+            ? $this->requestStack->getMainRequest()
+            : $this->requestStack->getMasterRequest();
+
+        $gateway = Omnipay::create($className, null, $request);
         $gateway->initialize($bridge->initializationParameters());
 
         return $gateway;
