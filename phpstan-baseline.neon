@@ -1,0 +1,20 @@
+parameters:
+    ignoreErrors:
+        # Doctrine-managed identifier (@ORM\GeneratedValue): written by the ORM via reflection, never by PHP code.
+        -
+            message: '#^Property Darvin\\PaymentBundle\\Entity\\(Event|Redirect)\:\:\$id is never written, only read\.$#'
+            identifier: property.onlyRead
+            count: 2
+            path: Entity/*.php
+        -
+            message: '#^Property Darvin\\PaymentBundle\\Entity\\(Event|Redirect)\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+            identifier: property.unusedType
+            count: 2
+            path: Entity/*.php
+        # Dead defensive check: Payment::getOrder() is declared to return PaidOrder, but a hand-made Payment may lack one.
+        # Not changed to keep behaviour identical.
+        -
+            message: '#^Strict comparison using !== between null and Darvin\\PaymentBundle\\Entity\\PaidOrder will always evaluate to true\.$#'
+            identifier: notIdentical.alwaysTrue
+            count: 1
+            path: Receipt/Exception/CantCreateReceiptException.php

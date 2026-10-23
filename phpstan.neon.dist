@@ -1,0 +1,27 @@
+includes:
+    - phpstan-baseline.neon
+parameters:
+    level: 5
+    phpVersion:
+        min: 70200
+        max: 80400
+    excludePaths:
+        - */Tests/*
+        - */vendor/*
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # False positive caused by the analysis environment: doctrine/collections 2.x declares a native "mixed $element",
+        # which PHPStan reads as a class named Doctrine\Common\Collections\mixed because phpVersion.min is 7.2. Not reported
+        # when analysing against doctrine/collections 1.x, hence reportUnmatched: false.
+        -
+            message: '#^Parameter \#1 \$element of method Doctrine\\Common\\Collections\\(ReadableCollection|Collection)<.+>\:\:\w+\(\) expects Doctrine\\Common\\Collections\\mixed, Darvin\\PaymentBundle\\Entity\\Event given\.$#'
+            identifier: argument.type
+            reportUnmatched: false
+            path: Entity/Payment.php
+        # Symfony docblock false positive: the return type of ->end() is the union of every possible parent node,
+        # so chained builder calls after it are reported as undefined.
+        -
+            message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\:\:scalarNode\(\)\.$#'
+            identifier: method.notFound
+            reportUnmatched: false
+            path: DependencyInjection/Configuration.php

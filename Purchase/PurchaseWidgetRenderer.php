@@ -124,6 +124,9 @@ class PurchaseWidgetRenderer implements PurchaseWidgetRendererInterface
      */
     private function getPaymentRepository(): PaymentRepository
     {
-        return $this->em->getRepository(PaymentInterface::class);
+        /** @var \Darvin\PaymentBundle\Repository\PaymentRepository $repository */
+        $repository = $this->em->getRepository(PaymentInterface::class);
+
+        return $repository;
     }
 }

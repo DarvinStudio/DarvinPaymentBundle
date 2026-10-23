@@ -146,6 +146,7 @@ abstract class AbstractController
      */
     final protected function getPaymentByToken(string $token): Payment
     {
+        /** @var \Darvin\PaymentBundle\Entity\Payment|null $payment */
         $payment = $this->em->getRepository(PaymentInterface::class)->findOneBy(['token' => $token]);
 
         if (null === $payment) {

@@ -27,7 +27,9 @@ class Configuration implements ConfigurationInterface
     {
         $builder = new TreeBuilder('darvin_payment');
 
-        $builder->getRootNode()
+        /** @var \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $root */
+        $root = $builder->getRootNode();
+        $root
             ->children()
                 ->scalarNode('default_currency')->defaultValue('RUB')->cannotBeEmpty()->end()
                 ->scalarNode('default_gateway')->defaultNull()->end()
