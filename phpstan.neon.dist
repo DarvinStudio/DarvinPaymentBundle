@@ -8,10 +8,6 @@ parameters:
     excludePaths:
         - */Tests/*
         - */vendor/*
-        # Not analysable on both supported dependency sets: fresh/doctrine-enum-bundle >= 7.4 (PHP >= 7.4) declares
-        # "protected static array $choices", while 7.3 and 6.x declare it untyped. PHPStan reports the untyped override
-        # (property.missingNativeType) as a non-ignorable error, and a native type here would be fatal with the untyped parent.
-        - DBAL/Type/PaymentStateType.php
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
         # False positive caused by the analysis environment: doctrine/collections 2.x declares a native "mixed $element",
